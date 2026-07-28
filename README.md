@@ -14,8 +14,6 @@ embedded as a widget on the college website.
 
 > **Demo:** _not yet deployed_ — `docker compose up` runs the whole stack locally,
 > database and sample corpus included. See [Installation](#installation).
-> Deployment config for Hugging Face Spaces and Railway is in
-> [`deploy/DEPLOY.md`](deploy/DEPLOY.md).
 > The screenshots below are captured from the running application, not mockups.
 
 ---
@@ -432,7 +430,7 @@ Ordered by value, not by ease.
 4. **Query-log collection** — LangSmith traces exist, but there's no local record to mine for what students actually ask, which is the input to everything else.
 5. **Approval workflow** — schema fields exist (`status`, `last_verified`); the reviewer UI does not. Needed before the college will let it self-update.
 6. **Feedback loop** — thumbs up/down routed into the eval set rather than collected and ignored.
-7. **Deploy** — config is written ([`deploy/`](deploy/)); needs secrets rotated and an Atlas allowlist change before going live.
+7. **Deploy** — Render/Railway/Spaces free tier, then embed on the live college site.
 
 ---
 
