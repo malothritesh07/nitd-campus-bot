@@ -1,0 +1,60 @@
+# Everything needed to run the bot, including the database.
+#
+#     docker compose up
+#
+# Then open http://localhost:8000 — no Python, no MongoDB, no API key required.
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # Runs once: writes default config, ingests the sample corpus, creates outlets.
+  # Exits when done; the app waits for it to finish successfully.
+  init:
+    build: .
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      DB_NAME: nitd_campus
+      DATA_DIR: /app/data/sample
+      SERVER_PEPPER: ${SERVER_PEPPER:-dev-only-pepper-change-in-production}
+      EMBED_OFFLINE: "1"
+      LANGSMITH_TRACING: "false"
+    command: >
+      sh -c "python seed_config.py &&
+             python sync.py &&
+             python seed_shops.py"
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    ports:
+      - "8000:8000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      DB_NAME: nitd_campus
+      DATA_DIR: /app/data/sample
+      SERVER_PEPPER: ${SERVER_PEPPER:-dev-only-pepper-change-in-production}
+      EMBED_OFFLINE: "1"
+      # Optional. Without it every category still works; Syllabus returns the
+      # raw source extract instead of an LLM summary.
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      LANGSMITH_TRACING: ${LANGSMITH_TRACING:-false}
+      LANGSMITH_API_KEY: ${LANGSMITH_API_KEY:-}
+
+volumes:
+  mongo-data:

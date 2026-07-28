@@ -1,0 +1,556 @@
+[
+ {
+  "id": "about_vision",
+  "text": "Vision of the Department of Computer Science & Engineering, NIT Delhi: To communicate quality Computer Science Education for producing globally identifiable skilled technocrats and entrepreneurs upholding sound ethics, profound knowledge, and innovative ideas to meet industrial and societal expectations.",
+  "metadata": {
+   "category": "about",
+   "subcategory": "vision",
+   "source": "https://cse.nitdelhi.ac.in/",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "about_goal",
+  "text": "Goal of the Department of Computer Science & Engineering, NIT Delhi: To prepare the students with strong fundamental knowledge for challenging careers in the sciences, humanities and management to lay a strong foundation for higher study and research to mark a global impact.",
+  "metadata": {
+   "category": "about",
+   "subcategory": "goal",
+   "source": "https://cse.nitdelhi.ac.in/",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "about_mission",
+  "text": "Mission of the Department of Computer Science & Engineering, NIT Delhi: M1: Impart value-based technical knowledge and skill via effective pedagogies and hands-on experience. | M2: Strengthen multifaceted competence, nurture creativity, and foster entrepreneurial mindsets. | M3: Develop an appetite for research and higher education in contemporary computer science. | M4: Inculcate ethical and social values essential for nation-building.",
+  "metadata": {
+   "category": "about",
+   "subcategory": "mission",
+   "source": "https://cse.nitdelhi.ac.in/",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_prof_geeta_sikha",
+  "text": "Prof.Geeta Sikha is a member of the CSE Department at NIT Delhi. Designation: Professor. Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Prof.Geeta Sikha",
+   "designation": "Professor",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_anurag_singh",
+  "text": "Dr.Anurag Singh is a member of the CSE Department at NIT Delhi. Designation: Associate Professor. Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Anurag Singh",
+   "designation": "Associate Professor",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_karan_verma",
+  "text": "Dr.Karan Verma is a member of the CSE Department at NIT Delhi. Designation: Associate Professor. Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Karan Verma",
+   "designation": "Associate Professor",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_munesh_singh",
+  "text": "Dr.Munesh Singh is a member of the CSE Department at NIT Delhi. Designation: Associate Professor. Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Munesh Singh",
+   "designation": "Associate Professor",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_shelly_sachdeva",
+  "text": "Dr.Shelly Sachdeva is a member of the CSE Department at NIT Delhi. Designation: Associate Professor. Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Shelly Sachdeva",
+   "designation": "Associate Professor",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_vipin_pal",
+  "text": "Dr.Vipin Pal is a member of the CSE Department at NIT Delhi. Designation: Assistant Professor(Grade-I). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Vipin Pal",
+   "designation": "Assistant Professor(Grade-I)",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_amandeep_kaur",
+  "text": "Dr.Amandeep Kaur is a member of the CSE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Amandeep Kaur",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_ankur",
+  "text": "Dr.Ankur is a member of the CSE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Ankur",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_gautam_kumar",
+  "text": "Dr.gautam Kumar is a member of the CSE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.gautam Kumar",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_gulab_sah",
+  "text": "Dr.Gulab Sah is a member of the CSE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Gulab Sah",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_gunjan",
+  "text": "Dr.Gunjan is a member of the CSE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Gunjan",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_nisha_singh_chauhan",
+  "text": "Dr.Nisha Singh Chauhan is a member of the CSE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Nisha Singh Chauhan",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_sahil",
+  "text": "Dr.Sahil is a member of the CSE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Sahil",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_halim",
+  "text": "Dr.Halim is a member of the CSE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Halim",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_sandhya_pundhir",
+  "text": "Dr.Sandhya Pundhir is a member of the CSE Department at NIT Delhi. Designation: Assistant Professor(Contractral Basis). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Sandhya Pundhir",
+   "designation": "Assistant Professor(Contractral Basis)",
+   "staff_type": "Faculty",
+   "source": "https://cse.nitdelhi.ac.in/faculty",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_mr_manish_kumar_malik",
+  "text": "Mr.Manish Kumar Malik is a member of the CSE Department at NIT Delhi. Role: technical Assistant. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Manish Kumar Malik",
+   "designation": "technical Assistant",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://cse.nitdelhi.ac.in/staff",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_mr_sanjeev_kumar",
+  "text": "Mr.sanjeev Kumar is a member of the CSE Department at NIT Delhi. Role: technical Assistant. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.sanjeev Kumar",
+   "designation": "technical Assistant",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://cse.nitdelhi.ac.in/staff",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_mr_somesh_kumar",
+  "text": "Mr.Somesh Kumar is a member of the CSE Department at NIT Delhi. Role: technical Assistant. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Somesh Kumar",
+   "designation": "technical Assistant",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://cse.nitdelhi.ac.in/staff",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_mr_vikas_bhardwaj",
+  "text": "Mr.Vikas Bhardwaj is a member of the CSE Department at NIT Delhi. Role: Senior Technician. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Vikas Bhardwaj",
+   "designation": "Senior Technician",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://cse.nitdelhi.ac.in/staff",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_mr_pradeep_kumar",
+  "text": "Mr.Pradeep Kumar is a member of the CSE Department at NIT Delhi. Role: Senior Technician. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Pradeep Kumar",
+   "designation": "Senior Technician",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://cse.nitdelhi.ac.in/staff",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_ms_anju_bhakar",
+  "text": "Ms.Anju Bhakar is a member of the CSE Department at NIT Delhi. Role: Junior Assistant. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Ms.Anju Bhakar",
+   "designation": "Junior Assistant",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://cse.nitdelhi.ac.in/staff",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_mr_kelash_kumar",
+  "text": "Mr.Kelash Kumar is a member of the CSE Department at NIT Delhi. Role: Office Attentent. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Kelash Kumar",
+   "designation": "Office Attentent",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://cse.nitdelhi.ac.in/staff",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_intelligent_computing_complex_network_lab",
+  "text": "Intelligent Computing & Complex Network Lab is a laboratory in the CSE Department at NIT Delhi, located at Lab No. 103, CSE Department, Admin Building. Coordinator(s): Dr. Anurag Singh. Technical staff: Mr. Somesh. Seating/system capacity: 35. Hardware: HP Desktop (x35): i7 12th Gen, 512GB NVMe SSD, 1 TB HDD,16 GB RAM, Windows 11, Ubuntu 20.04 LTS. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Intelligent Computing & Complex Network Lab",
+   "coordinators": "Dr. Anurag Singh",
+   "technical_staff": "Mr. Somesh",
+   "capacity": 35,
+   "location": "Lab No. 103, CSE Department, Admin Building",
+   "hardware": "HP Desktop (x35): i7 12th Gen, 512GB NVMe SSD, 1 TB HDD,16 GB RAM, Windows 11, Ubuntu 20.04 LTS",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#intelligent-computing-complex-network-lab",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_ai_research_innovating_lab_airil_lab",
+  "text": "AI Research & Innovating Lab (AIRIL Lab) is a laboratory in the CSE Department at NIT Delhi, located at Lab No. 102, CSE Department, Admin Building. Coordinator(s): Prof. (Dr.) Geeta Sikka, Dr. Amandeep Kaur. Technical staff: Mr. Manish Kumar Malik. Seating/system capacity: 35. Hardware: HP Desktop (x35): i7 12th Gen, 512GB NVMe SSD, 1 TB HDD,16 GB RAM, Windows 11, Ubuntu 20.04 LTS. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "AI Research & Innovating Lab (AIRIL Lab)",
+   "coordinators": "Prof. (Dr.) Geeta Sikka, Dr. Amandeep Kaur",
+   "technical_staff": "Mr. Manish Kumar Malik",
+   "capacity": 35,
+   "location": "Lab No. 102, CSE Department, Admin Building",
+   "hardware": "HP Desktop (x35): i7 12th Gen, 512GB NVMe SSD, 1 TB HDD,16 GB RAM, Windows 11, Ubuntu 20.04 LTS",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#ai-research-innovating-lab-airil-lab",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_programming_lab_ii",
+  "text": "Programming Lab-II is a laboratory in the CSE Department at NIT Delhi, located at Lab No. 17, CSE Department, Admin Building. Coordinator(s): Dr.Kapil Kumar | Dr. Shelly Sachdeva. Technical staff: Mr. Vikas Bhardwaj. Seating/system capacity: 40. Hardware: HP Desktop (x40): HP Desktop with i7 3rd Gen, 4GB RAM & 512 GB HDD. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Programming Lab-II",
+   "coordinators": "Dr.Kapil Kumar | Dr. Shelly Sachdeva",
+   "technical_staff": "Mr. Vikas Bhardwaj",
+   "capacity": 40,
+   "location": "Lab No. 17, CSE Department, Admin Building",
+   "hardware": "HP Desktop (x40): HP Desktop with i7 3rd Gen, 4GB RAM & 512 GB HDD",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#programming-lab-ii",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_visual_computing_robotics_lab",
+  "text": "Visual Computing & Robotics Lab is a laboratory in the CSE Department at NIT Delhi, located at 223-224,second floor,mini campus | Lab No. 14, CSE Department, Admin Building. Coordinator(s): Dr. Gautam Kumar. Technical staff: Mr. Somesh. Seating/system capacity: 30. Hardware: Tyron (x30): Raspberry Pi 400, Humanoid Robot, Mobile Robot, Mobile manipulator System consisting of GPU, GPS, Camera Depth Sensor, IMU, 2D Lidar.. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Visual Computing & Robotics Lab",
+   "coordinators": "Dr. Gautam Kumar",
+   "technical_staff": "Mr. Somesh",
+   "capacity": 30,
+   "location": "223-224,second floor,mini campus | Lab No. 14, CSE Department, Admin Building",
+   "hardware": "Tyron (x30): Raspberry Pi 400, Humanoid Robot, Mobile Robot, Mobile manipulator System consisting of GPU, GPS, Camera Depth Sensor, IMU, 2D Lidar.",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#visual-computing-robotics-lab",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_data_analytics_and_vision_for_smart_environments_lab",
+  "text": "Data Analytics and vision for smart Environments Lab is a laboratory in the CSE Department at NIT Delhi, located at Basement Mini campus | Lab No. 13, CSE Department, Admin Building. Coordinator(s): Dr. Sahil. Technical staff: Mr. Vikas Bhardwaj. Seating/system capacity: 9. Hardware: Tyron (x5): Intel Xeon Gold 6226R, RTX A 6000 – 48 GB, RAM 64 GB, SSD - 512 GB HDD – 2 TB, Ubuntu 20.04 LTS. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Data Analytics and vision for smart Environments Lab",
+   "coordinators": "Dr. Sahil",
+   "technical_staff": "Mr. Vikas Bhardwaj",
+   "capacity": 9,
+   "location": "Basement Mini campus | Lab No. 13, CSE Department, Admin Building",
+   "hardware": "Tyron (x5): Intel Xeon Gold 6226R, RTX A 6000 – 48 GB, RAM 64 GB, SSD - 512 GB HDD – 2 TB, Ubuntu 20.04 LTS",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#data-analytics-and-vision-for-smart-environments-lab",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_intelligent_systems_lab",
+  "text": "Intelligent Systems Lab is a laboratory in the CSE Department at NIT Delhi, located at Lab No. 12, CSE Department, Admin Building. Coordinator(s): Dr.Ajay Kumar | Dr. Amandeep Kaur and Dr. Nisha Singh. Technical staff: Mr. Ankur. Seating/system capacity: 19. Hardware: HP Desktop (x19): HP Desktop with i7 12th Gen, 512GB NVMe SSD, 16 GB RAM & 1 TB HDD. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Intelligent Systems Lab",
+   "coordinators": "Dr.Ajay Kumar | Dr. Amandeep Kaur and Dr. Nisha Singh",
+   "technical_staff": "Mr. Ankur",
+   "capacity": 19,
+   "location": "Lab No. 12, CSE Department, Admin Building",
+   "hardware": "HP Desktop (x19): HP Desktop with i7 12th Gen, 512GB NVMe SSD, 16 GB RAM & 1 TB HDD",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#intelligent-systems-lab",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_research_lab",
+  "text": "Research Lab is a laboratory in the CSE Department at NIT Delhi, located at Lab No. 11, CSE Department, Admin Building. Coordinator(s): Dr. Gulab Sah. Technical staff: Mr. Ankur. Seating/system capacity: 17. Hardware: Tyron (x17): Intel Xeon E5-2620, 16GB, 1TB HDD, GPU Nvidia Quardo K2000. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Research Lab",
+   "coordinators": "Dr. Gulab Sah",
+   "technical_staff": "Mr. Ankur",
+   "capacity": 17,
+   "location": "Lab No. 11, CSE Department, Admin Building",
+   "hardware": "Tyron (x17): Intel Xeon E5-2620, 16GB, 1TB HDD, GPU Nvidia Quardo K2000",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#research-lab",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_computer_networks_and_architechture_lab",
+  "text": "Computer networks and Architechture Lab is a laboratory in the CSE Department at NIT Delhi, located at Lab No. 10, CSE Department, Admin Building. Coordinator(s): Dr. Gunjan & Dr. Vipin Pal. Technical staff: Mr. Sanjeev Kumar. Seating/system capacity: 31. Hardware: HP Desktop (x31): HP Desktop with i7 12th Gen, • 512GB NVMe SSD, 1 TB HDD • 16 GB RAM • Windows 11, Ubuntu 20.04 LTS. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Computer networks and Architechture Lab",
+   "coordinators": "Dr. Gunjan & Dr. Vipin Pal",
+   "technical_staff": "Mr. Sanjeev Kumar",
+   "capacity": 31,
+   "location": "Lab No. 10, CSE Department, Admin Building",
+   "hardware": "HP Desktop (x31): HP Desktop with i7 12th Gen, • 512GB NVMe SSD, 1 TB HDD • 16 GB RAM • Windows 11, Ubuntu 20.04 LTS",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#computer-networks-architecture-lab",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_artificial_intelligence_data_science_lab",
+  "text": "Artificial Intelligence & Data science Lab is a laboratory in the CSE Department at NIT Delhi, located at Lab No. 09, CSE Department, Admin Building. Coordinator(s): Prof. (Dr.) Geeta Sikka & Dr. Gautam. Technical staff: Mr. Sanjeev Kumar. Seating/system capacity: 31. Hardware: HP Desktop (x31): HP Desktop with i7 12th Gen, • 512GB NVMe SSD, 1 TB HDD • 16 GB RAM • Windows 11, Ubuntu 20.04 LTS. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Artificial Intelligence & Data science Lab",
+   "coordinators": "Prof. (Dr.) Geeta Sikka & Dr. Gautam",
+   "technical_staff": "Mr. Sanjeev Kumar",
+   "capacity": 31,
+   "location": "Lab No. 09, CSE Department, Admin Building",
+   "hardware": "HP Desktop (x31): HP Desktop with i7 12th Gen, • 512GB NVMe SSD, 1 TB HDD • 16 GB RAM • Windows 11, Ubuntu 20.04 LTS",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#artificial-intelligence-data-science-lab",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_ubiquitous_computing_lab",
+  "text": "Ubiquitous Computing Lab is a laboratory in the CSE Department at NIT Delhi, located at Lab No. 04, CSE Department, Admin Building. Coordinator(s): Dr. Karan Verma. Technical staff: Mr. Pradeep Kumar. Seating/system capacity: 12. Hardware: HBE-IoT Smart Server HBEIoT Smart Server (x0),Systems (x5). Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Ubiquitous Computing Lab",
+   "coordinators": "Dr. Karan Verma",
+   "technical_staff": "Mr. Pradeep Kumar",
+   "capacity": 12,
+   "location": "Lab No. 04, CSE Department, Admin Building",
+   "hardware": "HBE-IoT Smart Server HBEIoT Smart Server (x0),Systems (x5)",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#ubiquitous-computing-lab",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_programming_lab_i",
+  "text": "Programming Lab-I is a laboratory in the CSE Department at NIT Delhi, located at Lab No. 03, CSE Department, Admin Building. Coordinator(s): Dr. Munesh Kumar. Technical staff: Mr. Pradeep Kumar. Seating/system capacity: 40. Hardware: HP Desktop (x40): HP Desktop with i7 3rd Gen, 4GB RAM & 512 GB HDD. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Programming Lab-I",
+   "coordinators": "Dr. Munesh Kumar",
+   "technical_staff": "Mr. Pradeep Kumar",
+   "capacity": 40,
+   "location": "Lab No. 03, CSE Department, Admin Building",
+   "hardware": "HP Desktop (x40): HP Desktop with i7 3rd Gen, 4GB RAM & 512 GB HDD",
+   "software": null,
+   "source": "https://cse.nitdelhi.ac.in/laboratories#programming-lab-i",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "programmes_placeholder_0",
+  "text": "No detailed content has been extracted yet for the 'Programmes' section of the CSE Department, NIT Delhi website. Refer to the source URL for current information.",
+  "metadata": {
+   "category": "programmes",
+   "name": "Programmes",
+   "source": "https://cse.nitdelhi.ac.in/programmes",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi",
+   "status": "incomplete_needs_scraping"
+  }
+ },
+ {
+  "id": "research_development_placeholder_0",
+  "text": "No detailed content has been extracted yet for the 'Research & Development' section of the CSE Department, NIT Delhi website. Refer to the source URL for current information.",
+  "metadata": {
+   "category": "research_development",
+   "name": "Research and Development",
+   "source": "https://cse.nitdelhi.ac.in/randd",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi",
+   "status": "incomplete_needs_scraping"
+  }
+ },
+ {
+  "id": "events_placeholder_0",
+  "text": "No detailed content has been extracted yet for the 'Events' section of the CSE Department, NIT Delhi website. Refer to the source URL for current information.",
+  "metadata": {
+   "category": "events",
+   "name": "Events",
+   "source": "https://cse.nitdelhi.ac.in/events",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi",
+   "status": "incomplete_needs_scraping"
+  }
+ },
+ {
+  "id": "gallery_placeholder_0",
+  "text": "No detailed content has been extracted yet for the 'Gallery' section of the CSE Department, NIT Delhi website. Refer to the source URL for current information.",
+  "metadata": {
+   "category": "gallery",
+   "name": "Gallery",
+   "source": "https://cse.nitdelhi.ac.in/gallery",
+   "department": "Computer Science & Engineering",
+   "institute": "NIT Delhi",
+   "status": "incomplete_needs_scraping"
+  }
+ }
+]

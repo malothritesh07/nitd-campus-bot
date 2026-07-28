@@ -1,0 +1,380 @@
+[
+ {
+  "doc_id": "fee-btech-3-josaa",
+  "program": "B.Tech (UG)",
+  "semester": 3,
+  "batch": "2025",
+  "admission_type": "JOSAA",
+  "title": "Fees structure for B. Tech students for Autumn Semester 2026 (Batch-2025)",
+  "source_url": "https://media.nitdelhi.ac.in/uploads/web_media/B%20Tech%203rd%20Semester@nitdelhi35720dc0-b3c7-4c88-a656-2e5e06e77825.pdf",
+  "categories": {
+   "above_5_lakh_income_gen_obc_ews": {
+    "admission_fee": 2000,
+    "tuition_fee": 62500,
+    "total_A": 64500,
+    "total_B_institute_fees": 18300,
+    "day_scholar_total": 82800,
+    "hosteller_mess_ac_total": 133800,
+    "hosteller_mess_non_ac_total": 121800
+   },
+   "between_1_to_5_lakh_income_gen_obc_ews": {
+    "admission_fee": 2000,
+    "tuition_fee": 20833,
+    "total_A": 22833,
+    "total_B_institute_fees": 18300,
+    "day_scholar_total": 41133,
+    "hosteller_mess_ac_total": 92133,
+    "hosteller_mess_non_ac_total": 80133
+   },
+   "less_than_1_lakh_income_gen_obc_ews_sc_st_pwd": {
+    "admission_fee": 2000,
+    "tuition_fee": 0,
+    "total_A": 2000,
+    "total_B_institute_fees": 18300,
+    "day_scholar_total": 20300,
+    "hosteller_mess_ac_total": 71300,
+    "hosteller_mess_non_ac_total": 59300
+   }
+  },
+  "institute_fee_breakdown": {
+   "development_fee": 5000,
+   "library_book_bank": 1800,
+   "computer_internet_fee": 2000,
+   "sports_creative_arts_society": 3000,
+   "students_welfare": 1000,
+   "industrial_training_placement_fee": 1500,
+   "insurance_fee_annual": 1000,
+   "entrepreneurship_startup_fees_annual": 1000,
+   "examination_fee": 2000
+  },
+  "hostel_fee_breakdown": {
+   "ac_room": 32000,
+   "non_ac_room": 20000,
+   "mess_fees": 19000
+  },
+  "quick_answer": "B.Tech 3rd Sem (JOSAA, Batch-2025) day scholar fee: Rs 82,800 (income >5L), Rs 41,133 (1-5L), Rs 20,300 (<1L). Hosteller with AC+mess: up to Rs 1,33,800.",
+  "currency": "INR (unless noted otherwise)",
+  "institute": "National Institute of Technology (NIT) Delhi",
+  "bank_details": {
+   "bank_name": "ICICI Bank",
+   "account_name": "Director NIT Delhi Fee Collection A/c",
+   "account_number": "092901001801",
+   "ifsc_code": "ICIC0000929",
+   "micr_code": "1100229103",
+   "swift_code": "ICICINBBNRI",
+   "note": "Fee must be paid only via the payment link sent by the Accounts Section or Institute Payment Gateway / NEFT-RTGS-IMPS to this account. No other mode is accepted."
+  },
+  "fee_valid_for_bank_loan_scholarship": true
+ },
+ {
+  "doc_id": "fee-btech-3-dasa",
+  "program": "B.Tech (UG)",
+  "semester": 3,
+  "batch": "2025",
+  "admission_type": "DASA",
+  "title": "Fees structure for B. Tech DASA students for Autumn Semester 2026 (Batch-2025)",
+  "source_url": "https://media.nitdelhi.ac.in/uploads/web_media/B%20Tech%20DASA%203rd%20Semester@nitdelhiaf4b0084-a09f-44f9-b273-982f9cebb1e0.pdf",
+  "admission_fee": 2000,
+  "tuition_fee_note": "As per Note 2: USD 4000/semester (non-SAARC), USD 2000/semester (SAARC nationals), CIWG candidates pay resident-student fee in USD (deficit fee US$960) at reporting time.",
+  "total_A_excl_tuition": 2000,
+  "total_B_institute_fees": 18300,
+  "day_scholar_total_excl_tuition": 20300,
+  "hosteller_ac_mess_total_excl_tuition": 71300,
+  "hosteller_non_ac_mess_total_excl_tuition": 59300,
+  "institute_fee_breakdown": {
+   "development_fee": 5000,
+   "library_book_bank": 1800,
+   "computer_internet_fee": 2000,
+   "sports_creative_arts_society": 3000,
+   "students_welfare": 1000,
+   "industrial_training_placement_fee": 1500,
+   "insurance_fee_annual": 1000,
+   "entrepreneurship_startup_fees_annual": 1000,
+   "examination_fee": 2000
+  },
+  "hostel_fee_breakdown": {
+   "ac_room": 32000,
+   "non_ac_room": 20000,
+   "mess_fees": 19000
+  },
+  "quick_answer": "B.Tech DASA 3rd Sem fee (excl. tuition): Day scholar Rs 20,300; Hosteller+AC+mess Rs 71,300. Tuition is separate: USD 4000/sem (non-SAARC) or USD 2000/sem (SAARC).",
+  "currency": "INR (unless noted otherwise)",
+  "institute": "National Institute of Technology (NIT) Delhi",
+  "bank_details": {
+   "bank_name": "ICICI Bank",
+   "account_name": "Director NIT Delhi Fee Collection A/c",
+   "account_number": "092901001801",
+   "ifsc_code": "ICIC0000929",
+   "micr_code": "1100229103",
+   "swift_code": "ICICINBBNRI",
+   "note": "Fee must be paid only via the payment link sent by the Accounts Section or Institute Payment Gateway / NEFT-RTGS-IMPS to this account. No other mode is accepted."
+  },
+  "fee_valid_for_bank_loan_scholarship": true
+ },
+ {
+  "doc_id": "fee-btech-3-sii",
+  "program": "B.Tech (UG)",
+  "semester": 3,
+  "admission_type": "SII (Study in India)",
+  "title": "Fees structure for UG Under Study in India Program (SII) Students Autumn Semester for 2026",
+  "source_url": "https://media.nitdelhi.ac.in/uploads/web_media/UG%20SII%203rd%20Semester@nitdelhid93587f6-3308-4d73-a38f-4115b1f84361.pdf",
+  "admission_fee": 4000,
+  "tuition_fee_note": "As per Note 1: USD 2000/semester (SAARC nationals), USD 4000/semester (non-SAARC nationals).",
+  "total_A_excl_tuition": 4000,
+  "total_B_institute_fees": 53600,
+  "hosteller_ac_mess_total_excl_tuition": 116600,
+  "hosteller_non_ac_mess_total_excl_tuition": 106600,
+  "institute_fee_breakdown": {
+   "development_fee": 10000,
+   "library_book_bank": 3600,
+   "computer_internet_fee": 4000,
+   "sports_creative_arts_society": 6000,
+   "students_welfare": 2000,
+   "industrial_training_placement_fee": 3000,
+   "examination_fee": 4000,
+   "insurance_fee_annual": 4000,
+   "entrepreneurship_startup_fees_annual": 2000,
+   "contingency_fees_annual": 5000,
+   "maintenance_fee": 10000
+  },
+  "hostel_fee_breakdown": {
+   "ac_room": 40000,
+   "non_ac_room": 30000,
+   "mess_fees": 19000
+  },
+  "quick_answer": "UG SII 3rd Sem fee (excl. tuition): Hosteller+AC+mess Rs 1,16,600; Non-AC Rs 1,06,600. Tuition separate: USD 2000-4000/sem depending on country.",
+  "currency": "INR (unless noted otherwise)",
+  "institute": "National Institute of Technology (NIT) Delhi",
+  "bank_details": {
+   "bank_name": "ICICI Bank",
+   "account_name": "Director NIT Delhi Fee Collection A/c",
+   "account_number": "092901001801",
+   "ifsc_code": "ICIC0000929",
+   "micr_code": "1100229103",
+   "swift_code": "ICICINBBNRI",
+   "note": "Fee must be paid only via the payment link sent by the Accounts Section or Institute Payment Gateway / NEFT-RTGS-IMPS to this account. No other mode is accepted."
+  },
+  "fee_valid_for_bank_loan_scholarship": true
+ },
+ {
+  "doc_id": "fee-btech-5-josaa",
+  "program": "B.Tech (UG)",
+  "semester": 5,
+  "batch": "2024",
+  "admission_type": "JOSAA",
+  "title": "Fees structure for B. Tech students for Autumn Semester 2026 (Batch-2024)",
+  "source_url": "https://media.nitdelhi.ac.in/uploads/web_media/B%20Tech%205th%20Semester@nitdelhi52f56d49-a86d-4761-a8bd-29fdbe0bb915.pdf",
+  "categories": {
+   "above_5_lakh_income_gen_obc_ews": {
+    "admission_fee": 2000,
+    "tuition_fee": 62500,
+    "total_A": 64500,
+    "total_B_institute_fees": 18300,
+    "day_scholar_total": 82800,
+    "hosteller_mess_ac_total": 129800,
+    "hosteller_mess_non_ac_total": 119800
+   },
+   "between_1_to_5_lakh_income_gen_obc_ews": {
+    "admission_fee": 2000,
+    "tuition_fee": 20833,
+    "total_A": 22833,
+    "total_B_institute_fees": 18300,
+    "day_scholar_total": 41133,
+    "hosteller_mess_ac_total": 88133,
+    "hosteller_mess_non_ac_total": 78133
+   },
+   "less_than_1_lakh_income_gen_obc_ews_sc_st_pwd": {
+    "admission_fee": 2000,
+    "tuition_fee": 0,
+    "total_A": 2000,
+    "total_B_institute_fees": 18300,
+    "day_scholar_total": 20300,
+    "hosteller_mess_ac_total": 67300,
+    "hosteller_mess_non_ac_total": 57300
+   }
+  },
+  "institute_fee_breakdown": {
+   "development_fee": 5000,
+   "library_book_bank": 1800,
+   "computer_internet_fee": 2000,
+   "sports_creative_arts_society": 3000,
+   "students_welfare": 1000,
+   "industrial_training_placement_fee": 1500,
+   "insurance_fee_annual": 1000,
+   "entrepreneurship_startup_fees_annual": 1000,
+   "examination_fee": 2000
+  },
+  "hostel_fee_breakdown": {
+   "ac_room": 28000,
+   "non_ac_room": 18000,
+   "mess_fees": 19000
+  },
+  "quick_answer": "B.Tech 5th Sem (JOSAA, Batch-2024) day scholar fee: Rs 82,800 (>5L income), Rs 41,133 (1-5L), Rs 20,300 (<1L). Hosteller with AC+mess: up to Rs 1,29,800.",
+  "currency": "INR (unless noted otherwise)",
+  "institute": "National Institute of Technology (NIT) Delhi",
+  "bank_details": {
+   "bank_name": "ICICI Bank",
+   "account_name": "Director NIT Delhi Fee Collection A/c",
+   "account_number": "092901001801",
+   "ifsc_code": "ICIC0000929",
+   "micr_code": "1100229103",
+   "swift_code": "ICICINBBNRI",
+   "note": "Fee must be paid only via the payment link sent by the Accounts Section or Institute Payment Gateway / NEFT-RTGS-IMPS to this account. No other mode is accepted."
+  },
+  "fee_valid_for_bank_loan_scholarship": true
+ },
+ {
+  "doc_id": "fee-btech-5-dasa",
+  "program": "B.Tech (UG)",
+  "semester": 5,
+  "batch": "2024",
+  "admission_type": "DASA",
+  "title": "Fees structure for B. Tech DASA students Autumn Semester for 2026 (Batch-2024)",
+  "source_url": "https://media.nitdelhi.ac.in/uploads/web_media/B%20Tech%20DASA%205th%20semester@nitdelhi89e2c43d-7066-41d7-a806-28a95c45f49e.pdf",
+  "admission_fee": 2000,
+  "tuition_fee_note": "As per Note 2: USD 4000/semester (non-SAARC), USD 2000/semester (SAARC nationals), CIWG candidates pay resident-student fee in USD (deficit fee US$960) at reporting time.",
+  "total_A_excl_tuition": 2000,
+  "total_B_institute_fees": 18300,
+  "day_scholar_total_excl_tuition": 20300,
+  "hosteller_ac_total_excl_tuition_mess_note": "Note: this doc lists 'Hosteller(s) With AC/Non-AC Room' totals without separate mess line shown; totals below already include mess as per source total row.",
+  "hosteller_ac_total_excl_tuition": 67300,
+  "hosteller_non_ac_total_excl_tuition": 57300,
+  "institute_fee_breakdown": {
+   "development_fee": 5000,
+   "library_book_bank": 1800,
+   "computer_internet_fee": 2000,
+   "sports_creative_arts_society": 3000,
+   "students_welfare": 1000,
+   "industrial_training_placement_fee": 1500,
+   "insurance_fee_annual": 1000,
+   "entrepreneurship_startup_fees_annual": 1000,
+   "examination_fee": 2000
+  },
+  "hostel_fee_breakdown": {
+   "ac_room": 28000,
+   "non_ac_room": 18000,
+   "mess_fees": 19000
+  },
+  "quick_answer": "B.Tech DASA 5th Sem fee (excl. tuition): Day scholar Rs 20,300; Hosteller+AC Rs 67,300. Tuition separate: USD 4000/sem (non-SAARC) or USD 2000/sem (SAARC).",
+  "currency": "INR (unless noted otherwise)",
+  "institute": "National Institute of Technology (NIT) Delhi",
+  "bank_details": {
+   "bank_name": "ICICI Bank",
+   "account_name": "Director NIT Delhi Fee Collection A/c",
+   "account_number": "092901001801",
+   "ifsc_code": "ICIC0000929",
+   "micr_code": "1100229103",
+   "swift_code": "ICICINBBNRI",
+   "note": "Fee must be paid only via the payment link sent by the Accounts Section or Institute Payment Gateway / NEFT-RTGS-IMPS to this account. No other mode is accepted."
+  },
+  "fee_valid_for_bank_loan_scholarship": true
+ },
+ {
+  "doc_id": "fee-btech-7-josaa",
+  "program": "B.Tech (UG)",
+  "semester": 7,
+  "admission_type": "JOSAA",
+  "title": "Fees structure for B. Tech students for Autumn Semester 2026 (7th Semester)",
+  "source_url": "https://media.nitdelhi.ac.in/uploads/web_media/B%20Tech%207th%20Semester@nitdelhifaa27a97-03a6-459a-8349-7f873be9d9a5.pdf",
+  "categories": {
+   "above_5_lakh_income_gen_obc_ews": {
+    "admission_fee": 2000,
+    "tuition_fee": 62500,
+    "total_A": 64500,
+    "total_B_institute_fees": 15500,
+    "day_scholar_total": 80000,
+    "hosteller_mess_ac_total": 127000,
+    "hosteller_mess_non_ac_total": 117000
+   },
+   "between_1_to_5_lakh_income_gen_obc_ews": {
+    "admission_fee": 2000,
+    "tuition_fee": 20833,
+    "total_A": 22833,
+    "total_B_institute_fees": 15500,
+    "day_scholar_total": 38333,
+    "hosteller_mess_ac_total": 85333,
+    "hosteller_mess_non_ac_total": 75333
+   },
+   "less_than_1_lakh_income_gen_obc_ews_sc_st_pwd": {
+    "admission_fee": 2000,
+    "tuition_fee": 0,
+    "total_A": 2000,
+    "total_B_institute_fees": 15500,
+    "day_scholar_total": 17500,
+    "hosteller_mess_ac_total": 64500,
+    "hosteller_mess_non_ac_total": 54500
+   }
+  },
+  "institute_fee_breakdown": {
+   "development_fee": 5000,
+   "library_book_bank": 1500,
+   "computer_internet_fee": 1500,
+   "sports_creative_arts_society": 2500,
+   "students_welfare": 1000,
+   "industrial_training_placement_fee": 1500,
+   "insurance_fee_annual": 1000,
+   "examination_fee": 1500
+  },
+  "hostel_fee_breakdown": {
+   "ac_room": 28000,
+   "non_ac_room": 18000,
+   "mess_fees": 19000
+  },
+  "quick_answer": "B.Tech 7th Sem (JOSAA) day scholar fee: Rs 80,000 (>5L income), Rs 38,333 (1-5L), Rs 17,500 (<1L). Hosteller with AC+mess: up to Rs 1,27,000.",
+  "currency": "INR (unless noted otherwise)",
+  "institute": "National Institute of Technology (NIT) Delhi",
+  "bank_details": {
+   "bank_name": "ICICI Bank",
+   "account_name": "Director NIT Delhi Fee Collection A/c",
+   "account_number": "092901001801",
+   "ifsc_code": "ICIC0000929",
+   "micr_code": "1100229103",
+   "swift_code": "ICICINBBNRI",
+   "note": "Fee must be paid only via the payment link sent by the Accounts Section or Institute Payment Gateway / NEFT-RTGS-IMPS to this account. No other mode is accepted."
+  },
+  "fee_valid_for_bank_loan_scholarship": true
+ },
+ {
+  "doc_id": "fee-btech-7-dasa",
+  "program": "B.Tech (UG)",
+  "semester": 7,
+  "admission_type": "DASA",
+  "title": "Fees structure for B. Tech DASA students Autumn Semester for 2026 (7th Semester)",
+  "source_url": "https://media.nitdelhi.ac.in/uploads/web_media/B%20Tech%20DASA%207th%20Semester@nitdelhi7a7e29e1-4a31-4d67-8050-c24b1a0a3bf1.pdf",
+  "admission_fee": 2000,
+  "tuition_fee_note": "As per Note 2: USD 4000/semester (non-SAARC), USD 2000/semester (SAARC nationals), CIWG candidates pay resident-student fee in USD (deficit fee US$960) at reporting time.",
+  "total_A_excl_tuition": 2000,
+  "total_B_institute_fees": 15500,
+  "day_scholar_total_excl_tuition": 17500,
+  "hosteller_ac_mess_total_excl_tuition": 64500,
+  "hosteller_non_ac_mess_total_excl_tuition": 54500,
+  "institute_fee_breakdown": {
+   "development_fee": 5000,
+   "library_book_bank": 1500,
+   "computer_internet_fee": 1500,
+   "sports_creative_arts_society": 2500,
+   "students_welfare": 1000,
+   "industrial_training_placement_fee": 1500,
+   "insurance_fee_annual": 1000,
+   "examination_fee": 1500
+  },
+  "hostel_fee_breakdown": {
+   "ac_room": 28000,
+   "non_ac_room": 18000,
+   "mess_fees": 19000
+  },
+  "quick_answer": "B.Tech DASA 7th Sem fee (excl. tuition): Day scholar Rs 17,500; Hosteller+AC+mess Rs 64,500. Tuition separate: USD 4000/sem (non-SAARC) or USD 2000/sem (SAARC).",
+  "currency": "INR (unless noted otherwise)",
+  "institute": "National Institute of Technology (NIT) Delhi",
+  "bank_details": {
+   "bank_name": "ICICI Bank",
+   "account_name": "Director NIT Delhi Fee Collection A/c",
+   "account_number": "092901001801",
+   "ifsc_code": "ICIC0000929",
+   "micr_code": "1100229103",
+   "swift_code": "ICICINBBNRI",
+   "note": "Fee must be paid only via the payment link sent by the Accounts Section or Institute Payment Gateway / NEFT-RTGS-IMPS to this account. No other mode is accepted."
+  },
+  "fee_valid_for_bank_loan_scholarship": true
+ }
+]

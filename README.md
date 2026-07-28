@@ -12,7 +12,8 @@ embedded as a widget on the college website.
 
 ## Live Link
 
-> **Demo:** _not yet deployed_ — see [Installation](#installation) to run it locally in ~3 minutes.
+> **Demo:** _not yet deployed_ — but `docker compose up` runs the whole stack locally,
+> database and sample corpus included. See [Installation](#installation).
 > The screenshots below are captured from the running application, not mockups.
 
 ---
@@ -331,43 +332,78 @@ are in CSE?" — and would otherwise be served to students as answers.
 
 ## Installation
 
-**Prerequisites:** Python 3.10+, a MongoDB Atlas cluster (free tier is enough),
-and the source data files.
+### Option A — Docker (recommended, runs anywhere)
+
+Nothing to install but Docker. No Python, no MongoDB, no API key.
 
 ```bash
-git clone https://github.com/<you>/nitd-campus-bot.git
+git clone https://github.com/malothritesh07/nitd-campus-bot.git
 cd nitd-campus-bot
+docker compose up
+```
 
+Open <http://localhost:8000>.
+
+Compose starts MongoDB, ingests the bundled sample corpus, creates the campus
+outlets, and serves the app. The embedding model is baked into the image, so the
+container needs no network at runtime and there is no first-query stall.
+
+First build takes a few minutes (PyTorch CPU + the model). After that, start is
+seconds.
+
+To use a language model for the Syllabus category, add a free
+[Groq](https://console.groq.com) key:
+
+```bash
+GROQ_API_KEY=gsk_... docker compose up
+```
+
+Without it every category still works — Syllabus returns the raw source extract
+instead of an LLM summary.
+
+### Option B — local Python
+
+```bash
 python -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+source .venv/bin/activate          # Windows: .venv\Scriptsctivate
 pip install -r requirements.txt
 
 cp .env.example .env               # set MONGO_URI and SERVER_PEPPER
 ```
 
 ```bash
-python seed_config.py              # defaults → config collection
+python seed_config.py              # defaults -> config collection
 python sync.py                     # build corpus (downloads the model once, ~90 MB)
 python seed_shops.py               # create outlets, prints owner codes ONCE
 python -m uvicorn app:app --reload --port 8000
 ```
 
-Open <http://localhost:8000/>.
+> Use forward slashes in `DATA_DIR`, even on Windows — backslashes get eaten by
+> shell escaping.
 
-> `GROQ_API_KEY` is optional. Without it every category still works; the Syllabus
-> category returns raw source text instead of an LLM summary.
-
-> Set `SERVER_PEPPER` **before** issuing shop codes — changing it later
+> Set `SERVER_PEPPER` **before** issuing shop codes. Changing it later
 > invalidates every code already handed out.
 
-**Tests** (server must be running):
+### The bundled data
+
+`data/sample/` holds a reduced corpus so a clone has something to answer with —
+187 chunks covering CSE and ECE departments, B.Tech fees, semesters 1–2 of two
+programmes, and all four admission checklists. Every retrieval path is
+exercised. It is public information already published on nitdelhi.ac.in.
+
+The full corpus (440 chunks, six departments, all programmes) is produced by the
+scrapers and is not committed. Point `DATA_DIR` at it to run against everything.
+
+### Tests
+
+Server must be running:
 
 ```bash
 python tests/test_api.py      # 22/22 expected
 python tests/stress_test.py   # 29/30 expected
 ```
 
-**Corpus maintenance:**
+### Corpus maintenance
 
 ```bash
 python sync.py --dry-run       # preview changes, write nothing
@@ -375,13 +411,6 @@ python sync.py --status        # approved vs archived counts
 python sync.py --restore <id>  # undo an archive
 python sync.py --purge 30      # hard-delete archives older than 30 days
 ```
-
-### Honest note on portability
-
-This is **not** a clone-and-run demo. It needs a MongoDB instance and the source
-data files (college data, deliberately not committed). Given both, setup is the
-five commands above. The one-command Docker path is listed under Future
-Improvements because it isn't built yet.
 
 ---
 
@@ -393,10 +422,9 @@ Ordered by value, not by ease.
 2. **Golden dataset + RAGAS** — the 52 current tests are hand-written. Real evaluation needs retrieval metrics (recall@k, MRR) separated from generation metrics (faithfulness, context precision), because a bad answer could be either one's fault.
 3. **Response streaming** — Syllabus takes ~4s and currently shows nothing until it completes.
 4. **Query-log collection** — LangSmith traces exist, but there's no local record to mine for what students actually ask, which is the input to everything else.
-5. **Docker Compose** — one-command reproducible setup, the honest fix for the portability note above.
-6. **Approval workflow** — schema fields exist (`status`, `last_verified`); the reviewer UI does not. Needed before the college will let it self-update.
-7. **Feedback loop** — thumbs up/down routed into the eval set rather than collected and ignored.
-8. **Deploy** — Render/Railway free tier, then embed on the live college site.
+5. **Approval workflow** — schema fields exist (`status`, `last_verified`); the reviewer UI does not. Needed before the college will let it self-update.
+6. **Feedback loop** — thumbs up/down routed into the eval set rather than collected and ignored.
+7. **Deploy** — Render/Railway free tier, then embed on the live college site.
 
 ---
 

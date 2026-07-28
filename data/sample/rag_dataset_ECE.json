@@ -1,0 +1,535 @@
+[
+ {
+  "id": "about_vision",
+  "text": "Vision of the Department of Electronics & Communication Engineering, NIT Delhi: Create an educational environment to prepare the students to meet the challenges of the modern electronics and communication industry through state of art technical knowledge and innovative approaches beneficial to society.",
+  "metadata": {
+   "category": "about",
+   "subcategory": "vision",
+   "source": "https://ece.nitdelhi.ac.in/",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "about_goal",
+  "text": "Goal of the Department of Electronics & Communication Engineering, NIT Delhi: • Effective teaching and learning with continuous improvement in curriculum | • Placements for all graduates and postgraduates | • Quality research publications | • Accreditations of programs offered | • MOU with industry and academia | • R&D projects | • Organization of conference/FDPs/STCs and Workshops.",
+  "metadata": {
+   "category": "about",
+   "subcategory": "goal",
+   "source": "https://ece.nitdelhi.ac.in/",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "about_mission",
+  "text": "Mission of the Department of Electronics & Communication Engineering, NIT Delhi: M1: To promote teaching and learning by engaging in innovative research and by offering state-of- the-art undergraduate, postgraduate, and doctoral programs. | M2: To cultivate an entrepreneurial environment and industry interaction, leading to the emergence of creators, innovators, and leaders. | M3: To promote co-curricular and extra-curricular activities for the overall personality development of the students. | M4: Building of responsible citizens through awareness and acceptance of ethical values.",
+  "metadata": {
+   "category": "about",
+   "subcategory": "mission",
+   "source": "https://ece.nitdelhi.ac.in/",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_prof_dr_jyoteesh_malhotra",
+  "text": "Prof.Dr.Jyoteesh Malhotra is a member of the ECE Department at NIT Delhi. Designation: Professor. Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Prof.Dr.Jyoteesh Malhotra",
+   "designation": "Professor",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_prof_manoj_kumar_taleja",
+  "text": "Prof.Manoj Kumar Taleja is a member of the ECE Department at NIT Delhi. Designation: Professor. Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Prof.Manoj Kumar Taleja",
+   "designation": "Professor",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_manisha_bharti",
+  "text": "Dr.Manisha Bharti is a member of the ECE Department at NIT Delhi. Designation: Associate Professor. Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Manisha Bharti",
+   "designation": "Associate Professor",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_rikmantra_basu",
+  "text": "Dr.Rikmantra Basu is a member of the ECE Department at NIT Delhi. Designation: Associate Professor. Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Rikmantra Basu",
+   "designation": "Associate Professor",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_dhandapani_vaithiyanthan",
+  "text": "Dr.Dhandapani Vaithiyanthan is a member of the ECE Department at NIT Delhi. Designation: Assistant Professor(Grade-I). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Dhandapani Vaithiyanthan",
+   "designation": "Assistant Professor(Grade-I)",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_nithin_singh_singha",
+  "text": "Dr.Nithin Singh Singha is a member of the ECE Department at NIT Delhi. Designation: Assistant Professor(Grade-I). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Nithin Singh Singha",
+   "designation": "Assistant Professor(Grade-I)",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_sandeep_kumar",
+  "text": "Dr.Sandeep Kumar is a member of the ECE Department at NIT Delhi. Designation: Assistant Professor(Grade-I). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Sandeep Kumar",
+   "designation": "Assistant Professor(Grade-I)",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_dharmendra_kumar_jhariya",
+  "text": "Dr.Dharmendra Kumar Jhariya is a member of the ECE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Dharmendra Kumar Jhariya",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_mahesh_kumar_singh",
+  "text": "Dr.Mahesh Kumar Singh is a member of the ECE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Mahesh Kumar Singh",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_manish_verma",
+  "text": "Dr.Manish Verma is a member of the ECE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Manish Verma",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_navneet_garg",
+  "text": "Dr.Navneet Garg is a member of the ECE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Navneet Garg",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_preeti_verma",
+  "text": "Dr.Preeti Verma is a member of the ECE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Preeti Verma",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_dr_sachin_agarwal",
+  "text": "Dr.Sachin Agarwal is a member of the ECE Department at NIT Delhi. Designation: Assistant Professor(Grade-II). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Dr.Sachin Agarwal",
+   "designation": "Assistant Professor(Grade-II)",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "faculty_ms_isha",
+  "text": "Ms.Isha is a member of the ECE Department at NIT Delhi. Designation: Assistant Professor(Contractual Basis). Category: Faculty.",
+  "metadata": {
+   "category": "faculty",
+   "name": "Ms.Isha",
+   "designation": "Assistant Professor(Contractual Basis)",
+   "staff_type": "Faculty",
+   "source": "https://ece.nitdelhi.ac.in/faculty",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "staff_mr_surender_kumar",
+  "text": "Mr.Surender Kumar is a member of the ECE Department at NIT Delhi. Role: Senior Technician Assitant. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Surender Kumar",
+   "designation": "Senior Technician Assitant",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://ece.nitdelhi.ac.in/staff",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "staff_mr_hemant_kumar",
+  "text": "Mr.Hemant Kumar is a member of the ECE Department at NIT Delhi. Role: technical Assistant. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Hemant Kumar",
+   "designation": "technical Assistant",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://ece.nitdelhi.ac.in/staff",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "staff_mr_kundan",
+  "text": "Mr.Kundan is a member of the ECE Department at NIT Delhi. Role: technical Assistant. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Kundan",
+   "designation": "technical Assistant",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://ece.nitdelhi.ac.in/staff",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "staff_mr_shivam",
+  "text": "Mr.Shivam is a member of the ECE Department at NIT Delhi. Role: technical Assistant. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Shivam",
+   "designation": "technical Assistant",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://ece.nitdelhi.ac.in/staff",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "staff_mr_sonu",
+  "text": "Mr.Sonu is a member of the ECE Department at NIT Delhi. Role: Senior Technician. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Sonu",
+   "designation": "Senior Technician",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://ece.nitdelhi.ac.in/staff",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "staff_amit_kumar_tiwari",
+  "text": "Amit Kumar Tiwari is a member of the ECE Department at NIT Delhi. Role: Technician. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Amit Kumar Tiwari",
+   "designation": "Technician",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://ece.nitdelhi.ac.in/staff",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "staff_mr_keshav",
+  "text": "Mr.Keshav is a member of the ECE Department at NIT Delhi. Role: Technician. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Mr.Keshav",
+   "designation": "Technician",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://ece.nitdelhi.ac.in/staff",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "staff_ms_aditi_kandari",
+  "text": "Ms.Aditi Kandari is a member of the ECE Department at NIT Delhi. Role: Senior Assistant. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Ms.Aditi Kandari",
+   "designation": "Senior Assistant",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://ece.nitdelhi.ac.in/staff",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "staff_ms_komal_rani",
+  "text": "Ms.Komal Rani is a member of the ECE Department at NIT Delhi. Role: Lab Attendent. Category: Staff/Non Teaching faculty.",
+  "metadata": {
+   "category": "staff",
+   "name": "Ms.Komal Rani",
+   "designation": "Lab Attendent",
+   "staff_type": "Staff/Non Teaching faculty",
+   "source": "https://ece.nitdelhi.ac.in/staff",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_electronics_devices_and_circuits_laboratory",
+  "text": "Electronics Devices and Circuits Laboratory is a laboratory in the ECE Department at NIT Delhi, located at Room No. 125 , Mini Campus Building. Coordinator(s): Dr. Rikmantra Basu | Dr Manish Verma. Technical staff: Mr. Kundan Kumar. Seating/system capacity: 35. Hardware: Digital Storage Oscilloscope, Arbitrary Function Generator, Handheld LCR Meter, Digital Multimeter, Triple Output Power Supply, Microampere DC Meter, Soldering Station. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Electronics Devices and Circuits Laboratory",
+   "coordinators": "Dr. Rikmantra Basu | Dr Manish Verma",
+   "technical_staff": "Mr. Kundan Kumar",
+   "capacity": 35,
+   "location": "Room No. 125 , Mini Campus Building",
+   "hardware": "Digital Storage Oscilloscope, Arbitrary Function Generator, Handheld LCR Meter, Digital Multimeter, Triple Output Power Supply, Microampere DC Meter, Soldering Station",
+   "software": null,
+   "source": "https://ece.nitdelhi.ac.in/laboratories#electronics-devices-and-circuits-laboratory",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_pg_research_scholar_lab",
+  "text": "PG Research Scholar Lab is a laboratory in the ECE Department at NIT Delhi, located at Room no. 107, Start-up building. Coordinator(s): Dr. Preeti Verma. Technical staff: Mr. Surender Kumar. Seating/system capacity: 20. Hardware: Desktop PCs - HP Pro (x16). Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "PG Research Scholar Lab",
+   "coordinators": "Dr. Preeti Verma",
+   "technical_staff": "Mr. Surender Kumar",
+   "capacity": 20,
+   "location": "Room no. 107, Start-up building",
+   "hardware": "Desktop PCs - HP Pro (x16)",
+   "software": null,
+   "source": "https://ece.nitdelhi.ac.in/laboratories#pg-research-scholar-lab",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_communication_systems",
+  "text": "Communication Systems is a laboratory in the ECE Department at NIT Delhi, located at Room No: 124, ECE Department, Mini Campus Building. Coordinator(s): Dr. Manisha Bharti. Technical staff: Mr. Hemant Kumar. Seating/system capacity: 35. Hardware: **Communication System Trainer Kit (Master Unit), CM2 Experiment Panel, CM4 Experiment Panel, CM5 Experiment Panel, CM6 Experiment Panel, CM7 Experiment Panel, CM8 Experiment Panel, CM12 Experiment Panel, CM13 Experiment Panel, CM20 Experiment Panel, 4-Channel Digital Storage Oscilloscope (DSO), 2-Channel Digital Storage Oscilloscope (DSO), Function Generator (20 MHz), Triple Channel DC Power Supply (30 V, 3 A), TRMS Digital Multimeter**. Software: MATLAB Software (x35).",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Communication Systems",
+   "coordinators": "Dr. Manisha Bharti",
+   "technical_staff": "Mr. Hemant Kumar",
+   "capacity": 35,
+   "location": "Room No: 124, ECE Department, Mini Campus Building",
+   "hardware": "**Communication System Trainer Kit (Master Unit), CM2 Experiment Panel, CM4 Experiment Panel, CM5 Experiment Panel, CM6 Experiment Panel, CM7 Experiment Panel, CM8 Experiment Panel, CM12 Experiment Panel, CM13 Experiment Panel, CM20 Experiment Panel, 4-Channel Digital Storage Oscilloscope (DSO), 2-Channel Digital Storage Oscilloscope (DSO), Function Generator (20 MHz), Triple Channel DC Power Supply (30 V, 3 A), TRMS Digital Multimeter**",
+   "software": "MATLAB Software (x35)",
+   "source": "https://ece.nitdelhi.ac.in/laboratories#communication-systems",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_rf_microwave_lab",
+  "text": "RF & Microwave lab is a laboratory in the ECE Department at NIT Delhi, located at Lab 123, ECE department, Mini Campus. Coordinator(s): Dr. Sachin Agarwal. Technical staff: Mr. Surender Kumar. Seating/system capacity: 35. Hardware: Microwave Test Bench (X-Band Klystron Source), PCB Prototype Machine, Microwave Test Bench (Reflex Klystron & Gunn Diode), Handheld LCR Meter, PCB Shearing Machine (300 mm, SLASH3001). Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "RF & Microwave lab",
+   "coordinators": "Dr. Sachin Agarwal",
+   "technical_staff": "Mr. Surender Kumar",
+   "capacity": 35,
+   "location": "Lab 123, ECE department, Mini Campus",
+   "hardware": "Microwave Test Bench (X-Band Klystron Source), PCB Prototype Machine, Microwave Test Bench (Reflex Klystron & Gunn Diode), Handheld LCR Meter, PCB Shearing Machine (300 mm, SLASH3001)",
+   "software": null,
+   "source": "https://ece.nitdelhi.ac.in/laboratories#rf-microwave-lab",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_instrumentation_measurement_laboratory",
+  "text": "Instrumentation & Measurement Laboratory is a laboratory in the ECE Department at NIT Delhi, located at Room No. 123 , Mini Campus Building. Coordinator(s): Dr. Dharmendra Kumar Jhariya. Technical staff: Mr. Amit Kumar Tiwari. Seating/system capacity: 35. Hardware: Universal Transducer Trainer Kit, LVDT Trainer (20 mm), Load Cell Trainer Kit, Strain Gauge Trainer Kit, Touch Panel Trainer, Colour Sensor Trainer, Pressure Trainer Kit, Temperature Sensor Trainer (RTD/Thermocouple/Thermistor), Water Flow Measurement Trainer, Humidity Sensor Trainer, Photo Transducer Kit (Photo Cell, Photo Transistor, Photo Diode), Light Sensing Transducers Module, Temperature Sensing Transducers Module, Sensor Transducer Training System with Computer Interface, Transducer Training Module, Universal Bridge Trainer Module, Strain Gauge Transducers Module, Displacement Sensing Transducers Module. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Instrumentation & Measurement Laboratory",
+   "coordinators": "Dr. Dharmendra Kumar Jhariya",
+   "technical_staff": "Mr. Amit Kumar Tiwari",
+   "capacity": 35,
+   "location": "Room No. 123 , Mini Campus Building",
+   "hardware": "Universal Transducer Trainer Kit, LVDT Trainer (20 mm), Load Cell Trainer Kit, Strain Gauge Trainer Kit, Touch Panel Trainer, Colour Sensor Trainer, Pressure Trainer Kit, Temperature Sensor Trainer (RTD/Thermocouple/Thermistor), Water Flow Measurement Trainer, Humidity Sensor Trainer, Photo Transducer Kit (Photo Cell, Photo Transistor, Photo Diode), Light Sensing Transducers Module, Temperature Sensing Transducers Module, Sensor Transducer Training System with Computer Interface, Transducer Training Module, Universal Bridge Trainer Module, Strain Gauge Transducers Module, Displacement Sensing Transducers Module",
+   "software": null,
+   "source": "https://ece.nitdelhi.ac.in/laboratories#instrumentation-and-measurement-laboratory",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_optical_communication_and_photonic_measurement_laboratory",
+  "text": "Optical Communication And photonic Measurement Laboratory is a laboratory in the ECE Department at NIT Delhi, located at Lab 123, ECE department, Mini Campus. Coordinator(s): Dr. Rikmantra Basu. Technical staff: Mr. Surender Kumar. Seating/system capacity: 35. Hardware: Light Runner Premium Fiber Optic Training Kit, Fiber Optics Laboratory Equipment, Single Mode & Multi Mode Fiber Optic Cable Module, Fiber Optics Communication Training System. Software: Not specified.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Optical Communication And photonic Measurement Laboratory",
+   "coordinators": "Dr. Rikmantra Basu",
+   "technical_staff": "Mr. Surender Kumar",
+   "capacity": 35,
+   "location": "Lab 123, ECE department, Mini Campus",
+   "hardware": "Light Runner Premium Fiber Optic Training Kit, Fiber Optics Laboratory Equipment, Single Mode & Multi Mode Fiber Optic Cable Module, Fiber Optics Communication Training System",
+   "software": null,
+   "source": "https://ece.nitdelhi.ac.in/laboratories#optical-communication-and-photonic-measurement-laboratory",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_system_and_circuit_simulation_laboratory",
+  "text": "System And Circuit Simulation Laboratory is a laboratory in the ECE Department at NIT Delhi, located at Lab 122, ECE department, Mini Campus. Coordinator(s): Dr. Jyoteesh Malhotra | Dr Nitin Singh Singha | Dr. Gulab Sah. Technical staff: Mr. Sonu Baghel. Seating/system capacity: 46. Hardware: HP Elite Tower 600 G9 Desktop PC, HP Pro Tower 400 G9 Desktop PC, FPGA Development Board, Reconfigurable Software Computing Platform (SDR), USRP X-310 Board, Bio-Medical Instrumentation Trainer System, Mobile Wireless EEG Amplifier System, Computer System for Mobile Wireless EEG System. Software: MATLAB, NetSim Standard (R&D), OrCAD Design and Simulation Software, Silvaco TCAD Omni, CST Studio Suite Software.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "System And Circuit Simulation Laboratory",
+   "coordinators": "Dr. Jyoteesh Malhotra | Dr Nitin Singh Singha | Dr. Gulab Sah",
+   "technical_staff": "Mr. Sonu Baghel",
+   "capacity": 46,
+   "location": "Lab 122, ECE department, Mini Campus",
+   "hardware": "HP Elite Tower 600 G9 Desktop PC, HP Pro Tower 400 G9 Desktop PC, FPGA Development Board, Reconfigurable Software Computing Platform (SDR), USRP X-310 Board, Bio-Medical Instrumentation Trainer System, Mobile Wireless EEG Amplifier System, Computer System for Mobile Wireless EEG System",
+   "software": "MATLAB, NetSim Standard (R&D), OrCAD Design and Simulation Software, Silvaco TCAD Omni, CST Studio Suite Software",
+   "source": "https://ece.nitdelhi.ac.in/laboratories#system-and-circuit-simulation-laboratory",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_microprocessor_microcontroller_laboratory",
+  "text": "Microprocessor & microcontroller Laboratory is a laboratory in the ECE Department at NIT Delhi, located at Room No: 124, ECE Department, Mini Campus Building. Coordinator(s): Dr. D. Vaithiyanathan. Technical staff: Mr. Hemant Kumar. Seating/system capacity: 35. Hardware: 8086 LCD Microprocessor Kit, 8051 Microcontroller (89C51RD2), 8251 Study Card, 8255 Study Card, 8259 Study Card, ADC Module, DAC Module, DTMF Module, TLC Module, LCD Module, LED Matrix Module, Keyboard Module, RFID Module, 8253 Study Card. Software: Keil C Software.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Microprocessor & microcontroller Laboratory",
+   "coordinators": "Dr. D. Vaithiyanathan",
+   "technical_staff": "Mr. Hemant Kumar",
+   "capacity": 35,
+   "location": "Room No: 124, ECE Department, Mini Campus Building",
+   "hardware": "8086 LCD Microprocessor Kit, 8051 Microcontroller (89C51RD2), 8251 Study Card, 8255 Study Card, 8259 Study Card, ADC Module, DAC Module, DTMF Module, TLC Module, LCD Module, LED Matrix Module, Keyboard Module, RFID Module, 8253 Study Card",
+   "software": "Keil C Software",
+   "source": "https://ece.nitdelhi.ac.in/laboratories#microprocessor-microcontroller-laboratory",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "lab_advanced_vlsi_design_laboratory",
+  "text": "Advanced VLSI Design Laboratory is a laboratory in the ECE Department at NIT Delhi, located at Room No. 206, ECE Department, Mini Campus Building. Coordinator(s): Prof. Manoj Kumar. Technical staff: Mr. Shivam Jaiswal. Seating/system capacity: 44. Hardware: HP Pro Tower 400 G9 Desktop PC, HP Z440 Workstation. Software: Mentor Graphics IC Nanometer Design & Verification Software, Cadence University Standard Bundle, Xilinx Vivado Software.",
+  "metadata": {
+   "category": "laboratories",
+   "name": "Advanced VLSI Design Laboratory",
+   "coordinators": "Prof. Manoj Kumar",
+   "technical_staff": "Mr. Shivam Jaiswal",
+   "capacity": 44,
+   "location": "Room No. 206, ECE Department, Mini Campus Building",
+   "hardware": "HP Pro Tower 400 G9 Desktop PC, HP Z440 Workstation",
+   "software": "Mentor Graphics IC Nanometer Design & Verification Software, Cadence University Standard Bundle, Xilinx Vivado Software",
+   "source": "https://ece.nitdelhi.ac.in/laboratories#advanced-vlsi-design-laboratory",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi"
+  }
+ },
+ {
+  "id": "programmes_placeholder_0",
+  "text": "No detailed content has been extracted yet for the 'Programmes' section of the ECE Department, NIT Delhi website. Refer to the source URL for current information.",
+  "metadata": {
+   "category": "programmes",
+   "name": "Programmes",
+   "source": "https://ece.nitdelhi.ac.in/programmes",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi",
+   "status": "incomplete_needs_scraping"
+  }
+ },
+ {
+  "id": "research_development_placeholder_0",
+  "text": "No detailed content has been extracted yet for the 'Research and Development' section of the ECE Department, NIT Delhi website. Refer to the source URL for current information.",
+  "metadata": {
+   "category": "research_development",
+   "name": "Research and Development",
+   "source": "https://ece.nitdelhi.ac.in/randd",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi",
+   "status": "incomplete_needs_scraping"
+  }
+ },
+ {
+  "id": "events_placeholder_0",
+  "text": "No detailed content has been extracted yet for the 'Events' section of the ECE Department, NIT Delhi website. Refer to the source URL for current information.",
+  "metadata": {
+   "category": "events",
+   "name": "Events",
+   "source": "https://ece.nitdelhi.ac.in/events",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi",
+   "status": "incomplete_needs_scraping"
+  }
+ },
+ {
+  "id": "gallery_placeholder_0",
+  "text": "No detailed content has been extracted yet for the 'Gallery' section of the ECE Department, NIT Delhi website. Refer to the source URL for current information.",
+  "metadata": {
+   "category": "gallery",
+   "name": "Gallery",
+   "source": "https://ece.nitdelhi.ac.in/gallery",
+   "department": "Electronics & Communication Engineering",
+   "institute": "NIT Delhi",
+   "status": "incomplete_needs_scraping"
+  }
+ }
+]

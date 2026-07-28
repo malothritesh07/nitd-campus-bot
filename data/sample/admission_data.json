@@ -1,0 +1,243 @@
+[
+ {
+  "doc_id": "admission-overview",
+  "title": "NIT Delhi Admission Procedure Overview (All Programs)",
+  "source_url": "https://nitdelhi.ac.in/academics/services/admissions",
+  "programs": {
+   "btech_ug": {
+    "entry_routes": [
+     "JOSAA / CSAB (regular)",
+     "DASA (international/NRI)",
+     "Study in India (SII)"
+    ],
+    "procedure_steps": [
+     "1. Counselling: JoSAA counselling or CSAB counselling",
+     "2. Institute reporting (Online + Physical): Online registration, upload photo, upload documents, document verification, fee payment, download provisional letter",
+     "3. Issue of Roll number, Official E-mail ID, Internet access ID",
+     "4. Orientation / Commencement of Classes"
+    ],
+    "official_counselling_links": {
+     "JOSAA": "https://josaa.nic.in/",
+     "CSAB": "https://csab.nic.in/",
+     "DASA": "https://dasanit.org/dasa2025/",
+     "Study in India": "https://studyinindia.gov.in/"
+    }
+   },
+   "mtech_mca_pg": {
+    "entry_routes": [
+     "CCMT (M.Tech centralized counselling)",
+     "DASA",
+     "Study in India",
+     "Self-Financed (M.Tech SFS)",
+     "NIMCET (MCA Regular and Self-Financed)"
+    ],
+    "procedure_steps": [
+     "1. Admission via CCMT / DASA / Study in India / Self-Financed / NIMCET",
+     "2. Institute reporting (Online + Physical): Online registration, upload photo, upload documents, document verification, fee payment, download provisional letter",
+     "3. Issue of Roll number, Official E-mail ID, Internet access ID",
+     "4. Orientation / Commencement of Classes"
+    ],
+    "official_counselling_links": {
+     "CCMT": "https://ccmt.admissions.nic.in/",
+     "NIMCET": "https://nimcet.admissions.nic.in/"
+    }
+   },
+   "phd": {
+    "entry_routes": [
+     "Self Sponsored (Entrance Test/Interview)",
+     "International Students (ICCR, Study in India)"
+    ],
+    "procedure_steps": [
+     "1. Online Application Form",
+     "2. Selection Process: Entrance Test / Interview",
+     "3. Issue of Roll number, Official E-mail ID, Internet access ID",
+     "4. Fee Payment by selected candidate",
+     "5. Institute Reporting: Orientation program, Commencement of classes"
+    ]
+   }
+  },
+  "note": "General procedural overview scraped from the official Admissions page. For exact program-specific document checklists see the dedicated records below."
+ },
+ {
+  "doc_id": "admission-docs-btech-dasa",
+  "title": "Additional Documents Required for B.Tech DASA Students at Physical Reporting (2025 batch)",
+  "program": "B.Tech (UG) - DASA admission route",
+  "source_url": "https://media.nitdelhi.ac.in/uploads/web_media/List-of-additional-documents-for-the-DASA-students@nitdelhi1b1acb97-338d-4305-a8f6-88c5174c1315.pdf",
+  "notice_ref": "NITD/ACAD/UGAdmissions/2025/98, dated 13th August 2025",
+  "important_note": "These are ADDITIONAL documents specific to DASA students, produced in ORIGINAL plus a photocopy at physical reporting, in addition to whatever was already submitted to DASA at the time of admission.",
+  "documents_required": [
+   "Provisional Admission Letter (issued from DASA 2025), signed by candidate",
+   "JEE 2025 score card issued by NTA (self-attested copy), if applicable",
+   "10th Standard/Matriculation or equivalent certificate (or govt-issued certificate) as proof of date of birth and name",
+   "Passport and Visa (Nepal nationals without passport: Authenticated Citizenship Card) and/or PIO/OCI card as applicable",
+   "Medical Certificate (specified format - Annexure 10 of DASA 2025 Information Brochure)",
+   "Mark sheet/grade card and Pass certificate of qualifying examination (or School Certificate proving completion of 11th & 12th if results awaited - Annexure 14)",
+   "Mark sheets of 10th, 11th and 12th (or equivalent examinations)",
+   "Certificate from School authorities proving completion of 11th & 12th - Annexure 11, on school letterhead",
+   "For foreign qualifications not listed in Annexure 2 of DASA brochure: AIU equivalence certificate (www.aiu.ac.in)",
+   "School Leaving / Transfer Certificate from institution last attended",
+   "For Indian citizens who completed 11th/12th abroad: proof certificate as per Annexure 13 (if not clear from School Leaving Certificate)",
+   "Character and Conduct Certificate from institution last attended (if qualifying exam passed in 2024-2025); OR from a Gazetted Officer issued on/after 1 March 2025 (if passed in earlier years)",
+   "CIWG category candidates additionally need: copy of parent's passport, copy of parent's visa valid in 2025, copy of parent's work permit valid in 2025, employer certificate (Annexure 12 format)"
+  ],
+  "important_conditions": [
+   "Admission is provisional and subject to cancellation if original documents are not produced at physical reporting.",
+   "If parents cannot travel with the candidate, a Gazetted-officer-attested copy of relevant passport/visa pages plus an authorization letter may be submitted instead."
+  ],
+  "quick_answer": "DASA B.Tech students must bring ORIGINALS + photocopies of: DASA provisional letter, JEE/10th DOB proof, passport & visa (or PIO/OCI), medical certificate, all mark sheets (10th/11th/12th), school leaving certificate, and character certificate. CIWG candidates need extra parent-employment documents."
+ },
+ {
+  "doc_id": "admission-docs-mca-nimcet",
+  "title": "Schedule & Document Checklist for MCA Physical Reporting (NIMCET Regular & SFS, Academic Year 2025-26)",
+  "program": "MCA (via NIMCET, Regular and Self-Financed)",
+  "source_url": "https://nitdelhi.ac.in/wp-content/uploads/2025/07/Schedule-for-Physical-Reporting-and-Document-Verification-_MCA-Admissions-Academic-Year-2025-26.pdf",
+  "notice_ref": "F.No.NITD/ACAD/17/2025-26/90, dated 24.07.2025",
+  "reporting_schedule": {
+   "dates": "28th July 2025 to 31st July 2025",
+   "time": "10:00 AM to 5:00 PM",
+   "venue": "Academic Section, 3rd Floor, Administrative Building, NIT Delhi, Plot No. FA7, Zone P1, GT Karnal Road, Delhi-110036",
+   "mode": "Offline only",
+   "contact_email": "academics@nitdelhi.ac.in",
+   "contact_phone": [
+    "9267998783",
+    "011-33861106",
+    "011-33861119"
+   ]
+  },
+  "what_to_bring": [
+   "Duly filled Admission Form",
+   "Self-attested copies of all documents in the checklist",
+   "All original documents for verification",
+   "Failing to bring required documents may result in cancellation of admission"
+  ],
+  "documents_checklist": [
+   {
+    "item": "Provisional seat allotment letter (downloaded from NIMCET website)",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Printout of registration form with locked choices",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Original Admission Letter and Original Document Verification Certificate (DVC) issued by NIMCET",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Birth certificate (competent authority) or Class X board certificate as DOB proof",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Four passport-size colour photographs",
+    "attach_with_form": "Original",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Provisional Seat Allotment Letter (last round)",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Proof of payment of seat acceptance fee",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Class X mark sheet and certificate",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Class XII / Diploma mark sheet (if applicable)",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Class XII / Diploma pass certificate (if applicable)",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Original grade/mark sheet of qualifying examination, all semesters",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Degree certificate of qualifying examination",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Course completion certificate from Head of University/Institute (if result awaited)",
+    "attach_with_form": "Original",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Character Certificate, Transfer Certificate & Migration Certificate",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Photo ID proof as per Govt. of India norms, especially Aadhaar Card",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Valid category certificate (OBC-NCL/SC/ST/EWS) - format on NIMCET website. OBC-NCL/EWS certificate must be issued on/after 1 April 2025",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Undertaking for OBC-NCL candidates only (Annexure III)",
+    "attach_with_form": "Original",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Certificate of Persons with Disability, for PwD candidates only",
+    "attach_with_form": "Self-attested photocopy",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Medical Fitness Certificate (Annexure V)",
+    "attach_with_form": "Original",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Affidavits: study-gap affidavit (Rs.10 stamp paper, if applicable), student anti-ragging affidavit (online generated), parent/guardian anti-ragging affidavit (online generated); hostellers need 2 sets of the anti-ragging affidavits",
+    "attach_with_form": "Original",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Undertaking by the student (Institute format, Annexure II)",
+    "attach_with_form": "Original",
+    "bring_original_at_reporting": true
+   },
+   {
+    "item": "Undertaking for late submission of documents under special circumstances, if applicable (Annexure IV)",
+    "attach_with_form": "Original",
+    "bring_original_at_reporting": true
+   }
+  ],
+  "additional_notes": [
+   "If original documents/certificates are not in English/Hindi, a certified English/Hindi translation is required during verification.",
+   "Category certificate format link: https://cdnbbsr.s3waas.gov.in/s33e6260b81898beacda3d16db379ed329/uploads/2025/04/20250416 77.pdf",
+   "Anti-ragging affidavit portal: https://antiragging.in/affidavit_university_form.php",
+   "Students should check the NIT Delhi website regularly for class schedule, orientation, roll number and institute email updates (these are shared only after physical reporting)."
+  ],
+  "quick_answer": "MCA (NIMCET) physical reporting: bring original admission letter/DVC, 10th & 12th/UG mark sheets & certificates, migration & character certificate, Aadhaar, 4 passport photos, category certificate (if applicable), medical fitness certificate, and anti-ragging affidavits (2 sets if hosteller)."
+ },
+ {
+  "doc_id": "admission-docs-btech-josaa-regular-status",
+  "title": "B.Tech Regular (JOSAA/CSAB) Physical Reporting Document Checklist - NOT AVAILABLE (broken link on official site)",
+  "program": "B.Tech (UG) - JOSAA/CSAB regular admission",
+  "status": "unavailable",
+  "note": "The official Admissions page (https://nitdelhi.ac.in/academics/services/admissions) has a link labeled 'Schedule for the Physical Reporting of B.Tech (Batch 2025) students' but it points to a dead '#' anchor (broken/placeholder link) as of scraping on 2026-07-25. No downloadable PDF is currently available for this specific checklist.",
+  "recommendation_for_students": "JOSAA/CSAB B.Tech candidates should refer to their JoSAA/CSAB seat allotment letter and provisional admission letter for the standard document list (typically: 10th & 12th mark sheets/certificates, migration certificate, character certificate, category certificate if applicable, medical certificate, Aadhaar/photo ID, passport photos, anti-ragging affidavits), and can confirm the exact NIT Delhi-specific list by emailing academics@nitdelhi.ac.in or checking the site closer to the reporting date, since the general document pattern closely follows the MCA/NIMCET checklist (see admission-docs-mca-nimcet).",
+  "contact_email": "academics@nitdelhi.ac.in",
+  "quick_answer": "NIT Delhi hasn't published a working link for the B.Tech (JOSAA/CSAB) physical-reporting document list yet. Check your JoSAA/CSAB provisional letter, or email academics@nitdelhi.ac.in closer to reporting dates."
+ }
+]

@@ -17,8 +17,8 @@ server.log
 rag_index/
 .cache/
 
-# Source data lives outside the repo (set DATA_DIR in .env)
-# ...but README screenshots must be committed
+# Full scraped corpus stays out of the repo — data/sample/ is committed so a
+# clone can run, and is negated below.
 *.jsonl
 rag_dataset_*.json
 fee_structure.json
@@ -26,6 +26,7 @@ admission_data.json
 sports_data.json
 fee_pdfs/
 fee_pngs/
+!data/sample/**
 
 # Editors / OS
 .vscode/
