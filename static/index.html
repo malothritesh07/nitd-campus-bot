@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIT Delhi</title>
+<style>
+:root{
+  --brand:#0F4C45; --brand-lift:#146055; --brand-ink:#fff;
+  --accent:#C8791A; --ok:#1E7A52; --warn:#B4761C; --off:#8A9691;
+  --ground:#F2F1EC; --surface:#fff; --surface-2:#F4F6F5; --line:#E3E8E6;
+  --ink:#12201D; --ink-2:#4A5A56; --ink-3:#7B8A86;
+  --radius:16px;
+  --shadow:0 18px 48px -12px rgba(9,32,28,.28), 0 4px 12px -4px rgba(9,32,28,.12);
+  --font:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--brand:#2E8B7E;--brand-lift:#35A093;--brand-ink:#06120F;--accent:#E39B45;
+        --ok:#4FBE8B;--warn:#D9A055;--off:#6F847F;
+        --ground:#0A1412;--surface:#111E1B;--surface-2:#182A26;--line:#243732;
+        --ink:#E8F0ED;--ink-2:#9DB2AC;--ink-3:#6F847F;
+        --shadow:0 18px 48px -12px rgba(0,0,0,.6), 0 4px 12px -4px rgba(0,0,0,.4);}
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font);background:var(--ground);color:var(--ink);-webkit-font-smoothing:antialiased}
+
+/* ---------- backdrop: stand-in for nitdelhi.ac.in ---------- */
+.host{max-width:1060px;margin:0 auto;padding:26px 22px 130px}
+.hb{display:flex;align-items:center;gap:13px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.hm{width:34px;height:34px;border-radius:8px;background:var(--brand);flex:none}
+.hb strong{font-size:15px}.hb span{font-size:12px;color:var(--ink-3)}
+.hn{margin-left:auto;display:flex;gap:17px;font-size:13px;color:var(--ink-2)}
+@media(max-width:640px){.hn{display:none}}
+.hg{display:grid;gap:13px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));margin-top:24px}
+.hc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:17px;min-height:104px}
+.hc b{display:block;font-size:13px;margin-bottom:8px}
+.hl{height:8px;border-radius:4px;background:var(--line);margin-bottom:7px}
+.hnote{margin:28px 0 0;font-size:13px;color:var(--ink-3);max-width:60ch;line-height:1.6}
+
+/* ============ WIDGET ============ */
+.nd-launcher{position:fixed;right:22px;bottom:22px;z-index:9999;width:58px;height:58px;
+  border-radius:999px;border:0;cursor:pointer;background:var(--brand);color:var(--brand-ink);
+  box-shadow:0 8px 20px -4px rgba(15,76,69,.45);display:grid;place-items:center;
+  transition:transform .18s,background .18s}
+.nd-launcher:hover{background:var(--brand-lift);transform:translateY(-2px)}
+.nd-launcher:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.nd-launcher svg{width:25px;height:25px;transition:opacity .16s,transform .16s}
+.nd-launcher .ic-close{position:absolute;opacity:0;transform:rotate(-45deg)}
+.nd-launcher[aria-expanded="true"] .ic-chat{opacity:0;transform:rotate(45deg)}
+.nd-launcher[aria-expanded="true"] .ic-close{opacity:1;transform:rotate(0)}
+
+.nd-panel{position:fixed;right:22px;bottom:92px;z-index:9999;width:390px;height:600px;
+  max-height:calc(100dvh - 120px);background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;
+  overflow:hidden;transform-origin:bottom right;opacity:0;transform:translateY(10px) scale(.97);
+  pointer-events:none;transition:opacity .2s,transform .2s cubic-bezier(.2,.9,.3,1)}
+.nd-panel.open{opacity:1;transform:none;pointer-events:auto}
+
+.nd-head{background:var(--brand);color:var(--brand-ink);padding:13px 14px;display:flex;
+  align-items:center;gap:11px;flex:none}
+.nd-av{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.16);
+  display:grid;place-items:center;flex:none}
+.nd-title{font-size:14px;font-weight:650;line-height:1.25}
+.nd-status{font-size:11px;opacity:.85;display:flex;align-items:center;gap:5px;margin-top:2px}
+.nd-live{width:6px;height:6px;border-radius:999px;background:#7BE0B4}
+.nd-x{background:transparent;border:0;color:inherit;cursor:pointer;width:30px;
+  height:30px;border-radius:8px;display:grid;place-items:center;opacity:.85}
+.nd-x:hover{background:rgba(255,255,255,.14);opacity:1}
+.nd-x:focus-visible{outline:2px solid var(--brand-ink);outline-offset:1px}
+.nd-head .nd-x:first-of-type{margin-left:auto}
+.nd-refresh svg{transition:transform .45s cubic-bezier(.3,.8,.3,1)}
+.nd-refresh.spin svg{transform:rotate(-360deg)}
+
+/* Wrap instead of scrolling sideways — with 8 topics the last three sat off
+   screen with no scrollbar to hint they existed. */
+.nd-cats{display:flex;flex-wrap:wrap;gap:5px;padding:9px 11px;flex:none;
+  border-bottom:1px solid var(--line)}
+.nd-cat{flex:none;display:inline-flex;align-items:center;gap:5px;padding:5px 9px;
+  border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-2);
+  font:inherit;font-size:11.5px;font-weight:550;cursor:pointer;white-space:nowrap;
+  transition:background .15s,color .15s,border-color .15s}
+.nd-cat svg{width:12px;height:12px;flex:none}
+.nd-cat:hover{border-color:var(--brand);color:var(--ink)}
+.nd-cat[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+
+.nd-log{flex:1;overflow-y:auto;padding:15px 13px;display:flex;flex-direction:column;gap:10px}
+.nd-log::-webkit-scrollbar{width:7px}
+.nd-log::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+.nd-msg{max-width:86%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.55;
+  white-space:pre-wrap;overflow-wrap:anywhere;animation:rise .22s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.nd-bot{align-self:flex-start;background:var(--surface-2);border-bottom-left-radius:5px}
+.nd-user{align-self:flex-end;background:var(--brand);color:var(--brand-ink);border-bottom-right-radius:5px}
+
+/* ---- interactive cards rendered INSIDE the chat ---- */
+.card{align-self:stretch;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:14px;padding:11px;animation:rise .22s ease both}
+.card-h{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);margin:1px 2px 9px}
+.srow{display:flex;align-items:center;gap:10px;padding:9px 10px;background:var(--surface);
+  border:1px solid var(--line);border-radius:11px;margin-bottom:7px}
+.srow:last-child{margin-bottom:0}
+.srow .i{flex:1;min-width:0}
+.srow .n{font-size:13px;font-weight:600;margin-bottom:3px}
+.srow .s{font-size:11.5px;color:var(--ink-2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:650;
+  padding:2px 7px;border-radius:999px;border:1px solid transparent}
+.dot{width:6px;height:6px;border-radius:99px;flex:none}
+.p-open{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,transparent);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.p-open .dot{background:var(--ok)}
+.p-closed{color:var(--ink-2);border-color:var(--line);background:var(--surface-2)}
+.p-closed .dot{background:var(--off)}
+.p-stale{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 35%,transparent);background:color-mix(in srgb,var(--warn) 10%,transparent)}
+.p-stale .dot{background:var(--warn)}
+.p-unk{color:var(--ink-3);border-color:var(--line)}
+.p-unk .dot{background:var(--ink-3)}
+.age{color:var(--ink-3);font-size:11px}
+.tg{width:44px;height:26px;border-radius:99px;border:1px solid var(--line);background:var(--surface-2);
+  position:relative;cursor:pointer;flex:none;transition:background .18s,border-color .18s}
+.tg::after{content:"";position:absolute;top:2.5px;left:2.5px;width:19px;height:19px;border-radius:99px;
+  background:var(--off);transition:transform .18s,background .18s}
+.tg[data-on="true"]{background:color-mix(in srgb,var(--brand) 18%,transparent);border-color:var(--brand)}
+.tg[data-on="true"]::after{transform:translateX(18px);background:var(--brand)}
+.tg:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.owner-note{font-size:10.5px;color:var(--ink-3);text-align:right;margin:8px 3px 1px}
+
+.opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.opt{padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink);font:inherit;font-size:12.5px;font-weight:550;cursor:pointer;
+  transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--brand);background:var(--surface-2)}
+.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.fb-form{display:grid;gap:8px}
+.fb-form input,.fb-form textarea{width:100%;padding:9px 11px;border-radius:10px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:13px}
+.fb-form textarea{min-height:78px;resize:vertical}
+.fb-form input:focus,.fb-form textarea:focus{outline:none;border-color:var(--brand)}
+
+.nd-src{align-self:flex-start;max-width:88%;margin-top:-4px;padding-left:3px;font-size:10.5px;
+  color:var(--ink-3);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nd-src a{color:var(--ink-2);text-decoration:underline;text-underline-offset:2px}
+.nd-src .meth{font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;font-weight:700;
+  padding:1.5px 6px;border-radius:999px;border:1px solid var(--line);color:var(--ink-3)}
+.nd-typing{align-self:flex-start;background:var(--surface-2);border-radius:14px;
+  border-bottom-left-radius:5px;padding:12px 14px;display:flex;gap:4px}
+.nd-typing i{width:6px;height:6px;border-radius:99px;background:var(--ink-3);animation:blink 1.3s infinite}
+.nd-typing i:nth-child(2){animation-delay:.18s}.nd-typing i:nth-child(3){animation-delay:.36s}
+@keyframes blink{0%,60%,100%{opacity:.28}30%{opacity:1}}
+
+.nd-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 13px 9px;flex:none}
+.nd-q{padding:6px 11px;border-radius:999px;border:1px dashed var(--line);background:transparent;
+  color:var(--ink-2);font:inherit;font-size:12px;cursor:pointer}
+.nd-q:hover{border-style:solid;border-color:var(--brand);color:var(--ink);background:var(--surface-2)}
+
+.nd-form{display:flex;align-items:flex-end;gap:8px;padding:11px 12px;flex:none;
+  border-top:1px solid var(--line)}
+.nd-input{flex:1;resize:none;max-height:90px;padding:10px 12px;border-radius:12px;
+  border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:inherit;
+  font-size:13.5px;line-height:1.45;outline:none}
+.nd-input:focus{border-color:var(--brand);background:var(--surface)}
+.nd-send{width:38px;height:38px;flex:none;border:0;border-radius:11px;cursor:pointer;
+  background:var(--brand);color:var(--brand-ink);display:grid;place-items:center}
+.nd-send:hover{background:var(--brand-lift)}
+.nd-foot{text-align:center;font-size:10.5px;color:var(--ink-3);padding:0 12px 9px;flex:none}
+
+/* code modal — sits INSIDE the panel */
+.veil{position:absolute;inset:0;background:rgba(6,20,17,.5);backdrop-filter:blur(2px);
+  display:none;place-items:center;padding:16px;z-index:20;border-radius:var(--radius)}
+.veil.on{display:grid}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:17px;width:100%}
+.modal h3{margin:0 0 4px;font-size:14.5px}
+.modal p{margin:0 0 13px;font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.modal label{display:block;font-size:11.5px;color:var(--ink-2);margin:0 0 5px}
+.modal input{width:100%;padding:10px 11px;border-radius:10px;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink);font:inherit;font-size:15px;letter-spacing:.18em;
+  text-align:center;text-transform:uppercase}
+.modal input#reason{letter-spacing:normal;text-align:left;text-transform:none;font-size:13px}
+.modal input:focus{outline:none;border-color:var(--brand);background:var(--surface)}
+.acts{display:flex;gap:8px;margin-top:14px}
+.btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);cursor:pointer;
+  font:inherit;font-size:13px;font-weight:600;background:var(--surface-2);color:var(--ink)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.primary:hover{background:var(--brand-lift)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+@media(max-width:520px){
+  .nd-panel{right:0;left:0;bottom:0;width:100%;height:100dvh;max-height:100dvh;border-radius:0;border:0}
+  .veil{border-radius:0}
+  .nd-launcher{right:16px;bottom:16px}
+}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+
+<div class="host">
+  <div class="hb"><div class="hm"></div>
+    <div><strong>National Institute of Technology Delhi</strong><br>
+    <span>Plot FA7, Zone P1, GT Karnal Road, Delhi 110036</span></div>
+    <nav class="hn"><span>Institute</span><span>Academics</span><span>Research</span><span>Campus Life</span></nav>
+  </div>
+  <div class="hg">
+    <div class="hc"><b>Admissions</b><div class="hl" style="width:88%"></div><div class="hl" style="width:62%"></div><div class="hl" style="width:74%"></div></div>
+    <div class="hc"><b>Academic Calendar</b><div class="hl" style="width:70%"></div><div class="hl" style="width:86%"></div><div class="hl" style="width:52%"></div></div>
+    <div class="hc"><b>Departments</b><div class="hl" style="width:80%"></div><div class="hl" style="width:58%"></div><div class="hl" style="width:72%"></div></div>
+    <div class="hc"><b>Notices</b><div class="hl" style="width:66%"></div><div class="hl" style="width:90%"></div><div class="hl" style="width:44%"></div></div>
+  </div>
+  <p class="hnote">Backdrop only — stands in for nitdelhi.ac.in. Everything happens in the chat
+  widget at the bottom right: tap <b>Feedback</b>, then <b>Shop status</b>, or just ask
+  “is HK cafe open?”. Shop owners toggle their own status from inside the same chat.</p>
+</div>
+
+<button class="nd-launcher" id="ndLauncher" aria-expanded="false" aria-controls="ndPanel" aria-label="Open student help chat">
+  <svg class="ic-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+  <svg class="ic-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+</button>
+
+<section class="nd-panel" id="ndPanel" role="dialog" aria-label="NIT Delhi student help">
+  <header class="nd-head">
+    <div class="nd-av"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-5.5"/></svg></div>
+    <div><div class="nd-title">NIT Delhi Help</div>
+      <div class="nd-status"><span class="nd-live"></span><span id="ndScope">Ask about campus, or check what's open</span></div></div>
+    <button class="nd-x nd-refresh" id="ndRefresh" aria-label="Clear conversation" title="Clear conversation">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.4 2.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.4-2.7L3 16"/><path d="M3 21v-5h5"/></svg></button>
+    <button class="nd-x" id="ndClose" aria-label="Close chat">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  </header>
+
+  <div class="nd-cats" id="ndCats" role="group" aria-label="Topics"></div>
+  <div class="nd-log" id="ndLog" role="log" aria-live="polite"></div>
+  <div class="nd-quick" id="ndQuick"></div>
+
+  <form class="nd-form" id="ndForm">
+    <textarea class="nd-input" id="ndInput" rows="1" placeholder="Ask anything…" aria-label="Type your question"></textarea>
+    <button class="nd-send" type="submit" aria-label="Send">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg></button>
+  </form>
+  <div class="nd-foot">Shop status is reported by the shops themselves.</div>
+
+  <!-- code modal lives inside the panel -->
+  <div class="veil" id="veil">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mT">
+      <h3 id="mT">Update status</h3>
+      <p id="mS">Enter your shop code to confirm.</p>
+      <label for="code">Shop code</label>
+      <input id="code" maxlength="12" autocomplete="off" placeholder="••••••••">
+      <div style="height:9px"></div>
+      <label for="reason">Reason (optional)</label>
+      <input id="reason" maxlength="80" placeholder="e.g. no gas today">
+      <div class="acts">
+        <button class="btn" type="button" onclick="closeModal()">Cancel</button>
+        <button class="btn primary" type="button" id="confirmBtn" onclick="confirmToggle()">Confirm</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const API = "";
+const ICONS={
+ shop:'<path d="M3 9h18l-1.5 11a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2z"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/>',
+ rupee:'<path d="M6 3h12M6 8h12M16 3c0 5-4 5-4 5H6l8 13"/>',
+ flask:'<path d="M9 3v6L4 19a2 2 0 0 0 1.7 3h12.6A2 2 0 0 0 20 19l-5-10V3"/><path d="M8 3h8"/>',
+ user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+ book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+ chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+ doc :'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/>',
+ info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>'
+};
+const svg=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`;
+const $=id=>document.getElementById(id);
+const panel=$("ndPanel"),launcher=$("ndLauncher"),log=$("ndLog"),cats=$("ndCats"),
+      quick=$("ndQuick"),form=$("ndForm"),input=$("ndInput"),scope=$("ndScope");
+
+// Chips, suggestions, greeting and footer are fetched from /api/config, which
+// reads the `config` collection. Editing a label is a database change, not a
+// code change. These are only the values used if the fetch fails.
+let CATS=[{id:"shops",label:"Open now",icon:"shop"},{id:"fee",label:"Fees",icon:"rupee"}];
+let QUICK={_default:["What's open now?"]};
+let GREETING="Hi! Ask about fees, labs, faculty or syllabus — or check what's open on campus.";
+
+async function loadConfig(){
+  try{
+    const r=await fetch(API+"/api/config");
+    if(!r.ok) throw new Error(r.status);
+    const c=await r.json();
+    if(Array.isArray(c.categories)&&c.categories.length) CATS=c.categories;
+    if(c.quick&&Object.keys(c.quick).length)             QUICK=c.quick;
+    if(c.greeting)    GREETING=c.greeting;
+    if(c.placeholder) input.placeholder=c.placeholder;
+    if(c.footer){const f=document.querySelector(".nd-foot"); if(f) f.textContent=c.footer;}
+  }catch(e){ /* keep the built-in fallback so the widget still opens */ }
+}
+const PROMPTS={
+  fee      :"Tell me your programme, semester and admission type — e.g. “B.Tech 3rd sem JOSAA, day scholar”.",
+  lab      :"Ask by lab name or room number — e.g. “AIRIL lab location” or “lab no 103”.",
+  faculty  :"Ask for a person, or a department list — e.g. “who is Dr. Halim” or “faculty of CSE”.",
+  syllabus :"Ask by course code or subject — e.g. “ADLB 101” or “2nd semester subjects in CSE”.",
+  admission:"Which route — JOSAA, DASA, or MCA (NIMCET)?",
+  about    :"Which department, and what would you like to know?"
+};
+// categories answered by the RAG backend
+const RAG=new Set(["fee","lab","faculty","syllabus","admission","about"]);
+let SHOPS=[], pending=null, activeCat=null, chatState={};
+
+/* ---------- render helpers ---------- */
+function bubble(t,who){const d=document.createElement("div");
+  d.className="nd-msg "+(who==="user"?"nd-user":"nd-bot");d.textContent=t;
+  log.appendChild(d);log.scrollTop=log.scrollHeight;return d;}
+function typing(on){let t=$("tp");
+  if(on&&!t){t=document.createElement("div");t.className="nd-typing";t.id="tp";
+    t.innerHTML="<i></i><i></i><i></i>";log.appendChild(t);log.scrollTop=log.scrollHeight;}
+  else if(!on&&t)t.remove();}
+function card(html){const d=document.createElement("div");d.className="card";d.innerHTML=html;
+  log.appendChild(d);log.scrollTop=log.scrollHeight;return d;}
+function options(list){
+  const d=document.createElement("div");d.className="card";
+  const wrap=document.createElement("div");wrap.className="opts";
+  list.forEach(([label,fn])=>{const b=document.createElement("button");
+    b.className="opt";b.type="button";b.textContent=label;b.onclick=fn;wrap.appendChild(b);});
+  d.appendChild(wrap);log.appendChild(d);log.scrollTop=log.scrollHeight;return d;}
+
+function pill(s){
+  if(s.state==="fresh")return s.is_open
+    ?'<span class="pill p-open"><i class="dot"></i>Open</span>'
+    :'<span class="pill p-closed"><i class="dot"></i>Closed</span>';
+  if(s.state==="stale")return `<span class="pill p-stale"><i class="dot"></i>${s.is_open?"Open":"Closed"} · may be old</span>`;
+  if(s.state==="inactive")return '<span class="pill p-unk"><i class="dot"></i>Not operating</span>';
+  return '<span class="pill p-unk"><i class="dot"></i>No update today</span>';
+}
+
+/* ---------- shop status inside the chat ---------- */
+async function fetchShops(){
+  const r=await fetch(API+"/api/shops");const d=await r.json();SHOPS=d.shops;return SHOPS;
+}
+async function showShopCard(){
+  typing(true);
+  try{ await fetchShops(); }catch(e){ typing(false); bubble("Couldn't reach the server.","bot"); return; }
+  typing(false);
+  const c=card('<div class="card-h">Campus outlets — live</div>'+
+    SHOPS.map(s=>`<div class="srow" data-id="${s.shop_id}">
+      <div class="i"><div class="n">${s.name}</div>
+        <div class="s">${pill(s)}<span class="age">${s.age||"—"}</span></div></div>
+      <button class="tg" data-on="${s.is_open===true}" aria-label="Update ${s.name}"></button>
+    </div>`).join("")+
+    '<div class="owner-note">Toggle is for shop owners — code required</div>');
+  c.querySelectorAll(".tg").forEach(btn=>{
+    const id=btn.closest(".srow").dataset.id;
+    btn.onclick=()=>openModal(SHOPS.find(s=>s.shop_id===id));
+  });
+}
+function answerFor(shop){
+  const s=SHOPS.find(x=>x.shop_id===shop.shop_id)||shop;
+  if(s.state==="no_update") return `${s.name} — no confirmed update today. Please check directly.`;
+  if(s.state==="inactive")  return `${s.name} is not operating currently.`;
+  return `${s.name} — ${s.headline}.\n${s.detail}`;
+}
+function matchShop(q){
+  const t=q.toLowerCase();
+  return SHOPS.find(s=>s.name.toLowerCase().split(/\s+/).some(w=>w.length>2&&t.includes(w))
+                    || (s.aliases||[]).some(a=>t.includes(a.toLowerCase())));
+}
+
+/* ---------- feedback flows ---------- */
+function showFeedbackChoice(){
+  bubble("What is this about?","bot");
+  options([["Student feedback",showFeedbackForm],["Shop status",()=>{bubble("Shop status","user");showShopCard();}]]);
+}
+function showFeedbackForm(){
+  bubble("Student feedback","user");
+  const d=card('<div class="card-h">Student feedback</div>'+
+    '<div class="fb-form"><input id="fbE" type="email" placeholder="you@nitdelhi.ac.in">'+
+    '<textarea id="fbT" placeholder="What would you like to tell us?"></textarea>'+
+    '<button class="btn primary" type="button" id="fbS">Send feedback</button></div>');
+  d.querySelector("#fbS").onclick=async()=>{
+    const text=d.querySelector("#fbT").value.trim();
+    if(!text){bubble("Please write your feedback first.","bot");return;}
+    await fetch(API+"/api/feedback",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({text,email:d.querySelector("#fbE").value.trim()})});
+    d.remove();bubble("Thanks, your response has been recorded.","bot");
+  };
+}
+
+/* ---------- code modal ---------- */
+function openModal(s){
+  pending={shop:s,next:!(s.is_open===true)};
+  $("mT").textContent=`${s.name} → ${pending.next?"Open":"Closed"}`;
+  $("mS").textContent=`Enter your shop code to mark ${s.name} as ${pending.next?"open":"closed"}.`;
+  $("code").value="";$("reason").value="";$("veil").classList.add("on");
+  setTimeout(()=>$("code").focus(),70);
+}
+function closeModal(){$("veil").classList.remove("on");pending=null;}
+$("code").addEventListener("keydown",e=>{if(e.key==="Enter")confirmToggle();});
+async function confirmToggle(){
+  if(!pending)return;
+  const code=$("code").value.trim();
+  if(!code){bubble("Enter your shop code.","bot");return;}
+  const b=$("confirmBtn");b.disabled=true;
+  try{
+    const r=await fetch(`${API}/api/shops/${pending.shop.shop_id}/toggle`,{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({code,is_open:pending.next,reason:$("reason").value.trim()||null})});
+    const d=await r.json();closeModal();bubble(d.message,"bot");showShopCard();
+  }catch(e){closeModal();bubble("Couldn't reach the server.","bot");}
+  finally{b.disabled=false;}
+}
+
+/* ---------- fee (metadata filtering + hybrid, no LLM) ---------- */
+function sourceLine(src,method){
+  const d=document.createElement("div");
+  d.className="nd-src";
+  const m=method?`<span class="meth">${method}</span>`:"";
+  d.innerHTML = src&&src.url
+    ? `${m}<a href="${src.url}" target="_blank" rel="noopener">${src.label}</a>`
+    : (src?`${m}<span>${src.label}</span>`:m);
+  if(d.innerHTML){log.appendChild(d);log.scrollTop=log.scrollHeight;}
+}
+async function askRag(text, cat){
+  typing(true);
+  try{
+    const r=await fetch(API+"/api/chat",{method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message:text, category:cat||null, slots:chatState})});
+    const d=await r.json();
+    typing(false);
+    if(d.state) chatState=d.state;            // carries slots / last lab between turns
+    bubble(d.answer,"bot");
+    sourceLine(d.source,d.method);
+  }catch(e){typing(false);bubble("Couldn't reach the server.","bot");}
+}
+
+/* ---------- routing ---------- */
+async function handle(text){
+  const t=text.toLowerCase();
+
+  // shop status stays local to the widget (live DB read, never cached)
+  const shopIsh=/open|close|status|canteen|cafe|shop|nescafe|amul|health cent|what'?s open/.test(t);
+  if(activeCat==="shops" || (!RAG.has(activeCat) && shopIsh)){
+    typing(true);try{await fetchShops();}catch(e){}
+    typing(false);
+    const hit=matchShop(t);
+    if(hit) bubble(answerFor(hit),"bot"); else showShopCard();
+    return;
+  }
+  if(activeCat==="feedback" || /feedback|complain|suggest/.test(t)){
+    showFeedbackChoice();return;
+  }
+  // everything else goes to the RAG backend; if a chip is active it scopes retrieval
+  await askRag(text, RAG.has(activeCat) ? activeCat : null);
+}
+
+/* ---------- shell ---------- */
+function renderQuick(){
+  quick.innerHTML="";
+  (QUICK[activeCat]||QUICK._default).forEach(q=>{
+    const b=document.createElement("button");b.type="button";b.className="nd-q";b.textContent=q;
+    b.onclick=()=>send(q);quick.appendChild(b);});
+}
+function renderCats(){
+  CATS.forEach(c=>{const b=document.createElement("button");
+    b.type="button";b.className="nd-cat";b.dataset.id=c.id;b.setAttribute("aria-pressed","false");
+    b.innerHTML=svg(c.icon)+`<span>${c.label}</span>`;
+    b.onclick=()=>pickCat(c);cats.appendChild(b);});
+}
+function pickCat(c){
+  const same=activeCat===c.id;activeCat=same?null:c.id;
+  [...cats.children].forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.id===activeCat)));
+  scope.textContent=activeCat?`${c.label}`:"Ask about campus, or check what's open";
+  renderQuick();
+  if(same)return;
+  bubble(c.label,"user");
+  chatState={};                       // switching topic forgets carried filters
+  if(c.id==="shops")         showShopCard();
+  else if(c.id==="feedback") showFeedbackChoice();
+  else bubble(PROMPTS[c.id] || `Ask me anything about ${c.label.toLowerCase()}.`,"bot");
+}
+async function send(text){
+  text=(text||"").trim();if(!text)return;
+  bubble(text,"user");input.value="";input.style.height="auto";
+  await handle(text);
+}
+function setOpen(on){
+  panel.classList.toggle("open",on);
+  launcher.setAttribute("aria-expanded",String(on));
+  if(on&&!log.children.length){
+    bubble(GREETING,"bot");
+    renderQuick();
+  }
+  if(on)setTimeout(()=>input.focus(),160);
+}
+function resetChat(){
+  closeModal();                 // drop any half-finished code entry
+  log.innerHTML="";
+  activeCat=null;pending=null;chatState={};
+  [...cats.children].forEach(b=>b.setAttribute("aria-pressed","false"));
+  scope.textContent="Ask about campus, or check what's open";
+  input.value="";input.style.height="auto";
+  bubble(GREETING,"bot");
+  renderQuick();
+}
+$("ndRefresh").onclick=()=>{
+  const b=$("ndRefresh");
+  b.classList.add("spin");setTimeout(()=>b.classList.remove("spin"),460);
+  resetChat();input.focus();
+};
+
+launcher.onclick=()=>setOpen(!panel.classList.contains("open"));
+$("ndClose").onclick=()=>{setOpen(false);launcher.focus();};
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape")return;
+  if($("veil").classList.contains("on")){closeModal();return;}
+  if(panel.classList.contains("open")){setOpen(false);launcher.focus();}
+});
+form.addEventListener("submit",e=>{e.preventDefault();send(input.value);});
+input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send(input.value);}});
+input.addEventListener("input",()=>{input.style.height="auto";
+  input.style.height=Math.min(input.scrollHeight,90)+"px";});
+
+// build the widget from server config, then open
+loadConfig().then(()=>{ renderCats(); renderQuick(); setOpen(true); });
+</script>
+</body>
+</html>
