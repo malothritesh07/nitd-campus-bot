@@ -21,3 +21,7 @@ groq>=0.11
 
 # Tracing (optional — the app runs with LANGSMITH_TRACING=false)
 langsmith>=0.1
+
+# Optional: set REDIS_URL to use Redis for cache + rate limiting.
+# Without it both fall back to MongoDB TTL collections.
+redis>=5.0

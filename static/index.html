@@ -424,6 +424,10 @@ async function askRag(text, cat){
       body:JSON.stringify({message:text, category:cat||null, slots:chatState})});
     const d=await r.json();
     typing(false);
+    if(r.status===429){                       // rate limited: say so kindly, no badge
+      bubble(d.answer||"Too many questions at once. Please wait a moment.","bot");
+      return;
+    }
     if(d.state) chatState=d.state;            // carries slots / last lab between turns
     bubble(d.answer,"bot");
     sourceLine(d.source,d.method);

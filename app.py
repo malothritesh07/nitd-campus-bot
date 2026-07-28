@@ -40,6 +40,8 @@ def ip_hash(request: Request) -> str:
 @app.on_event("startup")
 def _startup():
     D.ensure_indexes()
+    import cache
+    cache.ensure_indexes()
 
 
 @app.get("/api/shops")
@@ -124,20 +126,53 @@ def guess_category(q: str):
 
 
 @app.post("/api/chat")
-def chat(body: ChatIn):
+def chat(body: ChatIn, request: Request):
     """Category-scoped answering.
 
     fee/lab/faculty/admission are pure template lookups over MongoDB — no LLM,
     so a figure or room number can never be invented. Only syllabus calls Groq,
     and it falls back to the raw source text when no key is configured.
     """
-    import rag_handlers as H
+    import rag_handlers as H, cache, ratelimit as RL
+    from config import CFG
+
     q   = body.message.strip()
     cat = (body.category or "").lower()
     st  = dict(body.slots or {})          # widget carries per-category state
+    cid = RL.client_id(request)
+
+    # ---- rate limit ----------------------------------------------------
+    if CFG.get("ratelimit.enabled", True):
+        ok, why, retry = RL.check(cid, "request")
+        if not ok:
+            return JSONResponse(
+                {"answer": "You're sending questions faster than I can answer. "
+                           "Give it a minute and try again.",
+                 "source": None, "method": f"rate-limited ({why})",
+                 "retry_after": retry},
+                status_code=429, headers={"Retry-After": str(retry)})
+        RL.record(cid, "request", "/api/chat")
 
     if cat not in H.HANDLERS:
         cat = guess_category(q) or "any"
+
+    # ---- cache: only ever holds answers that cost an LLM call -----------
+    # Key on the state as it ARRIVED. Handlers mutate st (h_syllabus records the
+    # resolved course), so keying the write on the post-call state would never
+    # match the next read.
+    ckey = cache.key(q, cat, st)
+    hit = cache.get_by_key(ckey)
+    if hit:
+        hit["category"] = cat
+        hit["state"] = st
+        return hit
+
+    # A syllabus question may reach Groq, so check the tighter LLM budget
+    # before doing the work rather than after paying for it.
+    if cat in ("syllabus", "about", "any") and CFG.get("ratelimit.enabled", True):
+        ok, why, retry = RL.check(cid, "llm")
+        if not ok:
+            st["llm_budget_exhausted"] = True
 
     try:
         out = H.HANDLERS[cat](q, st)
@@ -147,9 +182,23 @@ def chat(body: ChatIn):
 
     out.setdefault("source", None)
     out.setdefault("method", cat)
+    if "+ LLM" in out["method"]:
+        RL.record(cid, "llm", "/api/chat")
+        cache.put_by_key(ckey, q, cat, out)
+
     out["category"] = cat
     out["state"] = st                      # returned so the widget can send it back
     return out
+
+
+@app.get("/api/ops")
+def ops(request: Request):
+    """Cache and rate-limit visibility — useful during a demo, and the thing
+    you actually want when the bot starts feeling slow."""
+    import cache, ratelimit as RL, store
+    return {"store_backend": store.backend(),
+            "cache": cache.stats(),
+            "ratelimit": RL.stats(RL.client_id(request))}
 
 
 @app.get("/api/config")

@@ -112,6 +112,12 @@ and leaves the rest untouched.
 - Owners toggle from inside the chat with a per-person code
 - Nightly reset boundary, evaluated lazily — no cron job to maintain
 
+**Production hardening**
+- **Answer cache** — only responses that cost a Groq call are cached. Measured 43x speedup on a repeat question (14.8s -> 0.34s). The key includes the corpus sync id, so any `sync.py` run invalidates every entry automatically
+- **Two rate-limit budgets** — requests (generous, 94% are one indexed read) and LLM calls (tight, those cost money). Exhausting the LLM budget degrades that answer to source text rather than erroring
+- **Redis optional** — set `REDIS_URL` for atomic counters and sub-ms reads; without it both cache and limiter use MongoDB TTL collections, so a clone needs no extra service
+- `GET /api/ops` exposes cache hit counts and current usage against limits
+
 **Operations**
 - Incremental corpus sync by content hash; unchanged records are never re-embedded
 - Soft deletes — removed records stop being retrievable at once, stay recoverable

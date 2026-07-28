@@ -50,6 +50,20 @@ DEFAULTS = {
         "raw_fallback_chars": 900,  # shown when the LLM is unavailable
         "min_reply_chars":    12,   # shorter than this is not an answer
     },
+    # -------------------------------------------------------------------- cache
+    "cache": {
+        "enabled": True,
+        "ttl_hours": 168,          # a week; any sync run invalidates sooner
+    },
+    # --------------------------------------------------------------- ratelimit
+    # Generous on requests (94% are one indexed Mongo read), tight on LLM calls
+    # because those are the only ones that cost money and take seconds.
+    "ratelimit": {
+        "enabled": True,
+        "requests_per_minute": 90,
+        "requests_per_hour":   600,
+        "llm_calls_per_hour":  40,
+    },
     # ------------------------------------------------------------------ prompts
     "prompts": {
         "syllabus_course":

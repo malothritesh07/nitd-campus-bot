@@ -259,9 +259,11 @@ def h_syllabus(q, st):
         ctx = "\n".join(x["text"] for x in _course_chunks(course["meta"]["doc_id"]))[:CFG.get("generation.context_chars")]
         m = course["meta"]
         label = f"{m.get('course_title')} — curriculum"
-        if not llm_available():
+        # budget exhausted is treated exactly like no key: answer from source
+        if not llm_available() or st.get("llm_budget_exhausted"):
+            why = "LLM budget reached" if st.get("llm_budget_exhausted") else "no LLM key"
             return {"answer": ctx[:CFG.get("generation.raw_fallback_chars")], "source": {"label": label, "url": None},
-                    "method": "exact-course · no LLM key"}
+                    "method": f"exact-course · {why}"}
         try:
             body = llm([{"role": "system", "content":
                          CFG.get("prompts.syllabus_course")},
@@ -294,9 +296,10 @@ def h_syllabus(q, st):
 
     ctx = "\n---\n".join(R.expand_parent(h)["text"] for h, _ in hits[:2])[:CFG.get("generation.context_chars")]
     scope = (prog if prog else "Curriculum") + (f" · semester {sem}" if sem is not None else "")
-    if not llm_available():
+    if not llm_available() or st.get("llm_budget_exhausted"):
+        why = "LLM budget reached" if st.get("llm_budget_exhausted") else "no LLM key"
         return {"answer": ctx[:CFG.get("generation.raw_fallback_chars")], "source": {"label": scope, "url": None},
-                "method": "hybrid(scoped) · no LLM key"}
+                "method": f"hybrid(scoped) · {why}"}
     try:
         body = llm([{"role": "system", "content":
                      CFG.get("prompts.syllabus_scoped")},
