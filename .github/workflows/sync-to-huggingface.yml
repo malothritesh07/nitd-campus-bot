@@ -1,0 +1,45 @@
+# Mirrors this repo into a Hugging Face Space on every push to main.
+#
+# Setup (once):
+#   1. Create the Space:  huggingface.co/new-space  → SDK: Docker → name it
+#   2. Get a write token: huggingface.co/settings/tokens
+#   3. In GitHub → Settings → Secrets and variables → Actions, add:
+#        HF_TOKEN     the write token
+#        HF_USERNAME  your Hugging Face username
+#        HF_SPACE     the Space name, e.g. nitd-campus-bot
+#
+# The Space needs its own README (with the metadata block) and Dockerfile at the
+# repo root, so this workflow copies the ones from deploy/huggingface/ into place
+# before pushing. The GitHub copies stay untouched.
+
+name: Sync to Hugging Face Space
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # lets you trigger it by hand from the Actions tab
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0      # Spaces needs full history for a clean push
+
+      - name: Swap in the Space's README and Dockerfile
+        run: |
+          cp deploy/huggingface/README.md   README.md
+          cp deploy/huggingface/Dockerfile  Dockerfile
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md Dockerfile
+          git commit -m "Space build files" || echo "nothing to commit"
+
+      - name: Push to the Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git push --force \
+            "https://${{ secrets.HF_USERNAME }}:$HF_TOKEN@huggingface.co/spaces/${{ secrets.HF_USERNAME }}/${{ secrets.HF_SPACE }}" \
+            HEAD:main

@@ -16,7 +16,12 @@ import db as D
 
 app = FastAPI(title="NIT Delhi — Campus Status", version="1.0")
 
-app.add_middleware(CORSMiddleware, allow_origins=["*"],
+# "*" is right for local dev and for a standalone demo Space. Set
+# ALLOWED_ORIGINS to a comma-separated list once the widget is embedded on the
+# college site, so only that page can call the API.
+import os as _os
+_origins = [o.strip() for o in _os.getenv("ALLOWED_ORIGINS", "*").split(",") if o.strip()]
+app.add_middleware(CORSMiddleware, allow_origins=_origins,
                    allow_methods=["GET", "POST"], allow_headers=["*"])
 
 # Identical acknowledgement for every failure mode. Wrong code, wrong shop,
