@@ -25,8 +25,11 @@ def _tok(s): return re.findall(r"[a-z0-9]+", (s or "").lower())
 
 
 def get_model():
-    """Loaded lazily so the API starts fast; embedding runs locally."""
+    """Loaded lazily so the API starts fast; embedding runs locally.
+    Returns None when ENABLE_DENSE=0 (see rag_core.dense_enabled)."""
     global _model
+    if os.getenv("ENABLE_DENSE", "1").strip().lower() in ("0", "false", "no"):
+        return None
     if _model is None:
         # Only go offline when explicitly asked (EMBED_OFFLINE=1). Forcing it
         # would stop a fresh install from ever downloading the model.
@@ -133,9 +136,13 @@ def hybrid_chunks(query: str, k=None, pool=None, prefilter: dict | None = None):
     b_scores = _cache["bm25"].get_scores(_tok(query))
     b_rank = sorted(idx, key=lambda i: -b_scores[i])[:pool]
 
-    qv = get_model().encode([query], normalize_embeddings=True)[0]
-    sims = _cache["vecs"] @ qv
-    d_rank = sorted(idx, key=lambda i: -sims[i])[:pool]
+    model = get_model()
+    if model is not None:
+        qv = model.encode([query], normalize_embeddings=True)[0]
+        sims = _cache["vecs"] @ qv
+        d_rank = sorted(idx, key=lambda i: -sims[i])[:pool]
+    else:
+        sims, d_rank = np.zeros(len(chunks), dtype="float32"), []
 
     K, fused = CFG.get("retrieval.rrf_k"), {}
     for r, i in enumerate(b_rank): fused[i] = fused.get(i, 0) + 1 / (K + r + 1)

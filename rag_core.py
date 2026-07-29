@@ -47,8 +47,19 @@ POS_IN_DENSE: dict = {}
 _model = None
 
 
+def dense_enabled() -> bool:
+    """Loading the embedding model costs ~460 MB of RSS (measured: 124 MB before,
+    583 MB after). On a 512 MB host that OOMs, so ENABLE_DENSE=0 skips it and
+    prose retrieval falls back to BM25 alone. Exact lookups — fees, labs,
+    faculty, admission, shops — are unaffected either way; they never used
+    vectors."""
+    return os.getenv("ENABLE_DENSE", "1").strip().lower() not in ("0", "false", "no")
+
+
 def get_model():
     global _model
+    if not dense_enabled():
+        return None
     if _model is None:
         # Only go offline when explicitly asked (EMBED_OFFLINE=1). Forcing it
         # would stop a fresh install from ever downloading the model.
@@ -390,10 +401,13 @@ def retrieve_scoped(query, keep_fn, k=None, pool=None):
     b_rank = [int(i) for i in np.argsort(bs)[::-1] if int(i) in aset][:pool]
     drows = [(POS_IN_DENSE[i], i) for i in allowed if i in POS_IN_DENSE]
     d_rank = []
-    if drows:
-        qv = get_model().encode([query], normalize_embeddings=True)[0]
+    model = get_model()
+    if drows and model is not None:
+        qv = model.encode([query], normalize_embeddings=True)[0]
         sims = dense_vecs[[r for r, _ in drows]] @ qv
         d_rank = [drows[o][1] for o in np.argsort(sims)[::-1][:pool]]
+    # with dense off, RRF over a single ranker is just BM25 order — still ranked,
+    # just lexical rather than hybrid
     K, fused = CFG.get("retrieval.rrf_k"), {}
     for r, i in enumerate(b_rank): fused[i] = fused.get(i, 0) + 1 / (K + r + 1)
     for r, i in enumerate(d_rank): fused[i] = fused.get(i, 0) + 1 / (K + r + 1)

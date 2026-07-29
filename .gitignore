@@ -36,3 +36,6 @@ Thumbs.db
 
 # keep README screenshots
 !docs/images/*.png
+
+# Real Streamlit secrets — the .example file is committed instead
+.streamlit/secrets.toml

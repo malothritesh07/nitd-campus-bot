@@ -12,8 +12,16 @@ embedded as a widget on the college website.
 
 ## Live Link
 
-> **Demo:** _not yet deployed_ — `docker compose up` runs the whole stack locally,
-> database and sample corpus included. See [Installation](#installation).
+> **Try it:** _(Streamlit link goes here once deployed)_
+>
+> The demo is a **reviewer-facing** surface — it shows the retrieval path, the
+> latency and whether an LLM was involved on **every** answer, because how it
+> answers is the point. Eight sample questions are one click away, including two
+> the bot refuses.
+>
+> The production UI is a different thing: a corner widget
+> (`static/index.html`) served by FastAPI, meant to embed on the college site.
+> `docker compose up` runs that stack locally with the sample corpus included.
 > The screenshots below are captured from the running application, not mockups.
 
 ---
@@ -335,6 +343,31 @@ content has been extracted for the Events section"* ranks first for "what events
 are in CSE?" — and would otherwise be served to students as answers.
 
 ---
+
+## Running the demo UI
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env          # fill in MONGO_URI, SERVER_PEPPER, GROQ_API_KEY
+streamlit run streamlit_app.py
+```
+
+Handlers are imported directly rather than called over HTTP, so this is one
+process with no backend to start. It reads the same MongoDB as the FastAPI app.
+
+**Deploying to Streamlit Community Cloud**
+
+1. share.streamlit.io → **New app** → pick this repo → main file `streamlit_app.py`
+2. **Advanced settings → Secrets** → paste the contents of
+   [`.streamlit/secrets.toml.example`](.streamlit/secrets.toml.example) with real values
+3. In MongoDB Atlas → **Network Access** → allow `0.0.0.0/0`, or the app cannot
+   reach the database from Streamlit's rotating IPs
+
+Measured memory: **~120 MB** baseline, **~583 MB** once the embedding model
+loads. Community Cloud allows roughly 1 GB, so dense retrieval stays on. On a
+512 MB host set `ENABLE_DENSE=0` and prose retrieval falls back to BM25 alone —
+every exact-lookup category is unaffected, since none of them ever used vectors.
+
 
 ## Installation
 

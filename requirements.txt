@@ -25,3 +25,7 @@ langsmith>=0.1
 # Optional: set REDIS_URL to use Redis for cache + rate limiting.
 # Without it both fall back to MongoDB TTL collections.
 redis>=5.0
+
+# Reviewer-facing demo UI (streamlit_app.py). The production widget is
+# static/index.html served by FastAPI and does not need this.
+streamlit>=1.40
