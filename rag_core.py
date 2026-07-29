@@ -143,7 +143,9 @@ def stats():
     return {"chunks": len(CHUNKS), "entity": len(FAC), "labs": len(LABS),
             "courses": len(COURSES), "embedded": len(DENSE_IDX),
             "fee_rows": D.db.fee_rows.count_documents({"status": {"$ne": "archived"}}),
-            "admission": len(ADMISSION), "programs": SYL_PROGRAMS}
+            "admission": len(ADMISSION),
+            "calendar": sum(1 for c in CHUNKS if c["domain"] == "calendar"),
+            "programs": SYL_PROGRAMS}
 
 
 def strip_title(s):
