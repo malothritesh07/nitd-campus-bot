@@ -23,20 +23,46 @@ st.set_page_config(page_title="NIT Delhi Campus Bot",
 
 # Streamlit Cloud puts secrets in st.secrets; the rest of the codebase reads
 # os.environ. Bridge them before anything imports db/config.
+#
+# `continue`, not `break`: with no secrets.toml at all, st.secrets raises on
+# every lookup, and breaking out on the first one would silently skip the
+# remaining keys even when some were readable.
 for _k in ("MONGO_URI", "DB_NAME", "GROQ_API_KEY", "SERVER_PEPPER",
            "EMBED_MODEL", "ENABLE_DENSE", "LANGSMITH_TRACING",
            "LANGSMITH_API_KEY", "LANGSMITH_PROJECT"):
     try:
         if _k in st.secrets and not os.getenv(_k):
             os.environ[_k] = str(st.secrets[_k])
-    except Exception:      # no secrets.toml at all — local runs use .env
-        break
+    except Exception:      # no secrets configured — local runs use .env instead
+        continue
 
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except Exception:
     pass
+
+# Fail with instructions rather than a KeyError from deep inside db.py, whose
+# message Streamlit Cloud redacts — leaving a stack trace and no way to act on it.
+if not os.getenv("MONGO_URI"):
+    st.error("**MONGO_URI is not set**, so the app cannot reach the database.")
+    st.markdown(
+        "On **Streamlit Cloud**: *Manage app* (lower right) → **Settings** → "
+        "**Secrets**, paste the block below, then **Save**. The app reboots "
+        "automatically.\n\n"
+        "Running **locally**: copy `.env.example` to `.env` and fill it in.")
+    st.code('MONGO_URI = "mongodb+srv://USER:PASSWORD@cluster.mongodb.net/'
+            '?appName=Cluster0"\n'
+            'DB_NAME = "nitd_campus"\n'
+            'SERVER_PEPPER = "a-long-random-string"\n'
+            'GROQ_API_KEY = ""\n'
+            'LANGSMITH_TRACING = "false"', language="toml")
+    st.caption("Values go in TOML format — `KEY = \"value\"`, quoted, one per "
+               "line. No `export`, no shell syntax.")
+    st.info("Also required: MongoDB Atlas → **Network Access** → allow "
+            "`0.0.0.0/0`. Streamlit Cloud connects from rotating IPs, so "
+            "without this the app hangs on connect even with correct secrets.")
+    st.stop()
 
 
 # --------------------------------------------------------------- resources
