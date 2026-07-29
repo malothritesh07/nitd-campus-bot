@@ -307,13 +307,22 @@ with st.sidebar:
 
     st.divider()
     st.markdown("#### Bring your own key")
-    st.caption("Optional. Leave blank and the demo's own key is used — only the "
-               "Syllabus category needs one at all.")
+    # Whether a key is configured on the deployment changes what "leave blank"
+    # means, so say the true thing rather than a generic line that is wrong in
+    # one of the two cases.
+    if H.GROQ_KEY:
+        st.caption("Optional — leave blank to use this deployment's key. "
+                   "Only the Syllabus category calls a model at all.")
+    else:
+        st.caption("This demo ships **no** key, so answers come straight from "
+                   "the source data. Add your own to have Syllabus answers "
+                   "phrased conversationally — every other category is "
+                   "template-rendered and needs no model.")
 
     user_key = st.text_input(
         "Groq API key", type="password", placeholder="gsk_…",
-        help="Kept in your browser session only. Never written to the database "
-             "or logged.")
+        help="Held in your browser session only — never written to the "
+             "database, never logged, and gone when you close the tab.")
     user_model = st.selectbox(
         "Model", GROQ_MODELS,
         help="Tried first. The others remain as fallbacks, so one decommissioned "
