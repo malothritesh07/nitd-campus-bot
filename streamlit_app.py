@@ -95,6 +95,56 @@ def boot():
     return True
 
 
+def _fail(title: str, body: str, extra=None):
+    st.error(title)
+    st.markdown(body)
+    if extra:
+        st.code(extra, language="text")
+    st.stop()
+
+
+# Ping before loading the corpus. Otherwise the first failure surfaces from
+# inside a cached function as a redacted pymongo traceback, which says nothing
+# about which of the three usual causes it is.
+try:
+    D._client.admin.command("ping")
+except Exception as _e:
+    _n = type(_e).__name__
+    if "OperationFailure" in _n or "Authentication" in _n:
+        _fail(
+            "**MongoDB rejected the username or password.**",
+            "The app reached your cluster, so the network path and IP allowlist "
+            "are fine — only the credentials are wrong.\n\n"
+            "**1. Special characters must be percent-encoded.** This is the "
+            "usual cause. If the password contains any of `@ : / ? # [ ] %`, it "
+            "must be escaped in the URI, or the parser reads it as a "
+            "delimiter:\n\n"
+            "| char | write as | char | write as |\n"
+            "|---|---|---|---|\n"
+            "| `@` | `%40` | `/` | `%2F` |\n"
+            "| `:` | `%3A` | `#` | `%23` |\n"
+            "| `%` | `%25` | `?` | `%3F` |\n\n"
+            "**2. Check the user exists** — Atlas → *Database Access*. It must "
+            "be a **database user**, not your Atlas login, and the name must "
+            "match exactly.\n\n"
+            "**3. Check its role** — that user needs read/write on this "
+            "database.\n\n"
+            "If you rotated the password, confirm the secret holds the new one.")
+    elif "ServerSelection" in _n or "Timeout" in _n:
+        _fail(
+            "**Could not reach the MongoDB cluster.**",
+            "Atlas → **Network Access** → *Add IP Address* → **Allow access "
+            "from anywhere** (`0.0.0.0/0`).\n\n"
+            "Streamlit Cloud connects from rotating IPs, so an allowlist holding "
+            "only your laptop's address fails here while still working locally.")
+    else:
+        _fail(
+            "**Could not connect to MongoDB.**",
+            "The connection string may be malformed — it should start with "
+            "`mongodb+srv://` and contain no spaces or line breaks.",
+            f"{_n}: {str(_e)[:400]}")
+
+
 boot()
 
 CATEGORIES = {
