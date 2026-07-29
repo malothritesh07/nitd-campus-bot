@@ -56,9 +56,18 @@ def dense_enabled() -> bool:
     return os.getenv("ENABLE_DENSE", "1").strip().lower() not in ("0", "false", "no")
 
 
+# Set once a model load has failed, so every later query skips the attempt
+# instead of paying the download timeout again.
+_model_failed = False
+
+
 def get_model():
-    global _model
-    if not dense_enabled():
+    """Returns None when dense retrieval is off OR the model cannot be loaded.
+    Callers must handle None: a failed download degrades prose retrieval to
+    BM25, which is much better than erroring out an answer that BM25 alone
+    would have answered fine."""
+    global _model, _model_failed
+    if not dense_enabled() or _model_failed:
         return None
     if _model is None:
         # Only go offline when explicitly asked (EMBED_OFFLINE=1). Forcing it
@@ -66,8 +75,14 @@ def get_model():
         if os.getenv("EMBED_OFFLINE", "").strip() in ("1", "true", "True"):
             os.environ["HF_HUB_OFFLINE"] = "1"
             os.environ["TRANSFORMERS_OFFLINE"] = "1"
-        from sentence_transformers import SentenceTransformer
-        _model = SentenceTransformer(os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2"))
+        try:
+            from sentence_transformers import SentenceTransformer
+            _model = SentenceTransformer(os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2"))
+        except Exception as e:
+            _model_failed = True
+            print(f"[embed] model unavailable, falling back to BM25 only: "
+                  f"{type(e).__name__}: {str(e)[:120]}")
+            return None
     return _model
 
 

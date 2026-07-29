@@ -226,6 +226,31 @@ def h_syllabus(q, st):
     if prog_now:            st["syl_program"] = prog_now
     if sem_now is not None: st["syl_semester"] = sem_now
 
+    # ---- department named, but no syllabus held for it -> refuse ----
+    # "subjects in civil 2nd semester" used to answer with Artificial
+    # Intelligence courses: detect_dept knows Civil, detect_syl_program does not
+    # (no Civil curriculum is loaded), so prog stayed at whatever the previous
+    # turn had set and the listing filter happily used it. Listing another
+    # department's courses under this question is worse than saying no.
+    # The course check matters: "discrete mathematics syllabus" contains
+    # "mathematics", which is a department alias, but names a course that IS
+    # held. Only refuse when nothing in the corpus matches.
+    #
+    # Match on the query stripped of words that carry no course identity.
+    # "civil engineering syllabus" otherwise scores 85 against "Engineering
+    # Metrology & Instrumentation" on the shared word "engineering" alone —
+    # the same way "dr haleem" once matched "Dr.Amit Mahajan" on a shared title.
+    dept_now = R.detect_dept(q)
+    residual = re.sub(r"\b(engineering|syllabus|subjects?|courses?|department|dept|branch|of|in|the)\b",
+                      " ", ql)
+    residual = re.sub(r"\b(" + "|".join(map(re.escape, R.DEPT_ALIASES)) + r")\b", " ", residual).strip()
+    if dept_now and prog_now is None and R.match_course(residual) is None:
+        st.pop("syl_program", None)   # a stale programme must not answer for it
+        st.pop("syl_course", None)
+        return {"answer": f"I don't have syllabus data for {dept_now}. "
+                          f"{R.syllabus_coverage()}",
+                "source": None, "method": "guard"}
+
     # ---- unknown course code: refuse instead of inventing modules ----
     if code_m:
         cc = (code_m.group(1) + code_m.group(2)).upper()
@@ -342,14 +367,35 @@ def h_syllabus(q, st):
 
 
 def h_about(q, st):
-    hits = R.retrieve_scoped(q, lambda x: x["domain"] == "about", k=2)
+    # Every department writes its vision and mission in near-identical
+    # boilerplate, so unscoped retrieval answered "mission of CSE" with Civil's
+    # mission. Same failure as the faculty records: the only distinguishing
+    # signal is the department name, which ranking dilutes.
+    dept = R.detect_dept(q)
+
+    def keep(x):
+        return x["domain"] == "about" and (not dept or x["meta"].get("department") == dept)
+
+    hits = R.retrieve_scoped(q, keep, k=2)
     if not hits:
+        if dept:
+            have = sorted({c["meta"].get("department") for c in R.CHUNKS
+                           if c["domain"] == "about" and c["meta"].get("department")})
+            return {"answer": f"I don't have department pages for {dept}. "
+                              f"I hold: {', '.join(have)}.",
+                    "source": None, "method": "guard"}
         return {"answer": "Nothing found for that department section.",
                 "source": None, "method": "no-match"}
     body = "\n\n".join(h["text"] for h, _ in hits)[:1200]
+    # Name the path that actually ran — the badge is the point of this project,
+    # and claiming a vector stage that never executed undermines it.
+    method = "hybrid(bm25+vector)" if R.get_model() is not None else "bm25 (no vectors)"
+    if dept:
+        method += " · dept-scoped"
     return {"answer": body,
-            "source": {"label": "Department page", "url": hits[0][0].get("source")},
-            "method": "hybrid(bm25+vector)"}
+            "source": {"label": f"{dept or 'Department'} page",
+                       "url": hits[0][0].get("source")},
+            "method": method}
 
 
 def h_any(q, st):

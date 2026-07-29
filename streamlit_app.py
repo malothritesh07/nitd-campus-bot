@@ -66,12 +66,8 @@ if not os.getenv("MONGO_URI"):
 
 
 # --------------------------------------------------------------- resources
-# Imported at module scope, NOT returned from a cached function. Caching module
-# objects looks equivalent but isn't: on hot-reload Streamlit re-imports the
-# modules, the previous MongoClient is garbage collected — pymongo closes it in
-# __del__ — and the cached reference keeps pointing at the dead client. Every
-# Mongo-backed answer then fails with "client has been closed" while the
-# in-memory ones keep working, which is a confusing way to find out.
+# Imported at module scope rather than returned from a cached function, so a
+# hot-reload can't leave the cache holding references to superseded modules.
 import db as D            # noqa: E402
 import rag_core           # noqa: E402
 import rag_handlers as H  # noqa: E402

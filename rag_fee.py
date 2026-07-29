@@ -36,8 +36,12 @@ def get_model():
         if os.getenv("EMBED_OFFLINE", "").strip() in ("1", "true", "True"):
             os.environ["HF_HUB_OFFLINE"] = "1"
             os.environ["TRANSFORMERS_OFFLINE"] = "1"
-        from sentence_transformers import SentenceTransformer
-        _model = SentenceTransformer(os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2"))
+        try:
+            from sentence_transformers import SentenceTransformer
+            _model = SentenceTransformer(os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2"))
+        except Exception as e:
+            print(f"[embed] fee model unavailable, BM25 only: {str(e)[:100]}")
+            return None
     return _model
 
 
