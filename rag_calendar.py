@@ -102,7 +102,11 @@ def _model_filters(query: str, allowed: dict) -> dict | None:
         category=allowed.get("category"), semester=allowed.get("semester"),
         query=query)
     try:
-        raw = H.llm([{"role": "user", "content": prompt}], max_tokens=120)
+        # Temperature 0: this is extraction, not writing. At the default the
+        # model intermittently filled in a month the question never stated,
+        # inferring it from world knowledge rather than the text.
+        raw = H.llm([{"role": "user", "content": prompt}], max_tokens=120,
+                    temperature=0)
     except Exception as exc:
         log.warning("Filter extraction failed, using keyword rules: %s", exc)
         return None

@@ -73,11 +73,20 @@ def snapshot():
     return out
 
 
+def comparable(result: dict) -> dict:
+    """Model-written text varies between runs even at low temperature, so the
+    answer body is only compared for deterministic paths. The method string is
+    always compared: it names the retrieval path, which must not drift."""
+    if "+ LLM" in (result.get("method") or ""):
+        return {k: v for k, v in result.items() if k != "answer"}
+    return result
+
+
 def verify(expected):
     actual = snapshot()
     failures = []
     for want, got in zip(expected, actual):
-        if want["result"] != got["result"]:
+        if comparable(want["result"]) != comparable(got["result"]):
             failures.append((want["query"], want["result"], got["result"]))
     for query, want, got in failures:
         print(f"CHANGED: {query}")
