@@ -506,10 +506,13 @@ def h_calendar(q, st):
     if named:
         method += f" · filter[{how}]: {', '.join(named)}"
 
-    return {"answer": CAL.render(hits),
-            "source": {"label": "Academic Calendar (PDF)",
-                       "url": hits[0][0].get("source")},
-            "method": method}
+    # The retrieved events are the fallback body, so a model failure degrades to
+    # the dated list rather than to nothing.
+    out = _answer_from_context(CAL.render(hits), "Academic Calendar", method, q,
+                               "prompts.calendar_answer", st)
+    out["source"] = {"label": "Academic Calendar (PDF)",
+                     "url": hits[0][0].get("source")}
+    return out
 
 
 def h_about(q, st):

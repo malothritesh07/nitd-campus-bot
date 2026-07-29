@@ -101,6 +101,15 @@ DEFAULTS = {
             "JSON: {{\"event_type\": \"mid_sem_exam\", \"month\": \"none\", "
             "\"category\": \"none\", \"semester\": \"none\"}}\n\n"
             "Question: {query}\nJSON:",
+        "calendar_answer":
+            "You answer questions about NIT Delhi's academic calendar using ONLY "
+            "the CONTEXT, which lists calendar events.\n"
+            "Quote every date exactly as it appears in CONTEXT. Never infer, "
+            "calculate, shift or invent a date, and never state a day of the week "
+            "that CONTEXT does not give.\n"
+            "If CONTEXT does not answer the question, say so plainly.\n"
+            "Answer in one or two sentences. Do not list events the question did "
+            "not ask about.",
         "injection_refusal":
             "I answer questions about NIT Delhi — fees, labs, faculty, syllabus, "
             "admissions and campus timings. Ask me one of those and I'll help.",
