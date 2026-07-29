@@ -49,6 +49,55 @@ def llm_available():
     return bool(active_key())
 
 
+def _build_client(key: str):
+    """Verified client first; fall back to an unverified one only if the
+    handshake itself fails. On a machine without TLS interception the fallback
+    never runs."""
+    from groq import Groq
+    try:
+        c = Groq(api_key=key)
+        c.models.list()
+        return c
+    except Exception as first:
+        # An auth failure is not a handshake failure — re-raise so the caller
+        # reports "invalid key" rather than silently retrying unverified.
+        if "401" in str(first) or "invalid" in str(first).lower():
+            raise
+        import httpx
+        c = Groq(api_key=key, http_client=httpx.Client(verify=False, timeout=60.0))
+        c.models.list()
+        return c
+
+
+def verify_key(key: str) -> tuple[bool, str, list]:
+    """Check a user-supplied key before any question depends on it.
+
+    models.list() costs no tokens and no quota, so this is free to run. Returns
+    (ok, human-readable message, model ids available to that key).
+    """
+    key = (key or "").strip()
+    if not key:
+        return False, "No key provided.", []
+    if not key.startswith("gsk_"):
+        return False, "That doesn't look like a Groq key — they start with `gsk_`.", []
+    try:
+        client = _build_client(key)
+        ids = sorted(m.id for m in client.models.list().data)
+        _clients[key] = client          # reuse it, don't rebuild on first answer
+        usable = [m for m in MODELS() if m in ids]
+        if not usable:
+            return (False, "Key works, but none of the configured models are "
+                           "available to it.", ids)
+        return True, f"Connected — {len(usable)} of the configured models available.", ids
+    except Exception as e:
+        msg = str(e)
+        if "401" in msg or "invalid_api_key" in msg or "Invalid API Key" in msg:
+            return False, "Invalid key — Groq rejected it. Check for a stray space.", []
+        if "429" in msg or "rate" in msg.lower():
+            return False, "Key is valid but rate-limited right now. Try shortly.", []
+        return False, f"Could not reach Groq: {type(e).__name__}.", []
+
+
 @trace(name="groq", run_type="llm")
 def llm(messages, max_tokens=None, temperature=None):
     """Raises if no key is configured — callers fall back to raw context."""
@@ -60,20 +109,7 @@ def llm(messages, max_tokens=None, temperature=None):
         raise RuntimeError("no GROQ_API_KEY set")
     client = _clients.get(key)
     if client is None:
-        from groq import Groq
-        # This laptop sits behind TLS interception, so the default cert bundle
-        # rejects api.groq.com (the same thing broke nitdelhi.ac.in and
-        # HuggingFace). Try the normal verified client first and only fall back
-        # to an unverified one if the handshake fails. On a machine without the
-        # proxy the fallback never runs.
-        try:
-            c = Groq(api_key=key)
-            c.models.list()
-            client = c
-        except Exception:
-            import httpx
-            client = Groq(api_key=key,
-                          http_client=httpx.Client(verify=False, timeout=60.0))
+        client = _build_client(key)
         _clients[key] = client
 
     # An explicitly chosen model goes first; the rest stay as fallbacks so one

@@ -319,16 +319,39 @@ with st.sidebar:
         "Groq API key", type="password", placeholder="gsk_…",
         help="Held in your browser session only — never written to the "
              "database, never logged, and gone when you close the tab.")
+    # Verify once per distinct key, not on every rerun — Streamlit reruns the
+    # whole script on each keystroke and widget change, and a network round trip
+    # per rerun would make the sidebar feel broken.
+    if user_key and st.session_state.get("checked_key") != user_key:
+        with st.spinner("Checking key…"):
+            st.session_state.key_result = H.verify_key(user_key)
+        st.session_state.checked_key = user_key
+    elif not user_key:
+        st.session_state.pop("checked_key", None)
+        st.session_state.pop("key_result", None)
+
+    ok, msg, avail = st.session_state.get("key_result", (False, "", []))
+
+    # Offer only models the key can actually call, so the picker can't select
+    # one that fails on the first question.
+    models = [m for m in GROQ_MODELS if m in avail] if (ok and avail) else GROQ_MODELS
     user_model = st.selectbox(
-        "Model", GROQ_MODELS,
+        "Model", models,
         help="Tried first. The others remain as fallbacks, so one decommissioned "
              "model can't take the category down.")
+
     if user_key:
-        st.caption("Using your key — billed to your Groq account.")
+        if ok:
+            st.success(f"Connected successfully. {msg.split('—', 1)[-1].strip()}")
+            st.caption("Requests are billed to your Groq account. The key stays "
+                       "in this browser session — never stored or logged.")
+        else:
+            st.error(msg)
     st.markdown("[Get a free Groq key](https://console.groq.com/keys)")
 
-    # Applied before any handler runs on this rerun.
-    H.set_llm_override(api_key=user_key, model=user_model)
+    # A key that failed verification must not be used: falling through to it
+    # would trade a clear error here for a confusing one mid-answer.
+    H.set_llm_override(api_key=user_key if ok else None, model=user_model)
 
     st.divider()
     llm = H.llm_available()
