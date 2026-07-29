@@ -1,0 +1,507 @@
+[
+  {
+    "id": "acad_cal_autumn2026_summary",
+    "text": "NIT Delhi Autumn Semester 2026 academic calendar summary: Registration starts 16 Jul 2026 and ends 22 Jul 2026 (late fee window 23-24 Jul). Classes for B.Tech II/III/IV Year, M.Tech II Year and MCA II Year commence on 27 Jul 2026. Mid Semester Examinations run 23 Sep-1 Oct 2026, followed by Mid Semester Break 19-23 Oct 2026. End Semester Examinations run 30 Nov-9 Dec 2026. Last Teaching Day is 25 Nov 2026. Results are declared and the session closes on 17 Dec 2026. Total Teaching Days: 70. Total Working Days: 105. Winter vacation for faculty starts 19 Dec 2026; Spring Semester 2027 registration runs 24-31 Dec 2026, with classes commencing 4 Jan 2027.",
+    "metadata": {
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar_summary",
+      "event_type": "summary"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_01",
+    "text": "On 15 Jul 2026 (Wed), during the Autumn Semester 2026 at NIT Delhi: Summer Break for Faculty Ends.",
+    "metadata": {
+      "date": "15 Jul 2026",
+      "day": "Wed",
+      "month": "July",
+      "activity": "Summer Break for Faculty Ends",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-07-15",
+      "event_type": "break"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_02",
+    "text": "On 16 Jul 2026 (Thu), during the Autumn Semester 2026 at NIT Delhi: Registration for Autumn Semester 2026 Starts.",
+    "metadata": {
+      "date": "16 Jul 2026",
+      "day": "Thu",
+      "month": "July",
+      "activity": "Registration for Autumn Semester 2026 Starts",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-07-16",
+      "event_type": "registration"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_03",
+    "text": "On 22 Jul 2026 (Wed), during the Autumn Semester 2026 at NIT Delhi: Registration for Autumn Semester 2026 Ends.",
+    "metadata": {
+      "date": "22 Jul 2026",
+      "day": "Wed",
+      "month": "July",
+      "activity": "Registration for Autumn Semester 2026 Ends",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-07-22",
+      "event_type": "registration"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_04",
+    "text": "On 23-24 Jul 2026 (Thu-Fri), during the Autumn Semester 2026 at NIT Delhi: Registration with Late Fees.",
+    "metadata": {
+      "date": "23-24 Jul 2026",
+      "day": "Thu-Fri",
+      "month": "July",
+      "activity": "Registration with Late Fees",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-07-23",
+      "event_type": "registration"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_05",
+    "text": "On 27 Jul 2026 (Mon), during the Autumn Semester 2026 at NIT Delhi: Commencement of Classes for B.Tech II/III/IV Year, M.Tech II Year & MCA II Year.",
+    "metadata": {
+      "date": "27 Jul 2026",
+      "day": "Mon",
+      "month": "July",
+      "activity": "Commencement of Classes for B.Tech II/III/IV Year, M.Tech II Year & MCA II Year",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-07-27",
+      "event_type": "class_schedule"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_06",
+    "text": "On 15 Aug 2026 (Sat), during the Autumn Semester 2026 at NIT Delhi: Independence Day.",
+    "metadata": {
+      "date": "15 Aug 2026",
+      "day": "Sat",
+      "month": "August",
+      "activity": "Independence Day",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-08-15",
+      "event_type": "holiday"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_07",
+    "text": "On 26 Aug 2026 (Wed), during the Autumn Semester 2026 at NIT Delhi: Milad-un-Nabi / Id-e-Milad.",
+    "metadata": {
+      "date": "26 Aug 2026",
+      "day": "Wed",
+      "month": "August",
+      "activity": "Milad-un-Nabi / Id-e-Milad",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-08-26",
+      "event_type": "holiday"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_08",
+    "text": "On 2 Sep 2026 (Wed), during the Autumn Semester 2026 at NIT Delhi: Convocation Rehearsal.",
+    "metadata": {
+      "date": "2 Sep 2026",
+      "day": "Wed",
+      "month": "September",
+      "activity": "Convocation Rehearsal",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-09-02",
+      "event_type": "other"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_09",
+    "text": "On 3 Sep 2026 (Thu), during the Autumn Semester 2026 at NIT Delhi: 6th Convocation.",
+    "metadata": {
+      "date": "3 Sep 2026",
+      "day": "Thu",
+      "month": "September",
+      "activity": "6th Convocation",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-09-03",
+      "event_type": "other"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_10",
+    "text": "On 4 Sep 2026 (Fri), during the Autumn Semester 2026 at NIT Delhi: Janmashtami.",
+    "metadata": {
+      "date": "4 Sep 2026",
+      "day": "Fri",
+      "month": "September",
+      "activity": "Janmashtami",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-09-04",
+      "event_type": "holiday"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_11",
+    "text": "From 23-30 Sep 2026, during the Autumn Semester 2026 at NIT Delhi: Mid Semester Examination.",
+    "metadata": {
+      "date": "23-30 Sep 2026",
+      "day": null,
+      "month": "September",
+      "activity": "Mid Semester Examination",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-09-23",
+      "event_type": "mid_sem_exam"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_12",
+    "text": "On 1 Oct 2026 (Thu), during the Autumn Semester 2026 at NIT Delhi: Mid Semester Examination.",
+    "metadata": {
+      "date": "1 Oct 2026",
+      "day": "Thu",
+      "month": "October",
+      "activity": "Mid Semester Examination",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-10-01",
+      "event_type": "mid_sem_exam"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_13",
+    "text": "On 2 Oct 2026 (Fri), during the Autumn Semester 2026 at NIT Delhi: Mahatma Gandhi's Birthday.",
+    "metadata": {
+      "date": "2 Oct 2026",
+      "day": "Fri",
+      "month": "October",
+      "activity": "Mahatma Gandhi's Birthday",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-10-02",
+      "event_type": "holiday"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_14",
+    "text": "From 5-7 Oct 2026, during the Autumn Semester 2026 at NIT Delhi: Re-Mid Application.",
+    "metadata": {
+      "date": "5-7 Oct 2026",
+      "day": null,
+      "month": "October",
+      "activity": "Re-Mid Application",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-10-05",
+      "event_type": "other"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_15",
+    "text": "From 19-23 Oct 2026, during the Autumn Semester 2026 at NIT Delhi: Mid Semester Break.",
+    "metadata": {
+      "date": "19-23 Oct 2026",
+      "day": null,
+      "month": "October",
+      "activity": "Mid Semester Break",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-10-19",
+      "event_type": "break"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_16",
+    "text": "On 20 Oct 2026 (Tue), during the Autumn Semester 2026 at NIT Delhi: Dussehra.",
+    "metadata": {
+      "date": "20 Oct 2026",
+      "day": "Tue",
+      "month": "October",
+      "activity": "Dussehra",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-10-20",
+      "event_type": "holiday"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_17",
+    "text": "On 8 Nov 2026 (Sun), during the Autumn Semester 2026 at NIT Delhi: Diwali.",
+    "metadata": {
+      "date": "8 Nov 2026",
+      "day": "Sun",
+      "month": "November",
+      "activity": "Diwali",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-11-08",
+      "event_type": "holiday"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_18",
+    "text": "From 11-13 Nov 2026, during the Autumn Semester 2026 at NIT Delhi: Re-Mid Examination.",
+    "metadata": {
+      "date": "11-13 Nov 2026",
+      "day": null,
+      "month": "November",
+      "activity": "Re-Mid Examination",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-11-11",
+      "event_type": "mid_sem_exam"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_19",
+    "text": "On 23 Nov 2026 (Mon), during the Autumn Semester 2026 at NIT Delhi: Feedback Submission by Students.",
+    "metadata": {
+      "date": "23 Nov 2026",
+      "day": "Mon",
+      "month": "November",
+      "activity": "Feedback Submission by Students",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-11-23",
+      "event_type": "other"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_20",
+    "text": "On 24 Nov 2026 (Tue), during the Autumn Semester 2026 at NIT Delhi: Guru Nanak's Birthday.",
+    "metadata": {
+      "date": "24 Nov 2026",
+      "day": "Tue",
+      "month": "November",
+      "activity": "Guru Nanak's Birthday",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-11-24",
+      "event_type": "holiday"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_21",
+    "text": "On 25 Nov 2026 (Wed), during the Autumn Semester 2026 at NIT Delhi: Last Teaching Day.",
+    "metadata": {
+      "date": "25 Nov 2026",
+      "day": "Wed",
+      "month": "November",
+      "activity": "Last Teaching Day",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-11-25",
+      "event_type": "class_schedule"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_22",
+    "text": "From 30 Nov-9 Dec 2026, during the Autumn Semester 2026 at NIT Delhi: End Semester Examination.",
+    "metadata": {
+      "date": "30 Nov-9 Dec 2026",
+      "day": null,
+      "month": "Nov-Dec",
+      "activity": "End Semester Examination",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-11-30",
+      "event_type": "end_sem_exam"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_23",
+    "text": "On 13 Dec 2026 (Sun), during the Autumn Semester 2026 at NIT Delhi: Submission of Final Grades by Faculties.",
+    "metadata": {
+      "date": "13 Dec 2026",
+      "day": "Sun",
+      "month": "December",
+      "activity": "Submission of Final Grades by Faculties",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-12-13",
+      "event_type": "other"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_24",
+    "text": "On 15 Dec 2026 (Tue), during the Autumn Semester 2026 at NIT Delhi: Submission of Final Grades by HoDs.",
+    "metadata": {
+      "date": "15 Dec 2026",
+      "day": "Tue",
+      "month": "December",
+      "activity": "Submission of Final Grades by HoDs",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-12-15",
+      "event_type": "other"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_25",
+    "text": "On 17 Dec 2026 (Thu), during the Autumn Semester 2026 at NIT Delhi: Result Declaration / Autumn Semester Session Close.",
+    "metadata": {
+      "date": "17 Dec 2026",
+      "day": "Thu",
+      "month": "December",
+      "activity": "Result Declaration / Autumn Semester Session Close",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-12-17",
+      "event_type": "result"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_26",
+    "text": "On 19 Dec 2026 (Sat), during the Autumn Semester 2026 at NIT Delhi: Winter Vacation Starts for Faculty.",
+    "metadata": {
+      "date": "19 Dec 2026",
+      "day": "Sat",
+      "month": "December",
+      "activity": "Winter Vacation Starts for Faculty",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-12-19",
+      "event_type": "break"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_27",
+    "text": "On 24 Dec 2026 (Thu), during the Autumn Semester 2026 at NIT Delhi: Registration for Spring Semester 2027 Starts.",
+    "metadata": {
+      "date": "24 Dec 2026",
+      "day": "Thu",
+      "month": "December",
+      "activity": "Registration for Spring Semester 2027 Starts",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-12-24",
+      "event_type": "registration"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_28",
+    "text": "On 25 Dec 2026 (Fri), during the Autumn Semester 2026 at NIT Delhi: Christmas Day.",
+    "metadata": {
+      "date": "25 Dec 2026",
+      "day": "Fri",
+      "month": "December",
+      "activity": "Christmas Day",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-12-25",
+      "event_type": "holiday"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_29",
+    "text": "On 29 Dec 2026 (Tue), during the Autumn Semester 2026 at NIT Delhi: Registration for Spring Semester 2027 Ends.",
+    "metadata": {
+      "date": "29 Dec 2026",
+      "day": "Tue",
+      "month": "December",
+      "activity": "Registration for Spring Semester 2027 Ends",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-12-29",
+      "event_type": "registration"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_30",
+    "text": "From 30-31 Dec 2026, during the Autumn Semester 2026 at NIT Delhi: Registration with Late Fees.",
+    "metadata": {
+      "date": "30-31 Dec 2026",
+      "day": null,
+      "month": "December",
+      "activity": "Registration with Late Fees",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2026-12-30",
+      "event_type": "registration"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_31",
+    "text": "On 4 Jan 2027 (Mon), during the Autumn Semester 2026 at NIT Delhi: Commencement of Classes for B.Tech, M.Tech & MCA Students.",
+    "metadata": {
+      "date": "4 Jan 2027",
+      "day": "Mon",
+      "month": "January",
+      "activity": "Commencement of Classes for B.Tech, M.Tech & MCA Students",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": "2027-01-04",
+      "event_type": "class_schedule"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_32",
+    "text": "NIT Delhi Academic Calendar, Autumn Semester 2026: Total Teaching Days: 70.",
+    "metadata": {
+      "date": null,
+      "day": null,
+      "month": null,
+      "activity": "Total Teaching Days: 70",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": null,
+      "event_type": "stats"
+    }
+  },
+  {
+    "id": "acad_cal_autumn2026_33",
+    "text": "NIT Delhi Academic Calendar, Autumn Semester 2026: Total Working Days: 105.",
+    "metadata": {
+      "date": null,
+      "day": null,
+      "month": null,
+      "activity": "Total Working Days: 105",
+      "semester": "Autumn 2026",
+      "source": "https://media.nitdelhi.ac.in/uploads/web_media/Academic%20Calendar_Autumn%20Semester%202026@nitdelhi34f6a200-074c-4665-8f2c-bc78e68d4b3b.pdf",
+      "category": "academic_calendar",
+      "date_iso": null,
+      "event_type": "stats"
+    }
+  }
+]

@@ -28,7 +28,7 @@ from pymongo import UpdateOne
 import db as D
 import corpus
 
-NEEDS_VECTOR = ("prose", "lab")
+NEEDS_VECTOR = ("prose", "lab", "calendar")
 COLLECTIONS  = ("chunks", "fee_rows", "fee_docs", "admission_docs", "link_only")
 
 

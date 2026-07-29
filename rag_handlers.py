@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
 import embeddings
+import rag_calendar as CAL
 import rag_core as R
 import rag_fee as F
 from tracing import trace
@@ -487,6 +488,30 @@ def h_syllabus(q, st):
     return _scoped_hybrid(q, program, semester, st)
 
 
+def h_calendar(q, st):
+    """Dense retrieval, then cross-encoder reranking with a metadata boost.
+
+    Calendar entries are short and lexically alike, so a bi-encoder ranks
+    "Mid Semester Examination" and "End Semester Examination" almost equally.
+    The reranker reads query and passage together and separates them.
+    """
+    hits, slots, how = CAL.search(q)
+    if not hits:
+        return {"answer": f"I don't have that in the academic calendar. "
+                          f"{CAL.coverage()}",
+                "source": None, "method": "no-match"}
+
+    named = [f"{k}={v}" for k, v in slots.items() if v != "none"]
+    method = "rerank(cross-encoder)"
+    if named:
+        method += f" · filter[{how}]: {', '.join(named)}"
+
+    return {"answer": CAL.render(hits),
+            "source": {"label": "Academic Calendar (PDF)",
+                       "url": hits[0][0].get("source")},
+            "method": method}
+
+
 def h_about(q, st):
 
 
@@ -533,6 +558,7 @@ def h_any(q, st):
 
 
 HANDLERS = {
+    "calendar":  h_calendar,
     "fee":       h_fee,
     "lab":       h_lab,
     "faculty":   h_faculty,

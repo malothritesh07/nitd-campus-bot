@@ -58,4 +58,5 @@ def encode(text: str):
     model = get_model()
     if model is None:
         return None
-    return model.encode([text], normalize_embeddings=True)[0]
+    return model.encode([text], normalize_embeddings=True,
+                        show_progress_bar=False)[0]

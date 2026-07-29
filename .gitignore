@@ -39,3 +39,6 @@ Thumbs.db
 
 # Real Streamlit secrets — the .example file is committed instead
 .streamlit/secrets.toml
+
+# FlashRank reranker model cache (downloaded on first use)
+flashrank_cache/

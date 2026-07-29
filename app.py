@@ -119,6 +119,15 @@ class ChatIn(BaseModel):
 def guess_category(q: str):
     """Used only when no chip is selected."""
     ql = q.lower()
+    if re.search(r"canteen|nescafe|amul|health cent|hk cafe|\bcafe\b"
+                 r"|(open|closed|shut)\s*(now|today|yet)?\??$", ql):
+        return "shops"
+    if re.search(r"calendar|holiday|vacation|convocation|mid[- ]?sem|end[- ]?sem"
+                 r"|exam date|teaching days|working days|registration"
+                 r"|diwali|dussehra|christmas|independence day|janmashtami"
+                 r"|gandhi|guru nanak|milad|\beid\b"
+                 r"|when (do|does|is|are).{0,20}(class|exam|registration|result)", ql):
+        return "calendar"
     if re.search(r"document|checklist|reporting|bring|verificat|\badmission\b", ql):
         return "admission"
     if re.search(r"\bfee|fees|cost|tuition|tution|charge|how much|kitna|ifsc|caution", ql):

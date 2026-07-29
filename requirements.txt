@@ -29,3 +29,5 @@ redis>=5.0
 # Reviewer-facing demo UI (streamlit_app.py). The production widget is
 # static/index.html served by FastAPI and does not need this.
 streamlit>=1.40
+
+flashrank>=0.2

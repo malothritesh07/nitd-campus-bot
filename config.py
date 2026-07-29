@@ -40,6 +40,11 @@ DEFAULTS = {
         "candidate_pool":      30,
         "prose_min_cosine":   0.30,
         "fee_hybrid_min_cosine": 0.35,
+        "top_k_calendar":       4,
+        "calendar_pool":       10,
+        "rerank_model": "ms-marco-MiniLM-L-12-v2",
+        "calendar_boosts": {"event_type": 0.40, "month": 0.20,
+                            "category": 0.10, "semester": 0.05},
     },
 
     "generation": {
@@ -80,6 +85,22 @@ DEFAULTS = {
             "Answer ONLY from CONTEXT. If CONTEXT lacks the detail asked, say it is not "
             "available. Never invent module or unit names, and never mention a course "
             "that does not appear in CONTEXT.",
+        "calendar_filter":
+            "You extract search filters from a question about NIT Delhi's "
+            "academic calendar.\nReturn ONLY a JSON object, nothing else. No "
+            "explanation, no markdown fences.\n\nAllowed values:\n"
+            "- event_type: {event_type}\n"
+            "  (mid_sem_exam = mid-semester and re-mid exams, end_sem_exam = "
+            "end-semester and final exams)\n"
+            "- month: {month}\n- category: {category}\n- semester: {semester}\n\n"
+            "Use \"none\" for any field the question does not clearly specify.\n\n"
+            "Question: what holidays are there\n"
+            "JSON: {{\"event_type\": \"holiday\", \"month\": \"none\", "
+            "\"category\": \"none\", \"semester\": \"none\"}}\n\n"
+            "Question: when do mid semester exams happen\n"
+            "JSON: {{\"event_type\": \"mid_sem_exam\", \"month\": \"none\", "
+            "\"category\": \"none\", \"semester\": \"none\"}}\n\n"
+            "Question: {query}\nJSON:",
         "injection_refusal":
             "I answer questions about NIT Delhi — fees, labs, faculty, syllabus, "
             "admissions and campus timings. Ask me one of those and I'll help.",
@@ -105,6 +126,19 @@ DEFAULTS = {
             r"</?(system|assistant|user)>|<\|im_(start|end)\|>",
             r"\b(jailbreak|do anything now)\b",
             r"override\s+(your|the)\s+(instruction|rule|setting)",
+        ],
+        "calendar_event_types": [
+            [r"holiday|festival|diwali|dussehra|christmas|independence|janmashtami"
+             r"|gandhi|guru nanak|milad|eid", "holiday"],
+            [r"mid[- ]?sem|midsem|re-?mid|mid semester", "mid_sem_exam"],
+            [r"end[- ]?sem|final exam|end semester", "end_sem_exam"],
+            [r"registration|register|enrol", "registration"],
+            [r"break|vacation|holiday period", "break"],
+            [r"class(es)? (start|begin|commence)|commencement|teaching day",
+             "class_schedule"],
+            [r"result|grade", "result"],
+            [r"total (teaching|working) days", "stats"],
+            [r"\bexam", "end_sem_exam"],
         ],
         "dept_aliases": {
             "civil": "Civil Engineering", "ce": "Civil Engineering",
@@ -168,6 +202,7 @@ DEFAULTS = {
 
     "ui": {
         "categories": [
+            {"id": "calendar",  "label": "Calendar",  "icon": "calendar"},
             {"id": "shops",     "label": "Open now",  "icon": "shop"},
             {"id": "fee",       "label": "Fees",      "icon": "rupee"},
             {"id": "lab",       "label": "Labs",      "icon": "flask"},
@@ -177,6 +212,8 @@ DEFAULTS = {
             {"id": "about",     "label": "About",     "icon": "info"},
             {"id": "feedback",  "label": "Feedback",  "icon": "chat"}],
         "quick": {
+            "calendar": ["When are the mid sem exams?", "List the holidays",
+                         "When does registration close?"],
             "_default":  ["What's open now?", "B.Tech 3rd sem fee", "Give feedback"],
             "shops":     ["What's open now?", "Is the canteen open?", "Is Nescafe open?"],
             "fee":       ["B.Tech 3rd sem JOSAA fee", "Hostel and mess charges", "How do I pay?"],

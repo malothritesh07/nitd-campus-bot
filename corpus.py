@@ -33,6 +33,8 @@ DEPT_FILES = ["rag_dataset_Ashm.json", "rag_dataset_CIVIL.json", "rag_dataset_CS
 CLASS_MAP = {"faculty": "entity", "staff": "entity", "leadership": "entity",
              "laboratories": "lab", "about": "prose"}
 
+CALENDAR_FILE = "academic_calendar_rag_context66.json"
+
 RES_KEYS = {
  "day_scholar_total": ("day_scholar", False),
  "day_scholar_total_excl_tuition": ("day_scholar", True),
@@ -157,6 +159,23 @@ def _link_only_record(row, md, category, filename):
             "message": "That section isn't published on the website yet."}
 
 
+def _add_calendar(collector):
+    """Calendar entries are date lookups, not semantic prose, so each event is
+    kept as its own chunk with its date and type in metadata."""
+    if not os.path.exists(P(CALENDAR_FILE)):
+        return
+    for row in jload(CALENDAR_FILE):
+        md = row.get("metadata", {})
+        collector.add({
+            "chunk_id": row["id"], "rag_class": "calendar", "domain": "calendar",
+            "text": row["text"], "source": md.get("source"),
+            "meta": {"date": md.get("date"), "date_iso": md.get("date_iso"),
+                     "day": md.get("day"), "month": md.get("month"),
+                     "activity": md.get("activity"), "semester": md.get("semester"),
+                     "event_type": md.get("event_type"),
+                     "category": md.get("category")}}, CALENDAR_FILE)
+
+
 def _add_departments(collector):
     link_only = []
     for filename in DEPT_FILES:
@@ -249,6 +268,7 @@ def build():
     """
     collector = _ChunkCollector()
     _add_syllabus(collector)
+    _add_calendar(collector)
     link_only = _add_departments(collector)
     fee_rows, fee_docs = _add_fees(collector)
     admission_docs = _stamp_documents(jload("admission_data.json"), "admission_data.json")
