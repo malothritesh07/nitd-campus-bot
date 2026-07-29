@@ -3,8 +3,8 @@
 # NIT Delhi Campus Bot
 
 **A student help chatbot that refuses to guess.**
-Fees, labs, faculty, syllabus, admissions and live campus shop status —
-embedded as a widget on the college website.
+Academic calendar, fees, labs, faculty, syllabus, admissions and live campus
+shop status — embedded as a widget on the college website.
 
 </div>
 
@@ -12,15 +12,15 @@ embedded as a widget on the college website.
 
 ## Live Link
 
-> **Demo:** _(Streamlit URL pending deployment)_
->
-> The Streamlit app is a reviewer-facing surface: it reports the retrieval path,
-> latency and model involvement for every answer, and offers eight sample
-> questions including two the system declines.
->
-> The production interface is the embedded widget (`static/index.html`) served by
-> FastAPI. `docker compose up` runs that stack locally with the sample corpus
-> included. Screenshots below are captured from the running application.
+### ▶ [Try it live](https://nitd-campus-bot-cfnuhtksns3sbjqvjsysuz.streamlit.app/)
+
+The demo reports the retrieval path, latency and model involvement for **every**
+answer, and offers sample questions including several the system declines.
+No sign-up, no API key required.
+
+The production interface is the embedded widget (`static/index.html`) served by
+FastAPI. `docker compose up` runs that stack locally with the sample corpus
+included. Screenshots below are captured from the running application.
 
 ---
 
@@ -86,8 +86,15 @@ The same logic applies to room numbers and rupee amounts. Their meaning is
 | Whole document | 4 admission checklists | never chunked — a partial checklist is dangerous | ✗ | ✗ |
 | Volatile | 5 campus outlets | direct read + freshness stamp, never cached | ✗ | ✗ |
 | Semantic prose | 52 courses, dept pages | BM25 + dense, fused with RRF | ✓ | ✓ |
+| Dense + rerank | 34 calendar events | dense → cross-encoder → metadata boost | ✓ | ✓ |
 
-Only the syllabus and about categories can reach a language model. Fees, labs,
+The calendar is the only category using a cross-encoder. Its entries are short
+and lexically alike — a bi-encoder scores *Mid Semester Examination* and *End
+Semester Examination* almost identically, while a cross-encoder reads query and
+passage together and separates them. Everywhere else the added latency buys
+nothing.
+
+Only the syllabus, about and calendar categories can reach a language model. Fees, labs,
 faculty, admissions and shop status are rendered from templates fed by MongoDB
 and never do, so exhausting an API quota degrades those two categories to raw
 source text and leaves the rest untouched.
@@ -97,6 +104,7 @@ source text and leaves the rest untouched.
 ## Features
 
 **Answers**
+- Academic calendar: exam windows, holidays, registration deadlines, class commencement and term statistics
 - Fee lookup by programme, semester, admission route, category and residence, with the source PDF linked
 - Fee component breakdown — tuition, hostel, mess, caution money, bank details
 - Lab lookup by room number, name, acronym, or equipment ("which lab has MATLAB")
@@ -121,7 +129,6 @@ source text and leaves the rest untouched.
 **Production hardening**
 - **Answer cache** — only responses that cost a Groq call are cached. Measured 43x speedup on a repeat question (14.8s -> 0.34s). The key includes the corpus sync id, so any `sync.py` run invalidates every entry automatically
 - **Two rate-limit budgets** — requests are generous, since most are a single indexed read; model calls are tight, since those cost money and take seconds. Exhausting the model budget degrades that answer to source text rather than returning an error
-- **Redis optional** — set `REDIS_URL` for atomic counters and sub-ms reads; without it both cache and limiter use MongoDB TTL collections, so a clone needs no extra service
 - `GET /api/ops` exposes cache hit counts and current usage against limits
 
 **Operations**
@@ -129,7 +136,7 @@ source text and leaves the rest untouched.
 - Soft deletes — removed records stop being retrievable at once, stay recoverable
 - Every threshold, prompt, lexicon and UI label is a database row, not a literal
 - End-to-end tracing (LangSmith) covering the non-LLM paths too
-- 22 regression tests and 30 adversarial tests
+- 22 regression tests, 30 adversarial tests, and a 37-case behavioural snapshot asserting that a refactor changes no answer
 
 ---
 
@@ -320,14 +327,18 @@ nitd-campus-bot/
 ├── sync.py                hash diff · incremental embed · soft delete · purge · restore
 ├── rag_core.py            retrieval: entity, lab, scoped hybrid, course matching
 ├── rag_fee.py             fee metadata filtering + hybrid fallback
+├── rag_calendar.py        calendar: dense → cross-encoder rerank → metadata boost
 ├── rag_handlers.py        one handler per category + Groq client
+├── embeddings.py          shared model loader; degrades to BM25 when unavailable
+├── textutil.py            tokeniser and currency formatting
 ├── tracing.py             LangSmith wiring; no-op if unavailable
 ├── seed_config.py         write default config into MongoDB
 ├── seed_shops.py          create outlets, issue owner codes (printed once)
 ├── static/index.html      the chat widget — no build step
 ├── tests/
 │   ├── test_api.py        22 happy-path cases
-│   └── stress_test.py     30 adversarial cases
+│   ├── stress_test.py     30 adversarial cases
+│   └── golden.py          37-case snapshot: record before a change, verify after
 └── docs/images/           README screenshots
 ```
 
@@ -468,7 +479,6 @@ a redeploy (see `config.py` for the seed values).
 | `ENABLE_DENSE` | no | `1` | Set `0` to skip loading the embedding model. Saves roughly 460 MB of RSS; prose retrieval falls back to BM25 |
 | `EMBED_OFFLINE` | no | — | Set `1` only when the model is already cached and the host is offline |
 | `DATA_DIR` | no | `./data` | Source files for `sync.py`. Use forward slashes on Windows |
-| `REDIS_URL` | no | — | Backs the cache and rate-limit counters. Without it both use MongoDB TTL collections |
 | `ALLOWED_ORIGINS` | no | `*` | Comma-separated CORS allowlist. Restrict once the widget is embedded |
 | `AUTO_CLOSE_HOUR` | no | `23` | Hour (IST) after which shop status resets to closed |
 | `STALE_HOURS` | no | `6` | Age beyond which a shop status is reported as unconfirmed |
@@ -485,13 +495,12 @@ environment before anything else loads.
 
 Ordered by value, not by ease.
 
-1. **Cross-encoder reranking** — `bge-reranker-base` after first-pass retrieval. First-pass optimises recall; reranking optimises precision on the shortlist. The single biggest quality win still available.
-2. **Golden dataset + RAGAS** — the 52 current tests are hand-written. Real evaluation needs retrieval metrics (recall@k, MRR) separated from generation metrics (faithfulness, context precision), because a bad answer could be either one's fault.
-3. **Response streaming** — Syllabus takes ~4s and currently shows nothing until it completes.
-4. **Query-log collection** — LangSmith traces exist, but there's no local record to mine for what students actually ask, which is the input to everything else.
-5. **Approval workflow** — schema fields exist (`status`, `last_verified`); the reviewer UI does not. Needed before the college will let it self-update.
-6. **Feedback loop** — thumbs up/down routed into the eval set rather than collected and ignored.
-7. **Deploy** — Render/Railway/Spaces free tier, then embed on the live college site.
+1. **Extend reranking beyond the calendar** — the cross-encoder currently serves one category. Applying it to the syllabus shortlist is the next likely quality win, though it costs latency on a path that already calls a model.
+2. **Retrieval metrics separated from generation metrics** — the current suite asserts behaviour, not ranking quality. Recall@k and MRR would show whether a poor answer came from retrieval or from phrasing.
+3. **Response streaming** — generated answers take several seconds and show nothing until complete.
+4. **Query logging** — traces exist in LangSmith, but no local record of what students actually ask, which is the input to every other improvement.
+5. **Approval workflow** — the schema carries `status` and `last_verified`; the reviewer interface does not exist. Required before the institute would let the corpus self-update.
+6. **Feedback loop** — route thumbs up/down into the evaluation set rather than collecting it unused.
 
 ---
 

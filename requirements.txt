@@ -7,27 +7,24 @@ pydantic>=2.6
 pymongo>=4.6
 python-dotenv>=1.0
 
-# Retrieval — embeddings run locally, never in the cloud
+# Retrieval — embeddings are computed locally, never sent to a third party
 sentence-transformers>=2.5
 rank-bm25>=0.2.2
 rapidfuzz>=3.6
 numpy>=1.26
 
+# Cross-encoder reranking (Calendar category)
+flashrank>=0.2
+
+# Answer generation (Syllabus and Calendar categories)
+groq>=0.11
+
 # Shop-owner code hashing
 bcrypt>=4.1
 
-# LLM (Syllabus category only)
-groq>=0.11
-
-# Tracing (optional — the app runs with LANGSMITH_TRACING=false)
-langsmith>=0.1
-
-# Optional: set REDIS_URL to use Redis for cache + rate limiting.
-# Without it both fall back to MongoDB TTL collections.
-redis>=5.0
-
-# Reviewer-facing demo UI (streamlit_app.py). The production widget is
-# static/index.html served by FastAPI and does not need this.
+# Reviewer-facing demo UI. The production widget is static/index.html,
+# served by FastAPI, and does not need this.
 streamlit>=1.40
 
-flashrank>=0.2
+# Tracing — optional, disabled with LANGSMITH_TRACING=false
+langsmith>=0.1
