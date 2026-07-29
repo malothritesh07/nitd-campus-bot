@@ -18,14 +18,11 @@ STALE_HOURS  = int(os.getenv("STALE_HOURS", "6"))
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
-# Rate limits. Layered deliberately: the whole campus sits behind one NAT address,
-# so IP is a weak signal and must stay loose or one prankster locks out every owner.
-# The precise signals are per-shop (brute force against a shop) and per-code
-# (targeted guessing of one owner's code).
-MAX_ATTEMPTS_PER_IP    = 40     # per hour — loose, only catches runaway scripts
-MAX_ATTEMPTS_PER_SHOP  = 12     # per hour — main brute-force defence
-MAX_FAILS_PER_CODE     = 5      # consecutive failures before that code locks
-MAX_TOGGLES_PER_SHOP   = 6      # successful, per hour — caps damage from a leaked code
+
+MAX_ATTEMPTS_PER_IP    = 40
+MAX_ATTEMPTS_PER_SHOP  = 12
+MAX_FAILS_PER_CODE     = 5
+MAX_TOGGLES_PER_SHOP   = 6
 LOCKOUT_MINUTES        = 30
 
 _client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=20000)
@@ -49,11 +46,10 @@ def ensure_indexes() -> None:
     staff.create_index([("shop_id", ASCENDING)])
     audit.create_index([("ts", ASCENDING)])
     audit.create_index([("shop_id", ASCENDING), ("ts", ASCENDING)])
-    # attempts self-expire one hour after they are written
+
     attempts.create_index([("ts", ASCENDING)], expireAfterSeconds=3600)
 
 
-# ---------------------------------------------------------------- codes
 def code_lookup(code: str) -> str:
     """Deterministic, indexable. bcrypt is salted so it cannot be looked up directly."""
     return hmac.new(PEPPER, code.strip().upper().encode(), hashlib.sha256).hexdigest()
@@ -70,7 +66,6 @@ def code_verify(code: str, hashed: str) -> bool:
         return False
 
 
-# ---------------------------------------------------------------- status
 def last_reset_boundary(ref: datetime | None = None) -> datetime:
     """Most recent AUTO_CLOSE_HOUR (IST) before `ref`.
 
@@ -113,7 +108,7 @@ def effective_status(shop: dict, st: dict | None) -> dict:
     if updated.tzinfo is None:
         updated = updated.replace(tzinfo=timezone.utc)
 
-    # written before tonight's reset boundary -> treat as unconfirmed, not as Closed.
+
     if updated < last_reset_boundary():
         return {"state": "no_update", "is_open": None,
                 "headline": "No confirmed update today",
@@ -148,7 +143,6 @@ def shop_list() -> list[dict]:
     return out
 
 
-# ---------------------------------------------------------------- rate limiting
 def log_attempt(ip_hash: str, shop_id: str, success: bool, lookup: str = "") -> None:
     attempts.insert_one({"ts": now_utc(), "ip_hash": ip_hash, "shop_id": shop_id,
                          "success": success, "lookup": lookup})
@@ -166,7 +160,7 @@ def is_rate_limited(ip_hash: str, shop_id: str, lookup: str = "") -> tuple[bool,
                                  "ts": {"$gte": since}}) >= MAX_TOGGLES_PER_SHOP:
         return True, "shop_toggle_limit"
 
-    # consecutive failures against this specific code
+
     if lookup:
         lock_since = now_utc() - timedelta(minutes=LOCKOUT_MINUTES)
         recent = list(attempts.find({"lookup": lookup, "ts": {"$gte": lock_since}})

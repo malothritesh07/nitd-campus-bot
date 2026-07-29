@@ -24,7 +24,7 @@ from config import CFG
 
 _generation = {"id": None, "at": None}
 
-# Categories whose answers change without the corpus changing.
+
 NEVER_CACHE = {"shops", "feedback"}
 
 

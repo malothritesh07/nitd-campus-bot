@@ -38,8 +38,7 @@ def get_model():
     if _model is not None:
         return _model
 
-    # Opt-in only: forcing offline mode would stop a fresh install from ever
-    # downloading the model.
+
     if _flag("EMBED_OFFLINE"):
         os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["TRANSFORMERS_OFFLINE"] = "1"

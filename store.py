@@ -59,7 +59,6 @@ def backend() -> str:
     return "redis" if _redis() is not None else "mongo"
 
 
-# ------------------------------------------------------------------ cache
 def cache_get(key: str):
     r = _redis()
     if r is not None:
@@ -70,7 +69,7 @@ def cache_get(key: str):
                 return json.loads(raw)
             return None
         except Exception:
-            pass                                   # fall through to Mongo
+            pass
     doc = D.db.answer_cache.find_one({"_id": key})
     if not doc:
         return None
@@ -126,7 +125,6 @@ def cache_clear(generation: str | None = None) -> int:
     return D.db.answer_cache.delete_many(q).deleted_count
 
 
-# ------------------------------------------------------------- rate limits
 def rate_count(cid: str, kind: str, window_seconds: int) -> int:
     """How many events for this client in the window."""
     r = _redis()

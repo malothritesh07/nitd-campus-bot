@@ -19,17 +19,13 @@ log = logging.getLogger(__name__)
 
 app = FastAPI(title="NIT Delhi — Campus Status", version="1.0")
 
-# "*" is right for local dev and for a standalone demo Space. Set
-# ALLOWED_ORIGINS to a comma-separated list once the widget is embedded on the
-# college site, so only that page can call the API.
+
 import os as _os
 _origins = [o.strip() for o in _os.getenv("ALLOWED_ORIGINS", "*").split(",") if o.strip()]
 app.add_middleware(CORSMiddleware, allow_origins=_origins,
                    allow_methods=["GET", "POST"], allow_headers=["*"])
 
-# Identical acknowledgement for every failure mode. Wrong code, wrong shop,
-# revoked code and rate-limit all return THIS — otherwise the toggle path is
-# discoverable by probing (plan §5).
+
 GENERIC = {"ok": True, "message": "Thanks, your response has been recorded."}
 
 
@@ -82,7 +78,7 @@ def toggle(shop_id: str, body: ToggleIn, request: Request):
     shop = D.shops.find_one({"shop_id": shop_id, "active": True})
     member = D.staff.find_one({"code_lookup": lookup, "is_active": True})
 
-    # every failure below returns GENERIC and is audited
+
     valid = bool(shop and member
                  and member["shop_id"] == shop_id
                  and D.code_verify(body.code, member["code_hash"]))
@@ -109,7 +105,7 @@ def toggle(shop_id: str, body: ToggleIn, request: Request):
                   old_status=(prev or {}).get("is_open"), new_status=body.is_open,
                   reason=body.reason)
 
-    # TODO(phase 3): email owner + admin here — non-blocking, students see the change now
+
     return {"ok": True, "message": f"{shop['name']} marked "
                                    f"{'Open' if body.is_open else 'Closed'}."}
 
@@ -117,7 +113,7 @@ def toggle(shop_id: str, body: ToggleIn, request: Request):
 class ChatIn(BaseModel):
     message: str = Field(min_length=1, max_length=500)
     category: Optional[str] = None
-    slots: Optional[dict] = None          # carried between turns by the widget
+    slots: Optional[dict] = None
 
 
 def guess_category(q: str):
@@ -161,8 +157,8 @@ def chat(body: ChatIn, request: Request):
     figure or room number cannot be invented. Only the syllabus and about
     categories reach a model, and they fall back to source text without one.
     """
-    # Imported here so that starting the API does not pull in the retrieval
-    # stack, which loads the corpus and the embedding model.
+
+
     import cache
     import ratelimit as RL
     import rag_handlers as H
@@ -170,7 +166,7 @@ def chat(body: ChatIn, request: Request):
 
     question = body.message.strip()
     category = (body.category or "").lower()
-    state = dict(body.slots or {})        # widget carries per-category state
+    state = dict(body.slots or {})
     client = RL.client_id(request)
     limits_on = CFG.get("ratelimit.enabled", True)
 
@@ -183,8 +179,7 @@ def chat(body: ChatIn, request: Request):
     if category not in H.HANDLERS:
         category = guess_category(question) or "any"
 
-    # Key on the state as it arrived: handlers mutate it (h_syllabus records the
-    # resolved course), so a key built afterwards would never match on read.
+
     cache_key = cache.key(question, category, state)
     cached = cache.get_by_key(cache_key)
     if cached:
@@ -192,7 +187,7 @@ def chat(body: ChatIn, request: Request):
         cached["state"] = state
         return cached
 
-    # Check the tighter LLM budget before doing the work, not after paying for it.
+
     if category in LLM_CATEGORIES and limits_on:
         allowed, _, _ = RL.check(client, "llm")
         if not allowed:
@@ -212,7 +207,7 @@ def chat(body: ChatIn, request: Request):
         cache.put_by_key(cache_key, question, category, answer)
 
     answer["category"] = category
-    answer["state"] = state               # returned so the widget can send it back
+    answer["state"] = state
     return answer
 
 
@@ -258,8 +253,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/")
 def index():
-    # never cache the shell — otherwise a browser keeps running yesterday's JS
-    # against today's API after a deploy
+
+
     return FileResponse("static/index.html", headers={
         "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
         "Pragma": "no-cache", "Expires": "0"})

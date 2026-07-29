@@ -28,7 +28,7 @@ from tracing import trace
 INR = format_inr
 tok = tokenize
 
-# ---------------------------------------------------------------- state
+
 CHUNKS: list = []
 FAC: list = []
 FAC_NAMES: list = []
@@ -48,8 +48,6 @@ DENSE_IDX: list = []
 POS_IN_DENSE: dict = {}
 
 
-# Lexicon lives in the `config` collection, so adding a department alias or a
-# stop word is a database edit rather than a code change.
 DEPT_ALIASES = CFG.get("lexicon.dept_aliases")
 QWORDS       = set(CFG.get("lexicon.question_words"))
 STOP_LAB     = set(CFG.get("lexicon.lab_stopwords"))
@@ -90,7 +88,6 @@ def lab_aliases(c):
     return [x for x in out if x]
 
 
-# ================================================================== load
 def load(force=False):
     global CHUNKS, FAC, FAC_NAMES, LABS, COURSES, COURSE_KEYS, ADMISSION
     global LAB_ALIAS, LAB_ALIAS_STR, LAB_DF, DF_MAX, KNOWN_CODES, SYL_PROGRAMS
@@ -149,7 +146,6 @@ def stats():
             "admission": len(ADMISSION), "programs": SYL_PROGRAMS}
 
 
-# ============================================================ CLASS: ENTITY
 def strip_title(s):
     """Drop Dr./Prof./Mr. so the fuzzy score reflects the actual name."""
     return re.sub(r"^(?:prof\.?\s*)?(?:dr|mr|ms|mrs)?\.?\s*", "",
@@ -203,8 +199,8 @@ def retrieve_entity(query, k=None, min_score=None):
     name = strip_title(extract_name(query))
     if not name:
         return []
-    # Match on the bare name. With titles left in, "dr haleem" scored 86 against
-    # "Dr.Amit Mahajan" purely on the shared "Dr." and Dr. Halim never surfaced.
+
+
     raw = process.extract(name, [strip_title(n) for _, n in pool], scorer=fuzz.WRatio,
                           processor=utils.default_process, limit=k)
     return [(pool[i][0], s) for _, s, i in raw
@@ -227,10 +223,7 @@ def render_entity(q):
     if not hits:
         return None
 
-    # Ambiguous when several people score about the same — a bare surname like
-    # "dr kumar" matches eight people, and silently picking the first is how a
-    # student ends up emailing the wrong professor. Department alone isn't the
-    # test: two Kumars in one department are just as ambiguous.
+
     top = hits[0][1]
     close = [h for h in hits if top - h[1] <= CFG.get("retrieval.entity_ambiguity_margin")]
     if len(close) > 1:
@@ -242,7 +235,6 @@ def render_entity(q):
     return f"{m['name']} — {m.get('designation') or m.get('role')}, {m.get('department')}."
 
 
-# =============================================================== CLASS: LAB
 def _tok_overlap(query, alias, min_ratio=None):
     min_ratio = CFG.get("retrieval.lab_token_overlap") if min_ratio is None else min_ratio
     """Fuzzy score alone isn't enough — a query token must resemble a token in the
@@ -291,15 +283,14 @@ def retrieve_lab(query, k=None):
 
     content = [w for w in tok(query)
                if w not in STOP_LAB and w not in QWORDS and len(w) > 3]
-    # If the student named something no lab has ("quantum"), that is the answer.
-    # Otherwise generic leftovers like "computer" would match an unrelated lab.
+
+
     if any(LAB_DF[w] == 0 for w in content):
         return []
     kws = [w for w in content if 0 < LAB_DF[w] <= DF_MAX]
     if kws:
-        # A hit in the lab's NAME must outrank a passing mention in its blurb.
-        # Weight name matches above description matches: a lab described as
-        # serving several branches would otherwise outrank the lab named.
+
+
         scored = []
         for c in pool:
             name = (c["meta"].get("name") or "").lower()
@@ -353,7 +344,6 @@ def render_lab(q):
             f"Capacity: {m.get('capacity')}")
 
 
-# ============================================================= CLASS: PROSE
 def courses_by_code(code_norm):
     """Exact code wins over fuzzy title matching. A student asking for CSBB 103
     was being handed ADBB 103 — a different subject entirely."""
@@ -426,7 +416,6 @@ def detect_syl_program(q):
     return None
 
 
-# ========================================================= CLASS: ADMISSION
 def render_admission(q):
     load()
     ql = q.lower()

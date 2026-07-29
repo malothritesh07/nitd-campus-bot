@@ -27,10 +27,10 @@ def load_cache(force=False):
     """Pull chunks + vectors out of Mongo into memory for ranking."""
     if _cache["bm25"] is not None and not force:
         return
-    # fee chunks live in the shared `chunks` collection under domain="fee"
+
     chunks = list(D.db.chunks.find({"domain": "fee", "embedding": {"$exists": True},
                                    "status": {"$ne": "archived"}}))
-    for c in chunks:                       # flatten meta so prefilter/render can read it
+    for c in chunks:
         c.update({k: v for k, v in (c.get("meta") or {}).items() if k not in c})
     _cache["chunks"] = chunks
     _cache["bm25"]   = BM25Okapi([_tok(c["text"]) for c in chunks]) if chunks else None
@@ -38,9 +38,6 @@ def load_cache(force=False):
                         if chunks else None)
 
 
-# ------------------------------------------------------------------ slots
-# Patterns come from the `config` collection — a new admission route or fee
-# component is a database edit, not a code change.
 PROGRAM_PAT = [(p, v) for p, v in CFG.get("lexicon.program_patterns")]
 ADM_PAT     = [(p, v) for p, v in CFG.get("lexicon.admission_patterns")]
 COMPONENTS  = CFG.get("lexicon.fee_components")
@@ -59,7 +56,7 @@ def extract_slots(q: str) -> dict:
             s["admission_type"] = v
             break
 
-    # income first, so its digits can't be mistaken for a semester
+
     if   re.search(r"below 1|less than 1|under 1|<\s*1", ql):
         s["category_bucket"] = "below_1_lakh"
     elif re.search(r"1.{0,6}5\s*lakh|between\s*1", ql):
@@ -75,8 +72,8 @@ def extract_slots(q: str) -> dict:
     if m:
         s["semester"] = int(m.group(1))
     else:
-        # a bare number can be the answer to "which semester?" — but only after
-        # stripping income phrases, or "below 1 lakh" would read as semester 1
+
+
         cleaned = re.sub(r"\b(?:below|less than|under|above|more than|over|between)\s*\d+"
                          r"(?:\s*(?:to|-)\s*\d+)?\s*(?:lakhs?)?", " ", ql)
         cleaned = re.sub(r"\b\d+\s*(?:to|-)\s*\d+\s*lakhs?", " ", cleaned)
@@ -86,7 +83,7 @@ def extract_slots(q: str) -> dict:
         if m2:
             s["semester"] = int(m2.group(1))
 
-    # typo-tolerant: hoostel / hostell / hostl, day scholer / dayscholar
+
     if   re.search(r"non[- ]?a\.?c", ql):
         s["residence"] = "hosteller_non_ac"
     elif re.search(r"\ba\.?c\b", ql):
@@ -106,15 +103,13 @@ def detect_component(q: str):
     return None
 
 
-# ------------------------------------------------------- metadata filtering
 def filter_rows(slots: dict) -> list:
     """The primary path: a plain indexed MongoDB query. No vectors involved."""
     q = {k: v for k, v in slots.items() if v is not None}
-    q["status"] = {"$ne": "archived"}   # never quote a fee that was withdrawn
+    q["status"] = {"$ne": "archived"}
     return list(D.db.fee_rows.find(q, {"_id": 0}))
 
 
-# ------------------------------------------------------------------ hybrid
 @trace(name="fee_hybrid", run_type="retriever")
 def hybrid_chunks(query: str, k=None, pool=None, prefilter: dict | None = None):
     """Lexical (BM25) + vector (cosine), fused with Reciprocal Rank Fusion.
@@ -150,7 +145,6 @@ def hybrid_chunks(query: str, k=None, pool=None, prefilter: dict | None = None):
     return [(chunks[i], round(s, 5), float(sims[i])) for i, s in top]
 
 
-# ---------------------------------------------------------------- rendering
 def _label(r):
     return (f"{r['program']} sem {r['semester']} · {r['admission_type']} · "
             f"{r['income_category'].replace('_', ' ')} · {r['residence'].replace('_', ' ')}")
@@ -290,7 +284,7 @@ def _guard_unpublished_semester(slots: dict):
     scope = {"program": slots["program"]} if slots.get("program") else {}
     available = sorted(D.db.fee_rows.distinct("semester", scope))
     programme = slots.get("program") or "that programme"
-    # Clear the semester, or every later turn inherits it and hits this guard.
+
     return {"answer": f"Semester {semester} isn't published for {programme}. "
                       f"Available: {', '.join(str(s) for s in available)}.",
             "source": None, "method": "guard",
@@ -312,7 +306,7 @@ def _guard_comparison(query: str, slots: dict):
     if not COMPARE_RE.search(query.lower()):
         return None
 
-    # Residence is dropped so both sides of the comparison appear.
+
     rows = filter_rows({k: v for k, v in slots.items() if v and k != "residence"})
     if not rows:
         return None

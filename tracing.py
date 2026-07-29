@@ -20,7 +20,7 @@ ENABLED = (os.getenv("LANGSMITH_TRACING", "false").strip().lower() == "true"
 _status = "disabled"
 
 if ENABLED:
-    # the SDK reads these
+
     os.environ["LANGCHAIN_TRACING_V2"] = "true"
     os.environ["LANGSMITH_TRACING"]    = "true"
     os.environ.setdefault("LANGCHAIN_API_KEY",  os.environ["LANGSMITH_API_KEY"])
@@ -31,19 +31,16 @@ if ENABLED:
         from langsmith import traceable as _traceable
         from langsmith import Client as _Client
         _status = "on"
-    except Exception as e:          # package missing / import error
+    except Exception as e:
         ENABLED, _status = False, f"import failed: {str(e)[:60]}"
 
 _LS_CLIENT = None
 if ENABLED:
-    # Networks that intercept TLS reject the default certificate bundle.
-    # rejects api.smith.langchain.com (same as Groq and HuggingFace). Try a
-    # normally-verified client first; only fall back to an unverified session
-    # if the handshake fails. On a machine without the proxy this never runs.
+
+
     def _probe(c):
-        # c.info swallows connection errors internally, so use a call that raises.
-        # list_projects works before the project exists — LangSmith creates it on
-        # the first trace, so probing the project itself would fail on a fresh key.
+
+
         list(c.list_projects(limit=1))
 
     def _build_client():
@@ -85,7 +82,7 @@ def trace(name=None, run_type="chain", **meta):
         except Exception:
             return fn
 
-    # allow bare @trace as well as @trace(...)
+
     if callable(name):
         fn, name = name, None
         return deco(fn)

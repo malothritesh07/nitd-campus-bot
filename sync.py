@@ -28,7 +28,7 @@ from pymongo import UpdateOne
 import db as D
 import corpus
 
-NEEDS_VECTOR = ("prose", "lab")          # entity is matched lexically, never embedded
+NEEDS_VECTOR = ("prose", "lab")
 COLLECTIONS  = ("chunks", "fee_rows", "fee_docs", "admission_docs", "link_only")
 
 
@@ -84,14 +84,14 @@ def apply(coll_name, new, changed, unchanged, gone, ts, run_id):
         ops.append(UpdateOne({"_id": {"$in": unchanged}},
                              {"$set": {"last_verified": ts}}, upsert=False))
 
-    # soft delete: stops being retrievable now, still recoverable
+
     if gone:
         D.db[coll_name].update_many(
             {"_id": {"$in": gone}},
             {"$set": {"status": "archived", "archived_at": ts, "sync_run": run_id}})
 
     if ops:
-        # unchanged uses a single multi-update; split so update_many is separate
+
         singles = [o for o in ops if not isinstance(o._filter.get("_id"), dict)]
         if singles:
             D.db[coll_name].bulk_write(singles, ordered=False)

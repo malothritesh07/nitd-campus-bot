@@ -22,20 +22,17 @@ log = logging.getLogger(__name__)
 def SRC_PDF(url):
     return {"label": "Official notice (PDF)", "url": url} if url else None
 
-# ------------------------------------------------------------------- Groq
+
 GROQ_KEY = (os.getenv("GROQ_API_KEY") or "").strip()
 def MODELS():
     return CFG.get("generation.models")
 _working = None
 
-# Per-session overrides so a visitor can supply their own key and model without
-# touching the deployment's. A ContextVar rather than a module global: Streamlit
-# runs every session in its own thread, and a global would let one visitor's key
-# leak into another's request.
+
 import contextvars
 _override = contextvars.ContextVar("llm_override", default=None)
 
-# Clients are cached per key — building one costs a models.list() round trip.
+
 _clients: dict = {}
 
 
@@ -64,8 +61,8 @@ def _build_client(key: str):
         c.models.list()
         return c
     except Exception as first:
-        # An auth failure is not a handshake failure — re-raise so the caller
-        # reports "invalid key" rather than silently retrying unverified.
+
+
         if "401" in str(first) or "invalid" in str(first).lower():
             raise
         import httpx
@@ -88,7 +85,7 @@ def verify_key(key: str) -> tuple[bool, str, list]:
     try:
         client = _build_client(key)
         ids = sorted(m.id for m in client.models.list().data)
-        _clients[key] = client          # reuse it, don't rebuild on first answer
+        _clients[key] = client
         usable = [m for m in MODELS() if m in ids]
         if not usable:
             return (False, "Key works, but none of the configured models are "
@@ -117,8 +114,7 @@ def llm(messages, max_tokens=None, temperature=None):
         client = _build_client(key)
         _clients[key] = client
 
-    # An explicitly chosen model goes first; the rest stay as fallbacks so one
-    # decommissioned model can't take the category down.
+
     chosen = (_override.get() or {}).get("model")
     head = [m for m in (chosen, _working) if m]
     order = head + [m for m in MODELS() if m not in head]
@@ -128,7 +124,7 @@ def llm(messages, max_tokens=None, temperature=None):
             r = client.chat.completions.create(model=m, messages=messages,
                                                 max_tokens=max_tokens, temperature=temperature)
             t = (r.choices[0].message.content or "").strip()
-            # A near-empty reply is not an answer; try the next model.
+
             if len(t) >= CFG.get("generation.min_reply_chars"):
                 _working = m
                 return t
@@ -140,7 +136,6 @@ def llm(messages, max_tokens=None, temperature=None):
     raise RuntimeError("all Groq models failed: " + "; ".join(errs))
 
 
-# ------------------------------------------------- prompt-injection guard
 _INJ = None
 
 
@@ -167,13 +162,12 @@ def leaks_instructions(reply: str) -> bool:
 
 
 def injection_refusal() -> dict:
-    # Deliberately identical to a normal out-of-scope reply, and it never says
-    # "injection detected" — naming the filter tells an attacker what to evade.
+
+
     return {"answer": CFG.get("prompts.injection_refusal"),
             "source": None, "method": "guard"}
 
 
-# ================================================================ handlers
 def h_fee(q, st):
     out = F.answer_fee(q, carried=st.get("slots") or {})
     st["slots"] = out.get("slots", {})
@@ -188,8 +182,7 @@ def h_lab(q, st):
     R.load()
     ql = q.lower()
 
-    # "list the ece labs" is a roster request, not a name lookup. Without this it
-    # fell through to fuzzy matching and suggested two unrelated labs.
+
     dept = R.detect_dept(q)
     if dept and re.search(LAB_LIST, ql):
         sel = [c for c in R.LABS if c["meta"].get("department") == dept]
@@ -209,7 +202,7 @@ def h_lab(q, st):
                     "source": {"label": f"{dept} — Laboratories", "url": sel[0].get("source")},
                     "method": "structured-listing"}
 
-    # "hardware in it?" -> reuse the lab from the previous turn
+
     if (re.search(R.PRONOUN, ql) or len(q.split()) <= 3) and st.get("lab"):
         if not R.retrieve_lab(q):
             q = f"{st['lab']} {q}"
@@ -238,8 +231,8 @@ def h_faculty(q, st):
                 "source": None, "method": "no-match"}
     dept = R.detect_dept(q)
     if re.search(PRIVATE_ASK, q.lower()):
-        # Answering the lookup alone would imply the private detail was
-        # searched for and not found; state the policy instead.
+
+
         return {"answer": body + "\n\nI only share what the institute publishes. "
                                  "Personal phone numbers and home addresses aren't "
                                  "available here — use the department office contact "
@@ -288,9 +281,7 @@ def _modules_of(course):
 COURSE_CODE_RE = re.compile(r"\b([A-Za-z]{3,4})\s?(\d{3})\b")
 FOLLOW_UP_RE = re.compile(r"\b(them|it|that|those|this)\b")
 
-# Words that identify a department or a question shape rather than a course.
-# Stripping them stops "civil engineering syllabus" from scoring 85 against
-# "Engineering Metrology & Instrumentation" on the shared word "engineering".
+
 GENERIC_RE = re.compile(
     r"\b(engineering|syllabus|subjects?|courses?|department|dept|branch|of|in|the)\b")
 
@@ -479,8 +470,7 @@ def h_syllabus(q, st):
         if listing:
             return listing
 
-    # A bare "in cse?" after a listing means the same question for another
-    # programme, so the intent carries as well as the slots.
+
     repeat_listing = (st.get("syl_intent") == "list_courses"
                       and (program_now or semester_now is not None)
                       and len(q.split()) <= 4)
@@ -498,10 +488,8 @@ def h_syllabus(q, st):
 
 
 def h_about(q, st):
-    # Every department writes its vision and mission in near-identical
-    # boilerplate, so unscoped retrieval answered "mission of CSE" with Civil's
-    # mission. Same failure as the faculty records: the only distinguishing
-    # signal is the department name, which ranking dilutes.
+
+
     dept = R.detect_dept(q)
 
     def keep(x):
@@ -518,8 +506,8 @@ def h_about(q, st):
         return {"answer": "Nothing found for that department section.",
                 "source": None, "method": "no-match"}
     body = "\n\n".join(h["text"] for h, _ in hits)[:1200]
-    # Name the path that actually ran — the badge is the point of this project,
-    # and claiming a vector stage that never executed undermines it.
+
+
     method = "hybrid(bm25+vector)" if embeddings.get_model() is not None else "bm25 (no vectors)"
     if dept:
         method += " · dept-scoped"
@@ -554,9 +542,7 @@ HANDLERS = {
     "any":       h_any,
 }
 
-# Trace every category, not just the ones that call a model. Most answers here
-# never touch an LLM, and those are exactly the paths where the interesting
-# failures live — wrong slot extracted, wrong person matched, filter too broad.
+
 def _with_input_guard(fn):
     """Applied to every category, not just the two that reach a model.
 

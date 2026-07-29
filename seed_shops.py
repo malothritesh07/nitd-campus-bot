@@ -8,7 +8,7 @@ import secrets, string
 from db import (db, shops, staff, ensure_indexes, code_lookup, code_hash, now_utc)
 
 ALPHABET = string.ascii_uppercase + string.digits
-AMBIGUOUS = set("O0I1")          # avoid characters people misread when typing
+AMBIGUOUS = set("O0I1")
 
 
 def new_code(n: int = 8) -> str:
@@ -38,7 +38,7 @@ SHOPS = [
      "owner_name": "TBD", "owner_email": ""},
 ]
 
-# one row per PERSON, never one shared code per shop -> a leak is traceable & revocable
+
 STAFF = [
     ("main_canteen",  "Canteen Manager"),
     ("hk_cafe",       "HK Cafe Owner"),
@@ -68,8 +68,8 @@ def main() -> None:
             "shop_id":     shop_id,
             "name":        person,
             "phone":       "",
-            "code_lookup": code_lookup(code),   # indexed HMAC — bcrypt is salted, can't be queried
-            "code_hash":   code_hash(code),     # verification
+            "code_lookup": code_lookup(code),
+            "code_hash":   code_hash(code),
             "is_active":   True,
             "issued_at":   now_utc(),
             "revoked_at":  None,

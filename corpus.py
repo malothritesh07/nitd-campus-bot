@@ -225,8 +225,7 @@ def _add_fees(collector):
         row["content_hash"] = content_hash(
             {k: v for k, v in row.items() if k not in ("content_hash", "ingested_at")})
 
-    # A prose chunk per document keeps fees reachable by hybrid search when
-    # metadata filtering cannot pin the answer down.
+
     for doc in fee_docs:
         rows = [r for r in fee_rows if r["doc_id"] == doc["doc_id"]]
         collector.add({

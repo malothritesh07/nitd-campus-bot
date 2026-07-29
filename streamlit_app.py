@@ -20,19 +20,14 @@ st.set_page_config(page_title="NIT Delhi Campus Bot",
                    page_icon="🎓", layout="wide",
                    initial_sidebar_state="expanded")
 
-# Streamlit Cloud puts secrets in st.secrets; the rest of the codebase reads
-# os.environ. Bridge them before anything imports db/config.
-#
-# `continue`, not `break`: with no secrets.toml at all, st.secrets raises on
-# every lookup, and breaking out on the first one would silently skip the
-# remaining keys even when some were readable.
+
 for _k in ("MONGO_URI", "DB_NAME", "GROQ_API_KEY", "SERVER_PEPPER",
            "EMBED_MODEL", "ENABLE_DENSE", "LANGSMITH_TRACING",
            "LANGSMITH_API_KEY", "LANGSMITH_PROJECT"):
     try:
         if _k in st.secrets and not os.getenv(_k):
             os.environ[_k] = str(st.secrets[_k])
-    except Exception:      # no secrets configured — local runs use .env instead
+    except Exception:
         continue
 
 try:
@@ -41,8 +36,7 @@ try:
 except Exception:
     pass
 
-# Fail with instructions rather than a KeyError from deep inside db.py, whose
-# message Streamlit Cloud redacts — leaving a stack trace and no way to act on it.
+
 if not os.getenv("MONGO_URI"):
     st.error("**MONGO_URI is not set**, so the app cannot reach the database.")
     st.markdown(
@@ -64,9 +58,6 @@ if not os.getenv("MONGO_URI"):
     st.stop()
 
 
-# --------------------------------------------------------------- resources
-# Imported at module scope rather than returned from a cached function, so a
-# hot-reload can't leave the cache holding references to superseded modules.
 import db as D            # noqa: E402
 import embeddings         # noqa: E402
 import rag_core           # noqa: E402
@@ -97,9 +88,6 @@ def _fail(title: str, body: str, extra=None):
     st.stop()
 
 
-# Ping before loading the corpus. Otherwise the first failure surfaces from
-# inside a cached function as a redacted pymongo traceback, which says nothing
-# about which of the three usual causes it is.
 try:
     D._client.admin.command("ping")
 except Exception as _e:
@@ -152,8 +140,7 @@ CATEGORIES = {
     "shops":     "Open now",
 }
 
-# Chosen to exercise a different retrieval path each — and to include the
-# refusals, which are the part worth grading.
+
 SAMPLES = [
     ("B.Tech 3rd sem JOSAA fee",     "fee",       "Metadata filter — 5 slots, zero vectors"),
     ("Which lab has MATLAB?",        "lab",       "Equipment keyword over lab records"),
@@ -165,8 +152,7 @@ SAMPLES = [
     ("total fee for all 8 semesters", "fee",      "REFUSAL — no arithmetic on money"),
 ]
 
-# Offered in the sidebar. Sourced from the `generation.models` config row so the
-# picker can't drift from the fallback chain the backend actually uses.
+
 def _groq_models():
     from config import CFG
     return list(CFG.get("generation.models") or [])
@@ -251,8 +237,8 @@ def ask(q: str, category: str) -> dict:
         try:
             out = H.HANDLERS[cat](q, st.session_state.slots)
         except Exception as e:
-            # Full traceback to the server log — the one-line message a user sees
-            # is rarely enough to find the cause.
+
+
             import traceback
             traceback.print_exc()
             out = {"answer": "Something went wrong answering that. Try rephrasing.",
@@ -261,12 +247,11 @@ def ask(q: str, category: str) -> dict:
     return out
 
 
-# ------------------------------------------------------------------ state
 st.session_state.setdefault("messages", [])
 st.session_state.setdefault("slots", {})
 st.session_state.setdefault("pending", None)
 
-# ---------------------------------------------------------------- sidebar
+
 with st.sidebar:
     st.markdown("### NIT Delhi Campus Bot")
     st.caption("Retrieval-first student assistant. Most answers never reach a language model.")
@@ -302,9 +287,8 @@ with st.sidebar:
 
     st.divider()
     st.markdown("#### Bring your own key")
-    # Whether a key is configured on the deployment changes what "leave blank"
-    # means, so say the true thing rather than a generic line that is wrong in
-    # one of the two cases.
+
+
     if H.GROQ_KEY:
         st.caption("Optional — leave blank to use this deployment's key. "
                    "Only the Syllabus category calls a model at all.")
@@ -318,9 +302,8 @@ with st.sidebar:
         "Groq API key", type="password", placeholder="gsk_…",
         help="Held in your browser session only — never written to the "
              "database, never logged, and gone when you close the tab.")
-    # Verify once per distinct key, not on every rerun — Streamlit reruns the
-    # whole script on each keystroke and widget change, and a network round trip
-    # per rerun would make the sidebar feel broken.
+
+
     if user_key and st.session_state.get("checked_key") != user_key:
         with st.spinner("Checking key…"):
             st.session_state.key_result = H.verify_key(user_key)
@@ -331,8 +314,7 @@ with st.sidebar:
 
     ok, msg, avail = st.session_state.get("key_result", (False, "", []))
 
-    # Offer only models the key can actually call, so the picker can't select
-    # one that fails on the first question.
+
     models = [m for m in GROQ_MODELS if m in avail] if (ok and avail) else GROQ_MODELS
     user_model = st.selectbox(
         "Model", models,
@@ -348,8 +330,7 @@ with st.sidebar:
             st.error(msg)
     st.markdown("[Get a free Groq key](https://console.groq.com/keys)")
 
-    # A key that failed verification must not be used: falling through to it
-    # would trade a clear error here for a confusing one mid-answer.
+
     H.set_llm_override(api_key=user_key if ok else None, model=user_model)
 
     st.divider()
@@ -366,7 +347,7 @@ with st.sidebar:
         st.rerun()
     st.caption("[Source on GitHub](https://github.com/malothritesh07/nitd-campus-bot)")
 
-# ------------------------------------------------------------------- main
+
 st.title("NIT Delhi Campus Bot")
 st.caption("Fees · labs · faculty · syllabus · admissions · live campus status — "
            "with the retrieval path shown on every answer.")
