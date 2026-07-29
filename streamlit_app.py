@@ -95,6 +95,15 @@ SAMPLES = [
     ("total fee for all 8 semesters", "fee",      "REFUSAL — no arithmetic on money"),
 ]
 
+# Offered in the sidebar. Sourced from the `generation.models` config row so the
+# picker can't drift from the fallback chain the backend actually uses.
+def _groq_models():
+    from config import CFG
+    return list(CFG.get("generation.models") or [])
+
+
+GROQ_MODELS = _groq_models()
+
 BADGE_COLOR = {
     "METADATA-FILTER": "#0f766e", "EXACT-LOOKUP":   "#1d4ed8",
     "FUZZY-LEXICAL":   "#7c3aed", "WHOLE-DOCUMENT": "#0369a1",
@@ -219,6 +228,26 @@ with st.sidebar:
         "| Admission | whole document | ✗ |\n"
         "| Shops | live read | ✗ |\n"
         "| Syllabus | BM25 + dense, RRF | ✓ |")
+
+    st.divider()
+    st.markdown("#### Bring your own key")
+    st.caption("Optional. Leave blank and the demo's own key is used — only the "
+               "Syllabus category needs one at all.")
+
+    user_key = st.text_input(
+        "Groq API key", type="password", placeholder="gsk_…",
+        help="Kept in your browser session only. Never written to the database "
+             "or logged.")
+    user_model = st.selectbox(
+        "Model", GROQ_MODELS,
+        help="Tried first. The others remain as fallbacks, so one decommissioned "
+             "model can't take the category down.")
+    if user_key:
+        st.caption("Using your key — billed to your Groq account.")
+    st.markdown("[Get a free Groq key](https://console.groq.com/keys)")
+
+    # Applied before any handler runs on this rerun.
+    H.set_llm_override(api_key=user_key, model=user_model)
 
     st.divider()
     llm = H.llm_available()

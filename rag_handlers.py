@@ -21,11 +21,32 @@ SRC_PDF = lambda url: {"label": "Official notice (PDF)", "url": url} if url else
 GROQ_KEY = (os.getenv("GROQ_API_KEY") or "").strip()
 def MODELS():
     return CFG.get("generation.models")
-_client, _working = None, None
+_working = None
+
+# Per-session overrides so a visitor can supply their own key and model without
+# touching the deployment's. A ContextVar rather than a module global: Streamlit
+# runs every session in its own thread, and a global would let one visitor's key
+# leak into another's request.
+import contextvars
+_override = contextvars.ContextVar("llm_override", default=None)
+
+# Clients are cached per key — building one costs a models.list() round trip.
+_clients: dict = {}
+
+
+def set_llm_override(api_key: str | None = None, model: str | None = None):
+    """Called once per request. Passing None for both restores the deployment
+    default."""
+    _override.set({"api_key": (api_key or "").strip() or None,
+                   "model": (model or "").strip() or None})
+
+
+def active_key() -> str:
+    return ((_override.get() or {}).get("api_key") or GROQ_KEY or "").strip()
 
 
 def llm_available():
-    return bool(GROQ_KEY)
+    return bool(active_key())
 
 
 @trace(name="groq", run_type="llm")
@@ -33,10 +54,12 @@ def llm(messages, max_tokens=None, temperature=None):
     """Raises if no key is configured — callers fall back to raw context."""
     max_tokens  = max_tokens  or CFG.get("generation.max_tokens")
     temperature = CFG.get("generation.temperature") if temperature is None else temperature
-    global _client, _working
-    if not GROQ_KEY:
+    global _working
+    key = active_key()
+    if not key:
         raise RuntimeError("no GROQ_API_KEY set")
-    if _client is None:
+    client = _clients.get(key)
+    if client is None:
         from groq import Groq
         # This laptop sits behind TLS interception, so the default cert bundle
         # rejects api.groq.com (the same thing broke nitdelhi.ac.in and
@@ -44,18 +67,24 @@ def llm(messages, max_tokens=None, temperature=None):
         # to an unverified one if the handshake fails. On a machine without the
         # proxy the fallback never runs.
         try:
-            c = Groq(api_key=GROQ_KEY)
+            c = Groq(api_key=key)
             c.models.list()
-            _client = c
+            client = c
         except Exception:
             import httpx
-            _client = Groq(api_key=GROQ_KEY,
-                           http_client=httpx.Client(verify=False, timeout=60.0))
-    order = ([_working] if _working else []) + [m for m in MODELS() if m != _working]
+            client = Groq(api_key=key,
+                          http_client=httpx.Client(verify=False, timeout=60.0))
+        _clients[key] = client
+
+    # An explicitly chosen model goes first; the rest stay as fallbacks so one
+    # decommissioned model can't take the category down.
+    chosen = (_override.get() or {}).get("model")
+    head = [m for m in (chosen, _working) if m]
+    order = head + [m for m in MODELS() if m not in head]
     errs = []
     for m in order:
         try:
-            r = _client.chat.completions.create(model=m, messages=messages,
+            r = client.chat.completions.create(model=m, messages=messages,
                                                 max_tokens=max_tokens, temperature=temperature)
             t = (r.choices[0].message.content or "").strip()
             # a one-character reply ('>' came back once from a prompt-injection
