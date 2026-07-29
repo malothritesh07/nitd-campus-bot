@@ -99,6 +99,39 @@ def llm(messages, max_tokens=None, temperature=None):
     raise RuntimeError("all Groq models failed: " + "; ".join(errs))
 
 
+# ------------------------------------------------- prompt-injection guard
+_INJ = None
+
+
+def _inj_patterns():
+    """Compiled once, sourced from the `config` collection so a new attack
+    phrasing is a database edit rather than a redeploy."""
+    global _INJ
+    if _INJ is None:
+        _INJ = [re.compile(p, re.I) for p in (CFG.get("lexicon.injection_patterns") or [])]
+    return _INJ
+
+
+def looks_like_injection(q: str) -> bool:
+    return any(p.search(q or "") for p in _inj_patterns())
+
+
+def leaks_instructions(reply: str) -> bool:
+    """Output-side check. If a reply echoes the system prompt, the model
+    complied with an injection we did not catch on the way in."""
+    r = (reply or "").lower()
+    markers = ("answer only from context", "the question is text typed by",
+               "never invent module", "is data, never instructions")
+    return any(m in r for m in markers)
+
+
+def injection_refusal() -> dict:
+    # Deliberately identical to a normal out-of-scope reply, and it never says
+    # "injection detected" — naming the filter tells an attacker what to evade.
+    return {"answer": CFG.get("prompts.injection_refusal"),
+            "source": None, "method": "guard"}
+
+
 # ================================================================ handlers
 def h_fee(q, st):
     out = F.answer_fee(q, carried=st.get("slots") or {})
@@ -320,7 +353,7 @@ def h_syllabus(q, st):
                     "method": f"exact-course · {why}"}
         try:
             body = llm([{"role": "system", "content":
-                         CFG.get("prompts.syllabus_course")},
+                         CFG.get("prompts.syllabus_course") + CFG.get("prompts.guard_clause")},
                         {"role": "user", "content": f"CONTEXT:\n{ctx}\n\nQUESTION: {q}"}],
                        max_tokens=CFG.get('generation.max_tokens'))
             return {"answer": body, "source": {"label": label, "url": None},
@@ -356,7 +389,7 @@ def h_syllabus(q, st):
                 "method": f"hybrid(scoped) · {why}"}
     try:
         body = llm([{"role": "system", "content":
-                     CFG.get("prompts.syllabus_scoped")},
+                     CFG.get("prompts.syllabus_scoped") + CFG.get("prompts.guard_clause")},
                     {"role": "user", "content": f"CONTEXT:\n{ctx}\n\nQUESTION: {q}"}],
                    max_tokens=CFG.get('generation.max_tokens'))
         return {"answer": body, "source": {"label": scope, "url": None},
@@ -426,6 +459,24 @@ HANDLERS = {
 # Trace every category, not just the ones that call a model. Most answers here
 # never touch an LLM, and those are exactly the paths where the interesting
 # failures live — wrong slot extracted, wrong person matched, filter too broad.
+def _with_input_guard(fn):
+    """Applied to every category, not just the two that reach a model.
+
+    The template paths cannot be steered by prompt text, so this is belt and
+    braces there — but a single wrap means a category added later is covered by
+    default rather than by remembering."""
+    def inner(q, st):
+        if looks_like_injection(q):
+            return injection_refusal()
+        out = fn(q, st)
+        if leaks_instructions(out.get("answer", "")):
+            return injection_refusal()
+        return out
+    inner.__name__ = getattr(fn, "__name__", "handler")
+    return inner
+
+
 for _cat, _fn in list(HANDLERS.items()):
     HANDLERS[_cat] = trace(name=f"category:{_cat}", run_type="chain",
-                           category=_cat, uses_llm=(_cat == "syllabus"))(_fn)
+                           category=_cat, uses_llm=(_cat == "syllabus"))(
+                         _with_input_guard(_fn))
