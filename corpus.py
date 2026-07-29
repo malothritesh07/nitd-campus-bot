@@ -3,7 +3,10 @@
 Split out of ingest_all.py so the sync engine can compare "what should exist"
 against "what does exist" without re-running any writes.
 """
-import hashlib, json, os, re
+import hashlib
+import json
+import os
+import re
 
 from dotenv import load_dotenv
 
@@ -11,9 +14,19 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(HERE, ".env"))
 DATA = os.getenv("DATA_DIR", "M:\\")
 
-P      = lambda name: os.path.join(DATA, name)
-jload  = lambda n: json.load(open(P(n), encoding="utf-8"))
-jlload = lambda n: [json.loads(l) for l in open(P(n), encoding="utf-8") if l.strip()]
+def P(name):
+    """Resolve a source filename against DATA_DIR."""
+    return os.path.join(DATA, name)
+
+
+def jload(name):
+    with open(P(name), encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def jlload(name):
+    with open(P(name), encoding="utf-8") as fh:
+        return [json.loads(line) for line in fh if line.strip()]
 
 DEPT_FILES = ["rag_dataset_Ashm.json", "rag_dataset_CIVIL.json", "rag_dataset_CSE.json",
               "rag_dataset_ECE.json", "rag_dataset_MAE.json"]
@@ -54,11 +67,16 @@ def parse_location(loc):
 
 def bucket(cat):
     c = (cat or "").lower()
-    if "less_than_1" in c: return "below_1_lakh"
-    if "between_1"   in c: return "1_to_5_lakh"
-    if "above_5"     in c: return "above_5_lakh"
-    if re.search(r"\bsc|st|ph|pwd", c) and "gen" not in c: return "sc_st_pwd"
-    if re.search(r"gen|obc|ews|ur", c): return "gen_obc_ews"
+    if "less_than_1" in c:
+        return "below_1_lakh"
+    if "between_1"   in c:
+        return "1_to_5_lakh"
+    if "above_5"     in c:
+        return "above_5_lakh"
+    if re.search(r"\bsc|st|ph|pwd", c) and "gen" not in c:
+        return "sc_st_pwd"
+    if re.search(r"gen|obc|ews|ur", c):
+        return "gen_obc_ews"
     return "all_categories"
 
 
@@ -78,121 +96,166 @@ def _fee_chunk_text(doc, rows):
     return " | ".join(p for p in parts if p)
 
 
-def build():
-    """Return the corpus the sources describe, each item carrying a content hash
-    and the source file it came from (needed to detect whole-file removals)."""
-    chunks, fee_rows, link_only = [], [], []
-    seen = {}
+class _ChunkCollector:
+    """Accumulates chunks, stamping each with an id, source file and content hash.
 
-    def add_chunk(c, src_file):
-        cid = c["chunk_id"]
-        if cid in seen:                       # real collisions: HHPB 150 is two subjects
-            seen[cid] += 1
-            cid = f"{cid}#{seen[cid]}"
-            c["duplicate_code"] = True
+    Chunk ids are not unique in the sources — HHPB 150 is two different subjects —
+    so genuine collisions are suffixed rather than silently overwritten.
+    """
+
+    def __init__(self):
+        self.chunks = []
+        self._counts = {}
+
+    def add(self, chunk, source_file):
+        chunk_id = chunk["chunk_id"]
+        if chunk_id in self._counts:
+            self._counts[chunk_id] += 1
+            chunk_id = f"{chunk_id}#{self._counts[chunk_id]}"
+            chunk["duplicate_code"] = True
         else:
-            seen[cid] = 1
-        c["_id"] = cid
-        c["source_file"] = src_file
-        c["content_hash"] = content_hash({"t": c["text"], "m": c.get("meta")})
-        chunks.append(c)
+            self._counts[chunk_id] = 1
+        chunk["_id"] = chunk_id
+        chunk["source_file"] = source_file
+        chunk["content_hash"] = content_hash({"t": chunk["text"], "m": chunk.get("meta")})
+        self.chunks.append(chunk)
 
-    # ---- syllabus ----
-    for r in jlload("rag_chunks_SYLLABUS.jsonl"):
-        md = r.get("metadata", {})
-        add_chunk({"chunk_id": r["chunk_id"], "rag_class": "prose", "domain": "syllabus",
-                   "text": r["text"], "source": None,
-                   "meta": {"doc_id": r.get("doc_id"), "granularity": r.get("granularity"),
-                            "module_label": r.get("module_label"),
-                            "course_code": md.get("course_code"),
-                            "course_title": md.get("course_title"),
-                            "program": md.get("program"), "semester": md.get("semester"),
-                            "academic_year": md.get("academic_year")}},
-                  "rag_chunks_SYLLABUS.jsonl")
 
-    # ---- departments ----
-    for fn in DEPT_FILES:
-        if not os.path.exists(P(fn)):
+def _stamp_documents(docs, source_file):
+    """Give whole documents the same id, provenance and hash treatment as chunks."""
+    for doc in docs:
+        doc["_id"] = doc["doc_id"]
+        doc["source_file"] = source_file
+        doc["content_hash"] = content_hash(
+            {k: v for k, v in doc.items() if k not in ("content_hash", "ingested_at")})
+    return docs
+
+
+def _add_syllabus(collector):
+    source = "rag_chunks_SYLLABUS.jsonl"
+    for row in jlload(source):
+        md = row.get("metadata", {})
+        collector.add({
+            "chunk_id": row["chunk_id"], "rag_class": "prose", "domain": "syllabus",
+            "text": row["text"], "source": None,
+            "meta": {"doc_id": row.get("doc_id"), "granularity": row.get("granularity"),
+                     "module_label": row.get("module_label"),
+                     "course_code": md.get("course_code"),
+                     "course_title": md.get("course_title"),
+                     "program": md.get("program"), "semester": md.get("semester"),
+                     "academic_year": md.get("academic_year")}}, source)
+
+
+def _link_only_record(row, md, category, filename):
+    """Record an unpublished section as a link only, rather than a stub that
+    would read as though the content were held."""
+    dept_key = re.sub(r"[^a-z0-9]+", "_",
+                      (md.get("department") or filename).lower()).strip("_")
+    return {"_id": f"{dept_key}__{row['id']}", "chunk_id": row["id"],
+            "domain": category, "dept": md.get("department"),
+            "url": md.get("source"), "source_file": filename,
+            "message": "That section isn't published on the website yet."}
+
+
+def _add_departments(collector):
+    link_only = []
+    for filename in DEPT_FILES:
+        if not os.path.exists(P(filename)):
             continue
-        for r in jload(fn):
-            md, cat = r.get("metadata", {}), r.get("metadata", {}).get("category")
+        for row in jload(filename):
+            md = row.get("metadata", {})
+            category = md.get("category")
             if md.get("status") == "incomplete_needs_scraping":
-                dept_key = re.sub(r"[^a-z0-9]+", "_",
-                                  (md.get("department") or fn).lower()).strip("_")
-                link_only.append({"_id": f"{dept_key}__{r['id']}", "chunk_id": r["id"],
-                                  "domain": cat, "dept": md.get("department"),
-                                  "url": md.get("source"), "source_file": fn,
-                                  "message": "That section isn't published on the website yet."})
+                link_only.append(_link_only_record(row, md, category, filename))
                 continue
-            rc = CLASS_MAP.get(cat, "prose")
-            e = {"chunk_id": r["id"], "rag_class": rc, "domain": cat, "text": r["text"],
-                 "source": md.get("source"),
-                 "meta": {"name": md.get("name"), "designation": md.get("designation"),
-                          "department": md.get("department"), "staff_type": md.get("staff_type"),
-                          "role": md.get("role"), "subcategory": md.get("subcategory")}}
-            if rc == "lab":
-                e["meta"].update(parse_location(md.get("location")))
-                e["meta"]["coordinators"] = md.get("coordinators")
-                e["meta"]["capacity"]     = md.get("capacity")
-                e["meta"]["hardware"]     = md.get("hardware")
-                e["meta"]["software"]     = md.get("software") or md.get("software_note")
-            add_chunk(e, fn)
 
-    # ---- fee ----
-    fee_docs = jload("fee_structure.json")
+            rag_class = CLASS_MAP.get(category, "prose")
+            entry = {
+                "chunk_id": row["id"], "rag_class": rag_class, "domain": category,
+                "text": row["text"], "source": md.get("source"),
+                "meta": {"name": md.get("name"), "designation": md.get("designation"),
+                         "department": md.get("department"),
+                         "staff_type": md.get("staff_type"), "role": md.get("role"),
+                         "subcategory": md.get("subcategory")}}
+            if rag_class == "lab":
+                entry["meta"].update(parse_location(md.get("location")))
+                entry["meta"]["coordinators"] = md.get("coordinators")
+                entry["meta"]["capacity"] = md.get("capacity")
+                entry["meta"]["hardware"] = md.get("hardware")
+                entry["meta"]["software"] = md.get("software") or md.get("software_note")
+            collector.add(entry, filename)
+    return link_only
 
-    def emit(doc, cat, blob):
-        for k, (res, excl) in RES_KEYS.items():
-            if isinstance(blob.get(k), (int, float)):
-                fee_rows.append({
-                    "_id": f"{doc['doc_id']}::{cat}::{res}",
-                    "doc_id": doc["doc_id"], "program": doc.get("program"),
-                    "semester": doc.get("semester"),
-                    "admission_type": doc.get("admission_type"),
-                    "batch": doc.get("batch"), "income_category": cat,
-                    "category_bucket": bucket(cat), "residence": res,
-                    "amount": int(blob[k]), "excludes_tuition": excl,
-                    "tuition_note": doc.get("tuition_fee_note"),
-                    "academic_year": "2026-27", "source_url": doc.get("source_url"),
-                    "source_file": "fee_structure.json"})
 
+def _fee_rows_for(doc, category, blob):
+    """One row per residence type, so a fee lookup is an indexed query rather
+    than arithmetic over a document."""
+    rows = []
+    for key, (residence, excludes_tuition) in RES_KEYS.items():
+        if not isinstance(blob.get(key), (int, float)):
+            continue
+        rows.append({
+            "_id": f"{doc['doc_id']}::{category}::{residence}",
+            "doc_id": doc["doc_id"], "program": doc.get("program"),
+            "semester": doc.get("semester"),
+            "admission_type": doc.get("admission_type"),
+            "batch": doc.get("batch"), "income_category": category,
+            "category_bucket": bucket(category), "residence": residence,
+            "amount": int(blob[key]), "excludes_tuition": excludes_tuition,
+            "tuition_note": doc.get("tuition_fee_note"),
+            "academic_year": "2026-27", "source_url": doc.get("source_url"),
+            "source_file": "fee_structure.json"})
+    return rows
+
+
+def _add_fees(collector):
+    source = "fee_structure.json"
+    fee_docs = jload(source)
+
+    fee_rows = []
     for doc in fee_docs:
         if "categories" in doc:
-            for cn, blob in doc["categories"].items():
-                emit(doc, cn, blob)
+            for category, blob in doc["categories"].items():
+                fee_rows.extend(_fee_rows_for(doc, category, blob))
         else:
-            emit(doc, doc.get("category", "all_categories"), doc)
+            fee_rows.extend(
+                _fee_rows_for(doc, doc.get("category", "all_categories"), doc))
 
-    for r in fee_rows:
-        r["content_hash"] = content_hash({k: v for k, v in r.items()
-                                          if k not in ("content_hash", "ingested_at")})
+    for row in fee_rows:
+        row["content_hash"] = content_hash(
+            {k: v for k, v in row.items() if k not in ("content_hash", "ingested_at")})
 
+    # A prose chunk per document keeps fees reachable by hybrid search when
+    # metadata filtering cannot pin the answer down.
     for doc in fee_docs:
         rows = [r for r in fee_rows if r["doc_id"] == doc["doc_id"]]
-        add_chunk({"chunk_id": f"fee::{doc['doc_id']}", "rag_class": "prose", "domain": "fee",
-                   "text": _fee_chunk_text(doc, rows), "source": doc.get("source_url"),
-                   "meta": {"doc_id": doc["doc_id"], "program": doc.get("program"),
-                            "semester": doc.get("semester"),
-                            "admission_type": doc.get("admission_type"),
-                            "title": doc.get("title"),
-                            "quick_answer": doc.get("quick_answer"),
-                            "source_url": doc.get("source_url")}},
-                  "fee_structure.json")
+        collector.add({
+            "chunk_id": f"fee::{doc['doc_id']}", "rag_class": "prose", "domain": "fee",
+            "text": _fee_chunk_text(doc, rows), "source": doc.get("source_url"),
+            "meta": {"doc_id": doc["doc_id"], "program": doc.get("program"),
+                     "semester": doc.get("semester"),
+                     "admission_type": doc.get("admission_type"),
+                     "title": doc.get("title"),
+                     "quick_answer": doc.get("quick_answer"),
+                     "source_url": doc.get("source_url")}}, source)
 
-    admission = jload("admission_data.json")
-    for a in admission:
-        a["_id"] = a["doc_id"]
-        a["source_file"] = "admission_data.json"
-        a["content_hash"] = content_hash(
-            {k: v for k, v in a.items() if k not in ("content_hash", "ingested_at")})
-    for d in fee_docs:
-        d["_id"] = d["doc_id"]
-        d["source_file"] = "fee_structure.json"
-        d["content_hash"] = content_hash(
-            {k: v for k, v in d.items() if k not in ("content_hash", "ingested_at")})
+    return fee_rows, _stamp_documents(fee_docs, source)
 
-    return {"chunks": chunks, "fee_rows": fee_rows, "fee_docs": fee_docs,
-            "admission_docs": admission, "link_only": link_only}
+
+def build():
+    """Assemble the corpus from the source files.
+
+    Every item carries a content hash and its originating file, which is what
+    lets sync detect edits and whole-file removals.
+    """
+    collector = _ChunkCollector()
+    _add_syllabus(collector)
+    link_only = _add_departments(collector)
+    fee_rows, fee_docs = _add_fees(collector)
+    admission_docs = _stamp_documents(jload("admission_data.json"), "admission_data.json")
+
+    return {"chunks": collector.chunks, "fee_rows": fee_rows, "fee_docs": fee_docs,
+            "admission_docs": admission_docs, "link_only": link_only}
 
 
 if __name__ == "__main__":

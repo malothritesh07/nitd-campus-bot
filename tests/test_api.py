@@ -1,5 +1,5 @@
 """End-to-end check of every category through the running API."""
-import json, sys, urllib.request
+import json, urllib.request
 
 API = "http://127.0.0.1:8000/api/chat"
 
@@ -59,12 +59,14 @@ print(f"\nSCORE {passed}/{len(TESTS)}")
 print("\n--- multi-turn fee ---")
 st = {}
 for m in ["btech 3rd sem josaa", "day scholar below 1 lakh", "hostel fee"]:
-    d = call("fee", m, st); st = d.get("state", {}).get("slots") or d.get("slots") or st
+    d = call("fee", m, st)
+    st = d.get("state", {}).get("slots") or d.get("slots") or st
     print(f"  YOU {m}\n  BOT {d['answer'].splitlines()[0][:100]}   [{d['method']}]")
 
 print("\n--- multi-turn lab (pronoun) ---")
 st = {}
-d = call("lab", "AIRIL lab location", st); st = d.get("state", st)
+d = call("lab", "AIRIL lab location", st)
+st = d.get("state", st)
 print(f"  BOT {d['answer'][:90]}")
 d = call("lab", "hardware in it", st)
 print(f"  BOT {d['answer'][:110]}")

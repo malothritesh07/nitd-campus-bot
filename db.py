@@ -1,5 +1,7 @@
 """Shared DB access, config and status logic for the campus shop-status feature."""
-import os, hmac, hashlib
+import hashlib
+import hmac
+import os
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
@@ -85,10 +87,13 @@ def last_reset_boundary(ref: datetime | None = None) -> datetime:
 
 def describe_age(delta: timedelta) -> str:
     mins = int(delta.total_seconds() // 60)
-    if mins < 1:   return "just now"
-    if mins < 60:  return f"{mins} minute{'s' if mins != 1 else ''} ago"
+    if mins < 1:
+        return "just now"
+    if mins < 60:
+        return f"{mins} minute{'s' if mins != 1 else ''} ago"
     hrs = mins // 60
-    if hrs < 24:   return f"{hrs} hour{'s' if hrs != 1 else ''} ago"
+    if hrs < 24:
+        return f"{hrs} hour{'s' if hrs != 1 else ''} ago"
     days = hrs // 24
     return f"{days} day{'s' if days != 1 else ''} ago"
 

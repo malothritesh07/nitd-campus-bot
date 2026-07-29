@@ -9,7 +9,7 @@ Two rules this module enforces:
    interesting failures are "did the metadata filter match", "did the fuzzy name
    lookup pick the wrong person". LangSmith shows those as regular runs.
 """
-import os, functools
+import os
 
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
@@ -36,7 +36,7 @@ if ENABLED:
 
 _LS_CLIENT = None
 if ENABLED:
-    # This laptop sits behind TLS interception, so the default cert bundle
+    # Networks that intercept TLS reject the default certificate bundle.
     # rejects api.smith.langchain.com (same as Groq and HuggingFace). Try a
     # normally-verified client first; only fall back to an unverified session
     # if the handshake fails. On a machine without the proxy this never runs.
@@ -55,7 +55,8 @@ if ENABLED:
             try:
                 import requests, urllib3
                 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-                s = requests.Session(); s.verify = False
+                s = requests.Session()
+                s.verify = False
                 c = _Client(session=s)
                 _probe(c)
                 return c, "unverified (TLS interception)"

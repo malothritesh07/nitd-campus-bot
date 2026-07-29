@@ -74,7 +74,8 @@ for q, cat, must, mustnot in CASES:
     try:
         d = ask(q, cat)
     except Exception as e:
-        fails.append((q, f"ERROR {e}", "")); continue
+        fails.append((q, f"ERROR {e}", ""))
+        continue
     a = (d.get("answer") or "")
     al = a.lower()
     prob = []

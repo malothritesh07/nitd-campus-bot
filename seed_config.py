@@ -19,7 +19,8 @@ written, skipped = [], []
 for section, value in DEFAULTS.items():
     existing = D.db.config.find_one({"_id": section})
     if existing and not force:
-        skipped.append(section); continue
+        skipped.append(section)
+        continue
     D.db.config.replace_one(
         {"_id": section},
         {"_id": section, "value": value, "updated_at": now,

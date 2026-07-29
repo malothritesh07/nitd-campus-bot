@@ -1,9 +1,10 @@
-"""Campus shop-status API + feedback page.
+"""HTTP API for the chat widget and the campus shop-status endpoints.
 
-Run:  uvicorn app:app --reload --port 8000
-Then: http://127.0.0.1:8000/
+    uvicorn app:app --reload --port 8000
 """
-import hashlib, re
+import hashlib
+import logging
+import re
 from typing import Optional
 
 from fastapi import FastAPI, Request
@@ -13,6 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 import db as D
+
+log = logging.getLogger(__name__)
 
 app = FastAPI(title="NIT Delhi — Campus Status", version="1.0")
 
@@ -120,80 +123,97 @@ class ChatIn(BaseModel):
 def guess_category(q: str):
     """Used only when no chip is selected."""
     ql = q.lower()
-    if re.search(r"document|checklist|reporting|bring|verificat|\badmission\b", ql):      return "admission"
-    if re.search(r"\bfee|fees|cost|tuition|tution|charge|how much|kitna|ifsc|caution", ql): return "fee"
-    if re.search(r"\blabs?\b|\blaborator|room\s*(no|number)", ql):                        return "lab"
-    if re.search(r"\b(who is|hod|head of|faculty|staff|professor|designation|coordinator)\b", ql): return "faculty"
-    if re.search(r"\b(dr|prof|mr|ms|mrs)\.?\s*[a-z]", ql):                                return "faculty"
-    if re.search(r"syllabus|module|unit|subject|course|semester", ql):                    return "syllabus"
-    if re.search(r"vision|mission|goal|about", ql):                                       return "about"
+    if re.search(r"document|checklist|reporting|bring|verificat|\badmission\b", ql):
+        return "admission"
+    if re.search(r"\bfee|fees|cost|tuition|tution|charge|how much|kitna|ifsc|caution", ql):
+        return "fee"
+    if re.search(r"\blabs?\b|\blaborator|room\s*(no|number)", ql):
+        return "lab"
+    if re.search(r"\b(who is|hod|head of|faculty|staff|professor|designation|coordinator)\b", ql):
+        return "faculty"
+    if re.search(r"\b(dr|prof|mr|ms|mrs)\.?\s*[a-z]", ql):
+        return "faculty"
+    if re.search(r"syllabus|module|unit|subject|course|semester", ql):
+        return "syllabus"
+    if re.search(r"vision|mission|goal|about", ql):
+        return "about"
     return None
+
+
+LLM_CATEGORIES = ("syllabus", "about", "any")
+
+RATE_LIMITED_BODY = ("You're sending questions faster than I can answer. "
+                     "Give it a minute and try again.")
+
+
+def _rate_limited(reason: str, retry_after: int) -> JSONResponse:
+    return JSONResponse(
+        {"answer": RATE_LIMITED_BODY, "source": None,
+         "method": f"rate-limited ({reason})", "retry_after": retry_after},
+        status_code=429, headers={"Retry-After": str(retry_after)})
 
 
 @app.post("/api/chat")
 def chat(body: ChatIn, request: Request):
-    """Category-scoped answering.
+    """Answer within a category.
 
-    fee/lab/faculty/admission are pure template lookups over MongoDB — no LLM,
-    so a figure or room number can never be invented. Only syllabus calls Groq,
-    and it falls back to the raw source text when no key is configured.
+    Fees, labs, faculty and admissions are template lookups over MongoDB, so a
+    figure or room number cannot be invented. Only the syllabus and about
+    categories reach a model, and they fall back to source text without one.
     """
-    import rag_handlers as H, cache, ratelimit as RL
+    # Imported here so that starting the API does not pull in the retrieval
+    # stack, which loads the corpus and the embedding model.
+    import cache
+    import ratelimit as RL
+    import rag_handlers as H
     from config import CFG
 
-    q   = body.message.strip()
-    cat = (body.category or "").lower()
-    st  = dict(body.slots or {})          # widget carries per-category state
-    cid = RL.client_id(request)
+    question = body.message.strip()
+    category = (body.category or "").lower()
+    state = dict(body.slots or {})        # widget carries per-category state
+    client = RL.client_id(request)
+    limits_on = CFG.get("ratelimit.enabled", True)
 
-    # ---- rate limit ----------------------------------------------------
-    if CFG.get("ratelimit.enabled", True):
-        ok, why, retry = RL.check(cid, "request")
-        if not ok:
-            return JSONResponse(
-                {"answer": "You're sending questions faster than I can answer. "
-                           "Give it a minute and try again.",
-                 "source": None, "method": f"rate-limited ({why})",
-                 "retry_after": retry},
-                status_code=429, headers={"Retry-After": str(retry)})
-        RL.record(cid, "request", "/api/chat")
+    if limits_on:
+        allowed, reason, retry_after = RL.check(client, "request")
+        if not allowed:
+            return _rate_limited(reason, retry_after)
+        RL.record(client, "request", "/api/chat")
 
-    if cat not in H.HANDLERS:
-        cat = guess_category(q) or "any"
+    if category not in H.HANDLERS:
+        category = guess_category(question) or "any"
 
-    # ---- cache: only ever holds answers that cost an LLM call -----------
-    # Key on the state as it ARRIVED. Handlers mutate st (h_syllabus records the
-    # resolved course), so keying the write on the post-call state would never
-    # match the next read.
-    ckey = cache.key(q, cat, st)
-    hit = cache.get_by_key(ckey)
-    if hit:
-        hit["category"] = cat
-        hit["state"] = st
-        return hit
+    # Key on the state as it arrived: handlers mutate it (h_syllabus records the
+    # resolved course), so a key built afterwards would never match on read.
+    cache_key = cache.key(question, category, state)
+    cached = cache.get_by_key(cache_key)
+    if cached:
+        cached["category"] = category
+        cached["state"] = state
+        return cached
 
-    # A syllabus question may reach Groq, so check the tighter LLM budget
-    # before doing the work rather than after paying for it.
-    if cat in ("syllabus", "about", "any") and CFG.get("ratelimit.enabled", True):
-        ok, why, retry = RL.check(cid, "llm")
-        if not ok:
-            st["llm_budget_exhausted"] = True
+    # Check the tighter LLM budget before doing the work, not after paying for it.
+    if category in LLM_CATEGORIES and limits_on:
+        allowed, _, _ = RL.check(client, "llm")
+        if not allowed:
+            state["llm_budget_exhausted"] = True
 
     try:
-        out = H.HANDLERS[cat](q, st)
-    except Exception as e:
+        answer = H.HANDLERS[category](question, state)
+    except Exception as exc:
+        log.exception("Handler %r failed for %r", category, question[:80])
         return {"answer": "Something went wrong answering that. Please try rephrasing.",
-                "source": None, "method": f"error: {str(e)[:80]}"}
+                "source": None, "method": f"error: {str(exc)[:80]}"}
 
-    out.setdefault("source", None)
-    out.setdefault("method", cat)
-    if "+ LLM" in out["method"]:
-        RL.record(cid, "llm", "/api/chat")
-        cache.put_by_key(ckey, q, cat, out)
+    answer.setdefault("source", None)
+    answer.setdefault("method", category)
+    if "+ LLM" in answer["method"]:
+        RL.record(client, "llm", "/api/chat")
+        cache.put_by_key(cache_key, question, category, answer)
 
-    out["category"] = cat
-    out["state"] = st                      # returned so the widget can send it back
-    return out
+    answer["category"] = category
+    answer["state"] = state               # returned so the widget can send it back
+    return answer
 
 
 @app.get("/api/ops")

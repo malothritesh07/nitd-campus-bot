@@ -1,21 +1,20 @@
-"""Streamlit demo front-end for the NIT Delhi campus bot.
+"""Reviewer-facing demo UI.
 
-This is a *reviewer-facing* surface, not the production one. The widget that
-embeds on the college site is static/index.html served by FastAPI; this exists so
-someone with a link and no context can evaluate the retrieval design in a couple
-of minutes.
+Surfaces what a normal chat interface hides — the retrieval path behind each
+answer, its latency, and whether a language model was involved — so the design
+can be evaluated without reading the code.
 
-Which means it shows the things a normal chat UI hides:
-  - which retrieval path produced each answer (the badge)
-  - how long it took, and whether an LLM was involved at all
-  - the evidence the answer was rendered from
-
-Handlers are imported directly rather than called over HTTP, so this runs as a
-single process on Streamlit Community Cloud with no backend to deploy.
+The production interface is the embedded widget in static/index.html, served by
+app.py. This module imports the handlers directly rather than calling them over
+HTTP, so it runs as a single process with no separate backend.
 """
-import os, time
+import logging
+import os
+import time
 
 import streamlit as st
+
+log = logging.getLogger(__name__)
 
 st.set_page_config(page_title="NIT Delhi Campus Bot",
                    page_icon="🎓", layout="wide",
@@ -69,25 +68,24 @@ if not os.getenv("MONGO_URI"):
 # Imported at module scope rather than returned from a cached function, so a
 # hot-reload can't leave the cache holding references to superseded modules.
 import db as D            # noqa: E402
+import embeddings         # noqa: E402
 import rag_core           # noqa: E402
 import rag_handlers as H  # noqa: E402
 
 
 @st.cache_resource(show_spinner="Connecting to MongoDB and loading the corpus…")
 def boot():
-    """Runs once per container rather than per rerun. Building the BM25 index on
-    every keystroke would make the app unusable.
+    """Load the corpus and warm the embedding model, once per container.
 
-    The embedding model is warmed here too. Left lazy, the first syllabus
-    question pays a 30-90s download while a reviewer watches a spinner and
-    concludes the bot is broken. Failure is non-fatal: without the model, prose
-    retrieval falls back to BM25 and every other category is unaffected."""
+    Warming here moves the model download out of the first question. A failure
+    is non-fatal: prose retrieval falls back to BM25.
+    """
     rag_core.load()
-    if rag_core.dense_enabled():
+    if embeddings.dense_enabled():
         try:
-            rag_core.get_model().encode(["warmup"])
-        except Exception as e:
-            print(f"[boot] embedding model unavailable, BM25-only prose: {e}")
+            embeddings.encode("warmup")
+        except Exception as exc:
+            log.warning("Embedding warm-up failed, using BM25 only: %s", exc)
     return True
 
 
@@ -255,7 +253,8 @@ def ask(q: str, category: str) -> dict:
         except Exception as e:
             # Full traceback to the server log — the one-line message a user sees
             # is rarely enough to find the cause.
-            import traceback; traceback.print_exc()
+            import traceback
+            traceback.print_exc()
             out = {"answer": "Something went wrong answering that. Try rephrasing.",
                    "method": f"error: {str(e)[:90]}"}
     out["ms"] = int((time.perf_counter() - t0) * 1000)
@@ -356,7 +355,7 @@ with st.sidebar:
     st.divider()
     llm = H.llm_available()
     st.markdown(f"**LLM:** {'connected' if llm else 'not configured'}  \n"
-                f"**Dense retrieval:** {'on' if rag_core.dense_enabled() else 'off (BM25 only)'}")
+                f"**Dense retrieval:** {'on' if embeddings.dense_enabled() else 'off (BM25 only)'}")
     if not llm:
         st.caption("Every category except Syllabus is unaffected — they render "
                    "from templates and need no model.")

@@ -20,7 +20,7 @@ Archiving rather than deleting matters: retrieval filters on
 status="approved", so an archived chunk stops being cited immediately, but it is
 still recoverable and still auditable. A later --purge removes it for real.
 """
-import argparse, os, sys
+import argparse, os
 from datetime import datetime, timedelta, timezone
 
 from pymongo import UpdateOne
@@ -175,7 +175,11 @@ if __name__ == "__main__":
     ap.add_argument("--status", action="store_true")
     a = ap.parse_args()
 
-    if a.status:      status()
-    elif a.purge:     purge(a.purge)
-    elif a.restore:   restore(a.restore)
-    else:             run(dry=a.dry_run)
+    if a.status:
+        status()
+    elif a.purge:
+        purge(a.purge)
+    elif a.restore:
+        restore(a.restore)
+    else:
+        run(dry=a.dry_run)

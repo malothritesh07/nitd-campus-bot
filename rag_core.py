@@ -12,7 +12,7 @@ Design (unchanged from the notebook):
   prose   syllabus/about     -> BM25 + dense fused with RRF, LLM to phrase it
   admission                  -> whole document, never chunked
 """
-import os, re
+import re
 from collections import Counter
 
 import numpy as np
@@ -20,11 +20,13 @@ from rank_bm25 import BM25Okapi
 from rapidfuzz import process, fuzz, utils
 
 import db as D
-from tracing import trace
 from config import CFG
+from embeddings import encode
+from textutil import format_inr, tokenize
+from tracing import trace
 
-INR = lambda n: f"Rs {n:,}"
-tok = lambda s: re.findall(r"[a-z0-9]+", (s or "").lower())
+INR = format_inr
+tok = tokenize
 
 # ---------------------------------------------------------------- state
 CHUNKS: list = []
@@ -44,46 +46,6 @@ bm25 = None
 dense_vecs = None
 DENSE_IDX: list = []
 POS_IN_DENSE: dict = {}
-_model = None
-
-
-def dense_enabled() -> bool:
-    """Loading the embedding model costs ~460 MB of RSS (measured: 124 MB before,
-    583 MB after). On a 512 MB host that OOMs, so ENABLE_DENSE=0 skips it and
-    prose retrieval falls back to BM25 alone. Exact lookups — fees, labs,
-    faculty, admission, shops — are unaffected either way; they never used
-    vectors."""
-    return os.getenv("ENABLE_DENSE", "1").strip().lower() not in ("0", "false", "no")
-
-
-# Set once a model load has failed, so every later query skips the attempt
-# instead of paying the download timeout again.
-_model_failed = False
-
-
-def get_model():
-    """Returns None when dense retrieval is off OR the model cannot be loaded.
-    Callers must handle None: a failed download degrades prose retrieval to
-    BM25, which is much better than erroring out an answer that BM25 alone
-    would have answered fine."""
-    global _model, _model_failed
-    if not dense_enabled() or _model_failed:
-        return None
-    if _model is None:
-        # Only go offline when explicitly asked (EMBED_OFFLINE=1). Forcing it
-        # would stop a fresh install from ever downloading the model.
-        if os.getenv("EMBED_OFFLINE", "").strip() in ("1", "true", "True"):
-            os.environ["HF_HUB_OFFLINE"] = "1"
-            os.environ["TRANSFORMERS_OFFLINE"] = "1"
-        try:
-            from sentence_transformers import SentenceTransformer
-            _model = SentenceTransformer(os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2"))
-        except Exception as e:
-            _model_failed = True
-            print(f"[embed] model unavailable, falling back to BM25 only: "
-                  f"{type(e).__name__}: {str(e)[:120]}")
-            return None
-    return _model
 
 
 # Lexicon lives in the `config` collection, so adding a department alias or a
@@ -98,7 +60,8 @@ PRONOUN  = r"\b(it|its|that|this|there|same|above)\b"
 def detect_dept(q):
     ql = q.lower()
     for k, v in DEPT_ALIASES.items():
-        if re.search(rf"\b{k}\b", ql): return v
+        if re.search(rf"\b{k}\b", ql):
+            return v
     return None
 
 
@@ -115,11 +78,15 @@ def _lab_blob(c):
 
 
 def lab_aliases(c):
-    n = (c["meta"].get("name") or "").strip(); out = {n}
-    for inner in re.findall(r"\(([^)]+)\)", n): out.add(inner.strip())
-    base = re.sub(r"\([^)]*\)", "", n); out.add(base.strip())
+    n = (c["meta"].get("name") or "").strip()
+    out = {n}
+    for inner in re.findall(r"\(([^)]+)\)", n):
+        out.add(inner.strip())
+    base = re.sub(r"\([^)]*\)", "", n)
+    out.add(base.strip())
     words = [w for w in re.findall(r"[A-Za-z]+", base) if len(w) > 2]
-    if len(words) >= 2: out.add("".join(w[0] for w in words).upper())
+    if len(words) >= 2:
+        out.add("".join(w[0] for w in words).upper())
     return [x for x in out if x]
 
 
@@ -128,7 +95,8 @@ def load(force=False):
     global CHUNKS, FAC, FAC_NAMES, LABS, COURSES, COURSE_KEYS, ADMISSION
     global LAB_ALIAS, LAB_ALIAS_STR, LAB_DF, DF_MAX, KNOWN_CODES, SYL_PROGRAMS
     global bm25, dense_vecs, DENSE_IDX, POS_IN_DENSE
-    if CHUNKS and not force: return
+    if CHUNKS and not force:
+        return
 
     CHUNKS = list(D.db.chunks.find({"status": {"$ne": "archived"}}))
     ADMISSION = list(D.db.admission_docs.find({"status": {"$ne": "archived"}}))
@@ -145,7 +113,8 @@ def load(force=False):
     SYL_PROGRAMS = sorted({c["meta"]["program"] for c in COURSES if c["meta"].get("program")})
 
     LAB_DF = Counter()
-    for c in LABS: LAB_DF.update(set(tok(_lab_blob(c))))
+    for c in LABS:
+        LAB_DF.update(set(tok(_lab_blob(c))))
     DF_MAX = max(1, int(CFG.get("retrieval.lab_df_ratio") * max(1, len(LABS))))
     LAB_ALIAS     = [(c, a) for c in LABS for a in lab_aliases(c)]
     LAB_ALIAS_STR = [norm_roman(a) for _, a in LAB_ALIAS]
@@ -158,9 +127,8 @@ def load(force=False):
 
 
 def syllabus_coverage():
-    """Say what is actually loaded. This used to be the fixed string
-    "I have semesters 1-4", which would have started lying the moment a fifth
-    semester was ingested."""
+    """Describe the coverage actually loaded, so the statement cannot go stale
+    as semesters are added."""
     load()
     if not COURSES:
         return "No syllabus data is loaded yet."
@@ -190,14 +158,16 @@ def strip_title(s):
 
 def extract_name(q):
     m = re.search(r"\b((?:dr|prof|mr|ms|mrs)\.?\s*[A-Za-z]+(?:\s+[A-Za-z]+){0,2})", q, re.I)
-    if m: return m.group(1).strip()
+    if m:
+        return m.group(1).strip()
     return " ".join(t for t in re.findall(r"[A-Za-z.]+", q)
                     if t.lower().strip(".") not in QWORDS).strip()
 
 
 def best_name_score(q):
     load()
-    if not FAC_NAMES: return 0
+    if not FAC_NAMES:
+        return 0
     r = process.extract(q, FAC_NAMES, scorer=fuzz.WRatio,
                         processor=utils.default_process, limit=1)
     return r[0][1] if r else 0
@@ -209,7 +179,8 @@ def _name_overlap(query_name, candidate, min_ratio=None):
     min_ratio = CFG.get("retrieval.entity_name_overlap") if min_ratio is None else min_ratio
     qt = [w for w in tok(query_name) if w not in {"dr", "prof", "mr", "ms", "mrs"} and len(w) > 2]
     ct = [w for w in tok(candidate)  if w not in {"dr", "prof", "mr", "ms", "mrs"} and len(w) > 2]
-    if not qt or not ct: return False
+    if not qt or not ct:
+        return False
     return any(fuzz.ratio(a, b) >= min_ratio for a in qt for b in ct)
 
 
@@ -222,14 +193,16 @@ def retrieve_entity(query, k=None, min_score=None):
     pool = [(c, n) for c, n in zip(FAC, FAC_NAMES)]
     if dept:
         f = [(c, n) for c, n in pool if (c["meta"].get("department") or "") == dept]
-        if f: pool = f
+        if f:
+            pool = f
     if re.search(r"\bhod\b|head of (the )?dep", ql):
         hits = [c for c, _ in pool if re.search(
             r"head of department|hod",
             str(c["meta"].get("role") or "") + str(c["meta"].get("designation") or ""), re.I)]
         return [(h, 100) for h in hits[:k]]
     name = strip_title(extract_name(query))
-    if not name: return []
+    if not name:
+        return []
     # Match on the bare name. With titles left in, "dr haleem" scored 86 against
     # "Dr.Amit Mahajan" purely on the shared "Dr." and Dr. Halim never surfaced.
     raw = process.extract(name, [strip_title(n) for _, n in pool], scorer=fuzz.WRatio,
@@ -251,7 +224,8 @@ def render_entity(q):
                     "\n".join(f"{i}. {c['meta']['name']} — {c['meta'].get('designation')}"
                               for i, c in enumerate(sel, 1)))
     hits = retrieve_entity(q)
-    if not hits: return None
+    if not hits:
+        return None
 
     # Ambiguous when several people score about the same — a bare surname like
     # "dr kumar" matches eight people, and silently picking the first is how a
@@ -275,7 +249,8 @@ def _tok_overlap(query, alias, min_ratio=None):
     lab's name. Without this, 'airlib' confidently matched 'JEEVAN Lab'."""
     qt = [w for w in tok(query) if w not in STOP_LAB and w not in QWORDS and len(w) > 2]
     at = [w for w in tok(alias) if len(w) > 2]
-    if not qt or not at: return False
+    if not qt or not at:
+        return False
     return any(fuzz.ratio(a, b) >= min_ratio for a in qt for b in at)
 
 
@@ -287,14 +262,16 @@ def retrieve_lab(query, k=None):
     pool = LABS
     if dept:
         f = [c for c in pool if c["meta"].get("department") == dept]
-        if f: pool = f
+        if f:
+            pool = f
 
     m    = re.search(r"(?:lab|room)\s*(?:no\.?|number|#)\s*[-:.]?\s*(\d+)", ql)
     bare = re.search(r"\b(\d{2,3})\b", ql)
     num  = int(m.group(1)) if m else (int(bare.group(1)) if bare and int(bare.group(1)) >= 10 else None)
     if num is not None:
         hits = [c for c in pool if c["meta"].get("room_number") == num]
-        if hits: return [(h, 100) for h in hits[:k]]
+        if hits:
+            return [(h, 100) for h in hits[:k]]
 
     equip = bool(re.search(r"\bwhich lab|\bhas\b|\bwith\b|contains|equipped", ql))
     if not equip:
@@ -303,11 +280,14 @@ def retrieve_lab(query, k=None):
         seen, good = set(), []
         for alias, sc, i in raw:
             c = LAB_ALIAS[i][0]
-            if id(c) in seen or (dept and c not in pool): continue
+            if id(c) in seen or (dept and c not in pool):
+                continue
             if sc >= CFG.get("retrieval.lab_alias_strong") or (
                     sc >= CFG.get("retrieval.lab_alias_weak") and _tok_overlap(query, alias)):
-                seen.add(id(c)); good.append((c, sc))
-        if good: return good[:k]
+                seen.add(id(c))
+                good.append((c, sc))
+        if good:
+            return good[:k]
 
     content = [w for w in tok(query)
                if w not in STOP_LAB and w not in QWORDS and len(w) > 3]
@@ -318,8 +298,8 @@ def retrieve_lab(query, k=None):
     kws = [w for w in content if 0 < LAB_DF[w] <= DF_MAX]
     if kws:
         # A hit in the lab's NAME must outrank a passing mention in its blurb.
-        # "vlsi lab room" was returning UG Chemistry, whose description reads
-        # "B.Tech (I) - Civil, VLSI and ECE" — a real match, but not the lab meant.
+        # Weight name matches above description matches: a lab described as
+        # serving several branches would otherwise outrank the lab named.
         scored = []
         for c in pool:
             name = (c["meta"].get("name") or "").lower()
@@ -331,7 +311,8 @@ def retrieve_lab(query, k=None):
             scored.append((c, 60 + CFG.get("retrieval.lab_name_weight") * in_name
                               + CFG.get("retrieval.lab_blob_weight") * in_blob))
         scored.sort(key=lambda x: -x[1])
-        if scored: return scored[:k]
+        if scored:
+            return scored[:k]
     return []
 
 
@@ -347,13 +328,15 @@ def lab_suggestions(query, n=3):
     for _, sc, i in raw:
         nm = LAB_ALIAS[i][0]["meta"].get("name")
         if nm and nm not in seen and sc >= 55:
-            seen.add(nm); out.append(nm)
+            seen.add(nm)
+            out.append(nm)
     return out[:n]
 
 
 def render_lab(q):
     hits = retrieve_lab(q)
-    if not hits: return None
+    if not hits:
+        return None
     m, ql = hits[0][0]["meta"], q.lower()
     if re.search(r"capacity|seats?|how many", ql):
         return f"{m['name']} — capacity {m.get('capacity')}." if m.get("capacity") else None
@@ -382,11 +365,13 @@ def courses_by_code(code_norm):
 def match_course(q, min_score=None):
     min_score = CFG.get("retrieval.course_match_min") if min_score is None else min_score
     load()
-    if not COURSES: return None
+    if not COURSES:
+        return None
     m = re.search(r"\b([A-Za-z]{3,4})\s?(\d{3})\b", q)
     if m:
         exact = courses_by_code((m.group(1) + m.group(2)).upper())
-        if exact: return exact[0]
+        if exact:
+            return exact[0]
     r = process.extract(q, COURSE_KEYS, scorer=fuzz.WRatio,
                         processor=utils.default_process, limit=1)
     return COURSES[r[0][2]] if r and r[0][1] >= min_score else None
@@ -410,22 +395,22 @@ def retrieve_scoped(query, keep_fn, k=None, pool=None):
     """Hybrid BM25 + dense restricted to one category — nothing outside can surface."""
     load()
     allowed = [i for i, c in enumerate(CHUNKS) if keep_fn(c)]
-    if not allowed: return []
+    if not allowed:
+        return []
     aset = set(allowed)
     bs = bm25.get_scores(tok(query))
     b_rank = [int(i) for i in np.argsort(bs)[::-1] if int(i) in aset][:pool]
     drows = [(POS_IN_DENSE[i], i) for i in allowed if i in POS_IN_DENSE]
     d_rank = []
-    model = get_model()
-    if drows and model is not None:
-        qv = model.encode([query], normalize_embeddings=True)[0]
+    qv = encode(query) if drows else None
+    if qv is not None:
         sims = dense_vecs[[r for r, _ in drows]] @ qv
         d_rank = [drows[o][1] for o in np.argsort(sims)[::-1][:pool]]
-    # with dense off, RRF over a single ranker is just BM25 order — still ranked,
-    # just lexical rather than hybrid
     K, fused = CFG.get("retrieval.rrf_k"), {}
-    for r, i in enumerate(b_rank): fused[i] = fused.get(i, 0) + 1 / (K + r + 1)
-    for r, i in enumerate(d_rank): fused[i] = fused.get(i, 0) + 1 / (K + r + 1)
+    for r, i in enumerate(b_rank):
+        fused[i] = fused.get(i, 0) + 1 / (K + r + 1)
+    for r, i in enumerate(d_rank):
+        fused[i] = fused.get(i, 0) + 1 / (K + r + 1)
     return [(CHUNKS[i], s) for i, s in sorted(fused.items(), key=lambda x: -x[1])[:k]]
 
 
@@ -445,12 +430,17 @@ def detect_syl_program(q):
 def render_admission(q):
     load()
     ql = q.lower()
-    if   re.search(r"\bdasa\b", ql):                    want = "admission-docs-btech-dasa"
-    elif re.search(r"\bmca\b|nimcet", ql):              want = "admission-docs-mca-nimcet"
-    elif re.search(r"\bjosaa\b|\bcsab\b|b\.?tech", ql): want = "admission-docs-btech-josaa-regular-status"
-    else:                                               want = "admission-overview"
+    if   re.search(r"\bdasa\b", ql):
+        want = "admission-docs-btech-dasa"
+    elif re.search(r"\bmca\b|nimcet", ql):
+        want = "admission-docs-mca-nimcet"
+    elif re.search(r"\bjosaa\b|\bcsab\b|b\.?tech", ql):
+        want = "admission-docs-btech-josaa-regular-status"
+    else:
+        want = "admission-overview"
     doc = next((d for d in ADMISSION if d["doc_id"] == want), ADMISSION[0] if ADMISSION else None)
-    if not doc: return "Admission data isn't loaded."
+    if not doc:
+        return "Admission data isn't loaded."
     if doc.get("status") == "unavailable":
         return (f"{doc['quick_answer']}\n\nOfficial page: "
                 "https://nitdelhi.ac.in/academics/services/admissions")

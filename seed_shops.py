@@ -5,8 +5,7 @@ Re-runs are safe: shops are upserted, codes are only issued to staff who have no
 Codes are printed ONCE and never stored in plaintext.
 """
 import secrets, string
-from db import (db, shops, status, staff, audit, attempts,
-                ensure_indexes, code_lookup, code_hash, now_utc)
+from db import (db, shops, staff, ensure_indexes, code_lookup, code_hash, now_utc)
 
 ALPHABET = string.ascii_uppercase + string.digits
 AMBIGUOUS = set("O0I1")          # avoid characters people misread when typing

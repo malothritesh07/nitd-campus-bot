@@ -13,8 +13,10 @@ Three things keep a cached answer from going stale:
 3. **Scope.** Volatile categories (shop status) and anything carrying a
    timestamp are never cached at all.
 """
-import hashlib, json, re
-from datetime import datetime, timedelta, timezone
+import hashlib
+import json
+import re
+from datetime import datetime, timezone
 
 import db as D
 import store

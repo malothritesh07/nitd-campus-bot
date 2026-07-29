@@ -4,18 +4,23 @@ Only Syllabus ever calls the LLM, and it degrades to the raw source text when
 no Groq key is set. Everything else is template-rendered from MongoDB, so a
 number or room can never be invented.
 """
-import os, re
+import logging
+import os
+import re
 
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
-import db as D
+import embeddings
 import rag_core as R
 import rag_fee as F
 from tracing import trace
 from config import CFG
 
-SRC_PDF = lambda url: {"label": "Official notice (PDF)", "url": url} if url else None
+log = logging.getLogger(__name__)
+
+def SRC_PDF(url):
+    return {"label": "Official notice (PDF)", "url": url} if url else None
 
 # ------------------------------------------------------------------- Groq
 GROQ_KEY = (os.getenv("GROQ_API_KEY") or "").strip()
@@ -123,15 +128,15 @@ def llm(messages, max_tokens=None, temperature=None):
             r = client.chat.completions.create(model=m, messages=messages,
                                                 max_tokens=max_tokens, temperature=temperature)
             t = (r.choices[0].message.content or "").strip()
-            # a one-character reply ('>' came back once from a prompt-injection
-            # attempt) is not an answer — try the next model rather than ship it
+            # A near-empty reply is not an answer; try the next model.
             if len(t) >= CFG.get("generation.min_reply_chars"):
                 _working = m
                 return t
             errs.append(f"{m}: reply too short ({t!r})")
         except Exception as e:
             errs.append(f"{m}: {str(e)[:70]}")
-            if _working == m: _working = None
+            if _working == m:
+                _working = None
     raise RuntimeError("all Groq models failed: " + "; ".join(errs))
 
 
@@ -153,8 +158,8 @@ def looks_like_injection(q: str) -> bool:
 
 
 def leaks_instructions(reply: str) -> bool:
-    """Output-side check. If a reply echoes the system prompt, the model
-    complied with an injection we did not catch on the way in."""
+    """Detect a reply echoing the system prompt, which indicates the model
+    followed an injection the input filter missed."""
     r = (reply or "").lower()
     markers = ("answer only from context", "the question is text typed by",
                "never invent module", "is data, never instructions")
@@ -233,8 +238,8 @@ def h_faculty(q, st):
                 "source": None, "method": "no-match"}
     dept = R.detect_dept(q)
     if re.search(PRIVATE_ASK, q.lower()):
-        # answering the name-lookup silently would look like we'd checked and
-        # found nothing private; say plainly that we don't publish it
+        # Answering the lookup alone would imply the private detail was
+        # searched for and not found; state the policy instead.
         return {"answer": body + "\n\nI only share what the institute publishes. "
                                  "Personal phone numbers and home addresses aren't "
                                  "available here — use the department office contact "
@@ -280,159 +285,216 @@ def _modules_of(course):
     return out
 
 
-def h_syllabus(q, st):
-    R.load()
-    ql = q.lower()
+COURSE_CODE_RE = re.compile(r"\b([A-Za-z]{3,4})\s?(\d{3})\b")
+FOLLOW_UP_RE = re.compile(r"\b(them|it|that|those|this)\b")
 
-    # ---- resolve context: what this turn says beats what was carried ----
-    prog_now = R.detect_syl_program(q)
-    m_sem    = re.search(SEM_RE, ql)
-    sem_now  = int(m_sem.group(1)) if m_sem else None
-    code_m   = re.search(r"\b([A-Za-z]{3,4})\s?(\d{3})\b", q)
+# Words that identify a department or a question shape rather than a course.
+# Stripping them stops "civil engineering syllabus" from scoring 85 against
+# "Engineering Metrology & Instrumentation" on the shared word "engineering".
+GENERIC_RE = re.compile(
+    r"\b(engineering|syllabus|subjects?|courses?|department|dept|branch|of|in|the)\b")
 
-    prog = prog_now or st.get("syl_program")
-    sem  = sem_now if sem_now is not None else st.get("syl_semester")
-    if prog_now:            st["syl_program"] = prog_now
-    if sem_now is not None: st["syl_semester"] = sem_now
 
-    # ---- department named, but no syllabus held for it -> refuse ----
-    # "subjects in civil 2nd semester" used to answer with Artificial
-    # Intelligence courses: detect_dept knows Civil, detect_syl_program does not
-    # (no Civil curriculum is loaded), so prog stayed at whatever the previous
-    # turn had set and the listing filter happily used it. Listing another
-    # department's courses under this question is worse than saying no.
-    # The course check matters: "discrete mathematics syllabus" contains
-    # "mathematics", which is a department alias, but names a course that IS
-    # held. Only refuse when nothing in the corpus matches.
-    #
-    # Match on the query stripped of words that carry no course identity.
-    # "civil engineering syllabus" otherwise scores 85 against "Engineering
-    # Metrology & Instrumentation" on the shared word "engineering" alone —
-    # the same way "dr haleem" once matched "Dr.Amit Mahajan" on a shared title.
-    dept_now = R.detect_dept(q)
-    residual = re.sub(r"\b(engineering|syllabus|subjects?|courses?|department|dept|branch|of|in|the)\b",
-                      " ", ql)
-    residual = re.sub(r"\b(" + "|".join(map(re.escape, R.DEPT_ALIASES)) + r")\b", " ", residual).strip()
-    if dept_now and prog_now is None and R.match_course(residual) is None:
-        st.pop("syl_program", None)   # a stale programme must not answer for it
-        st.pop("syl_course", None)
-        return {"answer": f"I don't have syllabus data for {dept_now}. "
-                          f"{R.syllabus_coverage()}",
-                "source": None, "method": "guard"}
+def _syllabus_context(q, ql, st):
+    """Resolve programme and semester. The current turn overrides carried state."""
+    program_now = R.detect_syl_program(q)
+    match = re.search(SEM_RE, ql)
+    semester_now = int(match.group(1)) if match else None
 
-    # ---- unknown course code: refuse instead of inventing modules ----
-    if code_m:
-        cc = (code_m.group(1) + code_m.group(2)).upper()
-        if cc not in R.KNOWN_CODES:
-            return {"answer": f"{code_m.group(1).upper()} {code_m.group(2)} is not in my syllabus "
-                              f"data. {R.syllabus_coverage()}",
-                    "source": None, "method": "guard"}
+    if program_now:
+        st["syl_program"] = program_now
+    if semester_now is not None:
+        st["syl_semester"] = semester_now
 
-    # ---- which course is in play? ----
+    program = program_now or st.get("syl_program")
+    semester = semester_now if semester_now is not None else st.get("syl_semester")
+    return program, semester, program_now, semester_now
+
+
+def _refuse(answer):
+    return {"answer": answer, "source": None, "method": "guard"}
+
+
+def _unknown_department(q, ql, program_now, st):
+    """Refuse a department we hold no curriculum for.
+
+    Without this the programme slot keeps whatever an earlier turn set, and the
+    listing filter answers with another department's courses. The course check
+    keeps "discrete mathematics syllabus" working, since "mathematics" is also
+    a department alias.
+    """
+    department = R.detect_dept(q)
+    if not department or program_now is not None:
+        return None
+
+    residual = GENERIC_RE.sub(" ", ql)
+    aliases = "|".join(map(re.escape, R.DEPT_ALIASES))
+    residual = re.sub(rf"\b({aliases})\b", " ", residual).strip()
+    if R.match_course(residual) is not None:
+        return None
+
+    st.pop("syl_program", None)
+    st.pop("syl_course", None)
+    return _refuse(f"I don't have syllabus data for {department}. "
+                   f"{R.syllabus_coverage()}")
+
+
+def _unknown_course_code(code_match):
+    """Refuse an unrecognised code rather than letting the model invent modules."""
+    if not code_match:
+        return None
+    prefix, number = code_match.groups()
+    if (prefix + number).upper() in R.KNOWN_CODES:
+        return None
+    return _refuse(f"{prefix.upper()} {number} is not in my syllabus data. "
+                   f"{R.syllabus_coverage()}")
+
+
+def _resolve_course(q, ql, st, code_match):
+    """Match a course, falling back to the last one discussed for follow-ups
+    such as "list them"."""
     course = R.match_course(q)
-    if course is None and not code_m and st.get("syl_course"):
-        # "list them" / "module names?" should stay on the last course discussed
-        if len(q.split()) <= 4 or re.search(r"\b(them|it|that|those|this)\b", ql):
+    if course is None and not code_match and st.get("syl_course"):
+        if len(q.split()) <= 4 or FOLLOW_UP_RE.search(ql):
             course = next((c for c in R.COURSES
                            if c["meta"].get("doc_id") == st["syl_course"]), None)
     if course is not None:
         st["syl_course"] = course["meta"].get("doc_id")
+    return course
 
-    # ---- named course + "units/modules" -> deterministic list, no LLM ----
-    if course is not None and re.search(LIST_UNITS, ql):
-        mods = _modules_of(course)
-        m = course["meta"]
-        if mods:
-            head = f"{m.get('course_code')} — {m.get('course_title')} ({len(mods)} modules):"
-            lines = [f"{i}. {x}" for i, x in enumerate(mods, 1)]
-            return {"answer": head + "\n" + "\n".join(lines),
-                    "source": {"label": f"{m.get('course_title')} — curriculum", "url": None},
-                    "method": "structured-listing"}
 
-    # A bare "in cse?" after a semester listing means "same question, other
-    # programme" — carry the intent, not just the slots.
-    repeat_listing = (st.get("syl_intent") == "list_courses"
-                      and (prog_now or sem_now is not None)
-                      and len(q.split()) <= 4)
+def _module_listing(course):
+    """Deterministic module list — no model, so unit names cannot be invented."""
+    modules = _modules_of(course)
+    if not modules:
+        return None
+    meta = course["meta"]
+    head = (f"{meta.get('course_code')} — {meta.get('course_title')} "
+            f"({len(modules)} modules):")
+    lines = [f"{i}. {m}" for i, m in enumerate(modules, 1)]
+    return {"answer": head + "\n" + "\n".join(lines),
+            "source": {"label": f"{meta.get('course_title')} — curriculum", "url": None},
+            "method": "structured-listing"}
 
-    # ---- "subjects / units in Nth semester [of PROG]" -> course listing ----
-    if sem is not None and course is None and (repeat_listing
-                                               or re.search(LIST_COURSE + "|" + LIST_UNITS, ql)):
-        sel = [c for c in R.COURSES if c["meta"].get("semester") == sem
-               and (not prog or c["meta"].get("program") == prog)]
-        if sel:
-            head = f"Semester {sem}" + (f" — {prog}" if prog else "") + f" ({len(sel)} courses):"
-            lines = [f"{i}. {c['meta']['course_code']} — {c['meta']['course_title']}"
-                     for i, c in enumerate(sorted(sel, key=lambda x: x["meta"]["course_code"] or ""), 1)]
-            tail = "\n\nAsk about any one of these for its module list."
-            st["syl_intent"] = "list_courses"
-            return {"answer": head + "\n" + "\n".join(lines) + tail,
-                    "source": {"label": "Curriculum", "url": None},
-                    "method": "structured-listing"}
-        have = sorted({c["meta"]["semester"] for c in R.COURSES
-                       if (not prog or c["meta"].get("program") == prog)
-                       and c["meta"].get("semester")})
-        msg = f"No courses stored for semester {sem}" + (f" of {prog}" if prog else "")
-        if have:
-            msg += f". Available semesters: {', '.join(map(str, have))}."
-        return {"answer": msg, "source": None, "method": "guard"}
 
-    # ---- a specific course, open question -> that course only ----
-    if course is not None:
-        ctx = "\n".join(x["text"] for x in _course_chunks(course["meta"]["doc_id"]))[:CFG.get("generation.context_chars")]
-        m = course["meta"]
-        label = f"{m.get('course_title')} — curriculum"
-        # budget exhausted is treated exactly like no key: answer from source
-        if not llm_available() or st.get("llm_budget_exhausted"):
-            why = "LLM budget reached" if st.get("llm_budget_exhausted") else "no LLM key"
-            return {"answer": ctx[:CFG.get("generation.raw_fallback_chars")], "source": {"label": label, "url": None},
-                    "method": f"exact-course · {why}"}
-        try:
-            body = llm([{"role": "system", "content":
-                         CFG.get("prompts.syllabus_course") + CFG.get("prompts.guard_clause")},
-                        {"role": "user", "content": f"CONTEXT:\n{ctx}\n\nQUESTION: {q}"}],
-                       max_tokens=CFG.get('generation.max_tokens'))
-            return {"answer": body, "source": {"label": label, "url": None},
-                    "method": "exact-course + LLM"}
-        except Exception:
-            return {"answer": ctx[:CFG.get("generation.raw_fallback_chars")], "source": {"label": label, "url": None},
-                    "method": "exact-course · LLM unavailable"}
+def _semester_listing(program, semester, st):
+    selected = [c for c in R.COURSES
+                if c["meta"].get("semester") == semester
+                and (not program or c["meta"].get("program") == program)]
 
-    # ---- fallback: hybrid, SCOPED to the programme/semester in play ----
-    # Unscoped, "units in AI 4th semester" was answered with CSBB 252 — a CSE course.
-    def keep(x):
-        if x["domain"] != "syllabus":
-            return False
-        if prog and x["meta"].get("program") != prog:
-            return False
-        if sem is not None and x["meta"].get("semester") != sem:
-            return False
-        return True
+    if not selected:
+        available = sorted({c["meta"]["semester"] for c in R.COURSES
+                            if (not program or c["meta"].get("program") == program)
+                            and c["meta"].get("semester")})
+        message = f"No courses stored for semester {semester}"
+        if program:
+            message += f" of {program}"
+        if available:
+            message += f". Available semesters: {', '.join(map(str, available))}."
+        return _refuse(message)
+
+    head = f"Semester {semester}"
+    if program:
+        head += f" — {program}"
+    head += f" ({len(selected)} courses):"
+    lines = [f"{i}. {c['meta']['course_code']} — {c['meta']['course_title']}"
+             for i, c in enumerate(
+                 sorted(selected, key=lambda x: x["meta"]["course_code"] or ""), 1)]
+    st["syl_intent"] = "list_courses"
+    return {"answer": head + "\n" + "\n".join(lines)
+                      + "\n\nAsk about any one of these for its module list.",
+            "source": {"label": "Curriculum", "url": None},
+            "method": "structured-listing"}
+
+
+def _answer_from_context(context, label, method, question, prompt_key, st):
+    """Phrase the retrieved context with the model, falling back to the raw
+    source text whenever the model is unavailable, out of budget, or errors.
+
+    The badge always names which of those happened.
+    """
+    context = context[:CFG.get("generation.context_chars")]
+    source = {"label": label, "url": None}
+    raw = context[:CFG.get("generation.raw_fallback_chars")]
+
+    if not llm_available() or st.get("llm_budget_exhausted"):
+        reason = "LLM budget reached" if st.get("llm_budget_exhausted") else "no LLM key"
+        return {"answer": raw, "source": source, "method": f"{method} · {reason}"}
+
+    system = CFG.get(prompt_key) + CFG.get("prompts.guard_clause")
+    try:
+        body = llm([{"role": "system", "content": system},
+                    {"role": "user",
+                     "content": f"CONTEXT:\n{context}\n\nQUESTION: {question}"}],
+                   max_tokens=CFG.get("generation.max_tokens"))
+    except Exception as exc:
+        log.warning("LLM unavailable, answering from source text: %s", exc)
+        return {"answer": raw, "source": source,
+                "method": f"{method} · LLM unavailable"}
+    return {"answer": body, "source": source, "method": f"{method} + LLM"}
+
+
+def _scoped_hybrid(q, program, semester, st):
+    """Hybrid retrieval restricted to the programme and semester in play.
+
+    Unscoped, "units in AI 4th semester" returned a CSE course.
+    """
+    def keep(chunk):
+        meta = chunk["meta"]
+        return (chunk["domain"] == "syllabus"
+                and (not program or meta.get("program") == program)
+                and (semester is None or meta.get("semester") == semester))
 
     hits = R.retrieve_scoped(q, keep, k=3)
     if not hits:
-        where = (" for " + prog) if prog else ""
-        if sem is not None:
-            where += f", semester {sem}"
+        where = f" for {program}" if program else ""
+        if semester is not None:
+            where += f", semester {semester}"
         return {"answer": f"I don't have that{where}. {R.syllabus_coverage()}",
                 "source": None, "method": "no-match"}
 
-    ctx = "\n---\n".join(R.expand_parent(h)["text"] for h, _ in hits[:2])[:CFG.get("generation.context_chars")]
-    scope = (prog if prog else "Curriculum") + (f" · semester {sem}" if sem is not None else "")
-    if not llm_available() or st.get("llm_budget_exhausted"):
-        why = "LLM budget reached" if st.get("llm_budget_exhausted") else "no LLM key"
-        return {"answer": ctx[:CFG.get("generation.raw_fallback_chars")], "source": {"label": scope, "url": None},
-                "method": f"hybrid(scoped) · {why}"}
-    try:
-        body = llm([{"role": "system", "content":
-                     CFG.get("prompts.syllabus_scoped") + CFG.get("prompts.guard_clause")},
-                    {"role": "user", "content": f"CONTEXT:\n{ctx}\n\nQUESTION: {q}"}],
-                   max_tokens=CFG.get('generation.max_tokens'))
-        return {"answer": body, "source": {"label": scope, "url": None},
-                "method": "hybrid(scoped) + LLM"}
-    except Exception:
-        return {"answer": ctx[:CFG.get("generation.raw_fallback_chars")], "source": {"label": scope, "url": None},
-                "method": "hybrid(scoped) · LLM unavailable"}
+    context = "\n---\n".join(R.expand_parent(h)["text"] for h, _ in hits[:2])
+    scope = program or "Curriculum"
+    if semester is not None:
+        scope += f" · semester {semester}"
+    return _answer_from_context(context, scope, "hybrid(scoped)", q,
+                                "prompts.syllabus_scoped", st)
+
+
+def h_syllabus(q, st):
+    R.load()
+    ql = q.lower()
+    program, semester, program_now, semester_now = _syllabus_context(q, ql, st)
+    code_match = COURSE_CODE_RE.search(q)
+
+    for guard in (_unknown_department(q, ql, program_now, st),
+                  _unknown_course_code(code_match)):
+        if guard:
+            return guard
+
+    course = _resolve_course(q, ql, st, code_match)
+
+    if course is not None and re.search(LIST_UNITS, ql):
+        listing = _module_listing(course)
+        if listing:
+            return listing
+
+    # A bare "in cse?" after a listing means the same question for another
+    # programme, so the intent carries as well as the slots.
+    repeat_listing = (st.get("syl_intent") == "list_courses"
+                      and (program_now or semester_now is not None)
+                      and len(q.split()) <= 4)
+    if semester is not None and course is None and (
+            repeat_listing or re.search(f"{LIST_COURSE}|{LIST_UNITS}", ql)):
+        return _semester_listing(program, semester, st)
+
+    if course is not None:
+        context = "\n".join(x["text"] for x in _course_chunks(course["meta"]["doc_id"]))
+        label = f"{course['meta'].get('course_title')} — curriculum"
+        return _answer_from_context(context, label, "exact-course", q,
+                                    "prompts.syllabus_course", st)
+
+    return _scoped_hybrid(q, program, semester, st)
 
 
 def h_about(q, st):
@@ -458,7 +520,7 @@ def h_about(q, st):
     body = "\n\n".join(h["text"] for h, _ in hits)[:1200]
     # Name the path that actually ran — the badge is the point of this project,
     # and claiming a vector stage that never executed undermines it.
-    method = "hybrid(bm25+vector)" if R.get_model() is not None else "bm25 (no vectors)"
+    method = "hybrid(bm25+vector)" if embeddings.get_model() is not None else "bm25 (no vectors)"
     if dept:
         method += " · dept-scoped"
     return {"answer": body,

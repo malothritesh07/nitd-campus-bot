@@ -12,17 +12,15 @@ embedded as a widget on the college website.
 
 ## Live Link
 
-> **Try it:** _(Streamlit link goes here once deployed)_
+> **Demo:** _(Streamlit URL pending deployment)_
 >
-> The demo is a **reviewer-facing** surface — it shows the retrieval path, the
-> latency and whether an LLM was involved on **every** answer, because how it
-> answers is the point. Eight sample questions are one click away, including two
-> the bot refuses.
+> The Streamlit app is a reviewer-facing surface: it reports the retrieval path,
+> latency and model involvement for every answer, and offers eight sample
+> questions including two the system declines.
 >
-> The production UI is a different thing: a corner widget
-> (`static/index.html`) served by FastAPI, meant to embed on the college site.
-> `docker compose up` runs that stack locally with the sample corpus included.
-> The screenshots below are captured from the running application, not mockups.
+> The production interface is the embedded widget (`static/index.html`) served by
+> FastAPI. `docker compose up` runs that stack locally with the sample corpus
+> included. Screenshots below are captured from the running application.
 
 ---
 
@@ -36,29 +34,28 @@ embedded as a widget on the college website.
 |---|---|
 | <img src="docs/images/02-labs.png" width="330"> | <img src="docs/images/03-faculty.png" width="330"> |
 
-| Shop owner toggle, code-gated | **Refusing to answer** — the important one |
+| Shop owner toggle, code-gated | Declining to answer |
 |---|---|
 | <img src="docs/images/05-owner-code.png" width="330"> | <img src="docs/images/06-refusal.png" width="330"> |
 
-The badge under every answer (`METADATA-FILTER`, `EXACT-LOOKUP`, `FUZZY-LEXICAL`,
-`GUARD`, `HYBRID(BM25+VECTOR) + LLM`) shows which retrieval path produced it —
-useful for debugging, and useful for trusting the answer.
+Each answer carries a badge naming the retrieval path that produced it
+(`METADATA-FILTER`, `EXACT-LOOKUP`, `FUZZY-LEXICAL`, `GUARD`,
+`HYBRID(BM25+VECTOR) + LLM`), which serves both debugging and auditability.
 
 ---
 
 ## Project Overview
 
-NIT Delhi students repeatedly ask the same questions — what's the fee for my
-semester, where is that lab, who is the HOD, what documents do I bring to
-reporting, is the canteen still open. The answers exist, scattered across PDFs,
-department pages and notices nobody reads.
+Students ask the same questions repeatedly: the fee for a given semester, where
+a lab is, who the head of department is, which documents to bring to reporting,
+whether the canteen is open. The answers exist, but are spread across PDFs,
+department pages and notices.
 
-This is a chatbot for those questions. The design constraint that shaped
-everything: **a wrong fee figure or a wrong room number is worse than no answer
-at all.** A student who quotes a made-up fee to their parents, or walks to the
-wrong building, stops trusting the bot permanently.
+One constraint shaped the design: **a wrong fee figure or room number is worse
+than no answer.** A student who repeats an invented fee, or walks to the wrong
+building, stops trusting the system permanently.
 
-So most answers never reach a language model.
+Most answers therefore never reach a language model.
 
 ### The measurement that drove the architecture
 
@@ -90,9 +87,10 @@ The same logic applies to room numbers and rupee amounts. Their meaning is
 | Volatile | 5 campus outlets | direct read + freshness stamp, never cached | ✗ | ✗ |
 | Semantic prose | 52 courses, dept pages | BM25 + dense, fused with RRF | ✓ | ✓ |
 
-Roughly **80% of queries are answered with zero LLM calls**, from templates fed
-by MongoDB. Running out of API quota degrades one category to raw source text
-and leaves the rest untouched.
+Only the syllabus and about categories can reach a language model. Fees, labs,
+faculty, admissions and shop status are rendered from templates fed by MongoDB
+and never do, so exhausting an API quota degrades those two categories to raw
+source text and leaves the rest untouched.
 
 ---
 
@@ -122,7 +120,7 @@ and leaves the rest untouched.
 
 **Production hardening**
 - **Answer cache** — only responses that cost a Groq call are cached. Measured 43x speedup on a repeat question (14.8s -> 0.34s). The key includes the corpus sync id, so any `sync.py` run invalidates every entry automatically
-- **Two rate-limit budgets** — requests (generous, 94% are one indexed read) and LLM calls (tight, those cost money). Exhausting the LLM budget degrades that answer to source text rather than erroring
+- **Two rate-limit budgets** — requests are generous, since most are a single indexed read; model calls are tight, since those cost money and take seconds. Exhausting the model budget degrades that answer to source text rather than returning an error
 - **Redis optional** — set `REDIS_URL` for atomic counters and sub-ms reads; without it both cache and limiter use MongoDB TTL collections, so a clone needs no extra service
 - `GET /api/ops` exposes cache hit counts and current usage against limits
 
@@ -453,6 +451,36 @@ python sync.py --purge 30      # hard-delete archives older than 30 days
 
 ---
 
+## Configuration
+
+Runtime settings come from two places. Secrets and host-specific switches are
+environment variables; everything tunable — thresholds, prompts, lexicons, UI
+labels — lives in the `config` collection in MongoDB and can be changed without
+a redeploy (see `config.py` for the seed values).
+
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `MONGO_URI` | yes | — | Atlas connection string. Percent-encode any of `@ : / ? # [ ] %` in the password |
+| `DB_NAME` | no | `nitd_campus` | Database name |
+| `SERVER_PEPPER` | yes | — | Derives the lookup key for shop-owner codes. Set once; changing it invalidates every issued code |
+| `GROQ_API_KEY` | no | — | Only the syllabus and about categories use it. Without it those answer from source text; every other category is unaffected |
+| `EMBED_MODEL` | no | `all-MiniLM-L6-v2` | Sentence-transformer used for query and corpus embeddings |
+| `ENABLE_DENSE` | no | `1` | Set `0` to skip loading the embedding model. Saves roughly 460 MB of RSS; prose retrieval falls back to BM25 |
+| `EMBED_OFFLINE` | no | — | Set `1` only when the model is already cached and the host is offline |
+| `DATA_DIR` | no | `./data` | Source files for `sync.py`. Use forward slashes on Windows |
+| `REDIS_URL` | no | — | Backs the cache and rate-limit counters. Without it both use MongoDB TTL collections |
+| `ALLOWED_ORIGINS` | no | `*` | Comma-separated CORS allowlist. Restrict once the widget is embedded |
+| `AUTO_CLOSE_HOUR` | no | `23` | Hour (IST) after which shop status resets to closed |
+| `STALE_HOURS` | no | `6` | Age beyond which a shop status is reported as unconfirmed |
+| `LANGSMITH_TRACING` | no | `false` | Enables tracing; `LANGSMITH_API_KEY` is required when true |
+| `CONFIG_RELOAD_SECONDS` | no | `60` | How long the `config` collection is cached in process |
+
+Copy `.env.example` to `.env` for local use. On Streamlit Cloud the same keys go
+in *Settings → Secrets* in TOML form; `streamlit_app.py` bridges them into the
+environment before anything else loads.
+
+---
+
 ## Future Improvements
 
 Ordered by value, not by ease.
@@ -467,8 +495,8 @@ Ordered by value, not by ease.
 
 ---
 
-## What I'd Highlight
+## Design Notes
 
-- **Measured before designing.** The 0.975 similarity finding is why faculty lookup bypasses vector search. That number came from testing the data, not from a blog post.
-- **Adversarial testing found real bugs.** `"vlsi lab room"` returned *UG Chemistry* because that lab's description mentions VLSI in passing; `"units in AI 4th semester"` returned a CSE course; a `--dry-run` caught 70 records about to be needlessly archived. All fixed, all documented in commit history.
-- **Refusals are a feature.** Six of the thirty adversarial tests check that the bot *declines* — no invented semesters, no arithmetic, no guessing between two professors named Kumar.
+- **Retrieval strategy follows measurement.** The 0.975 similarity between distinct faculty records is why entity lookup bypasses vector search entirely; the figure came from profiling the corpus.
+- **Adversarial testing surfaced real defects.** `"vlsi lab room"` matched *UG Chemistry*, whose description mentions VLSI in passing; `"units in AI 4th semester"` returned a course from another programme; a `--dry-run` caught 70 records about to be archived unnecessarily. Each is fixed and recorded in the commit history.
+- **Refusal is a designed behaviour, not a fallback.** Dedicated tests assert that the system declines rather than guessing: no unpublished semesters, no arithmetic over fees, no arbitrary choice between two similarly named staff.

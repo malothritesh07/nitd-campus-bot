@@ -6,43 +6,21 @@ rendered by template, so a fee figure can never be invented or miscalculated.
 Everything is read from Atlas at query time; only the query embedding is
 computed on this machine.
 """
-import os, re
+import re
+
 import numpy as np
 from rank_bm25 import BM25Okapi
-from rapidfuzz import fuzz
 
-import db as D   # reuses the shared Mongo connection
-from tracing import trace
+import db as D
 from config import CFG
+from embeddings import encode
+from textutil import format_inr, tokenize
+from tracing import trace
 
-_model = None
 _cache = {"chunks": [], "bm25": None, "vecs": None}
 
-INR = lambda n: f"Rs {n:,}"
-
-
-def _tok(s): return re.findall(r"[a-z0-9]+", (s or "").lower())
-
-
-def get_model():
-    """Loaded lazily so the API starts fast; embedding runs locally.
-    Returns None when ENABLE_DENSE=0 (see rag_core.dense_enabled)."""
-    global _model
-    if os.getenv("ENABLE_DENSE", "1").strip().lower() in ("0", "false", "no"):
-        return None
-    if _model is None:
-        # Only go offline when explicitly asked (EMBED_OFFLINE=1). Forcing it
-        # would stop a fresh install from ever downloading the model.
-        if os.getenv("EMBED_OFFLINE", "").strip() in ("1", "true", "True"):
-            os.environ["HF_HUB_OFFLINE"] = "1"
-            os.environ["TRANSFORMERS_OFFLINE"] = "1"
-        try:
-            from sentence_transformers import SentenceTransformer
-            _model = SentenceTransformer(os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2"))
-        except Exception as e:
-            print(f"[embed] fee model unavailable, BM25 only: {str(e)[:100]}")
-            return None
-    return _model
+INR = format_inr
+_tok = tokenize
 
 
 def load_cache(force=False):
@@ -73,16 +51,25 @@ def extract_slots(q: str) -> dict:
     s = {"program": None, "semester": None, "admission_type": None,
          "residence": None, "category_bucket": None}
     for p, v in PROGRAM_PAT:
-        if re.search(p, ql): s["program"] = v; break
+        if re.search(p, ql):
+            s["program"] = v
+            break
     for p, v in ADM_PAT:
-        if re.search(p, ql): s["admission_type"] = v; break
+        if re.search(p, ql):
+            s["admission_type"] = v
+            break
 
     # income first, so its digits can't be mistaken for a semester
-    if   re.search(r"below 1|less than 1|under 1|<\s*1", ql):       s["category_bucket"] = "below_1_lakh"
-    elif re.search(r"1.{0,6}5\s*lakh|between\s*1", ql):             s["category_bucket"] = "1_to_5_lakh"
-    elif re.search(r"above 5|more than 5|over 5|>\s*5", ql):        s["category_bucket"] = "above_5_lakh"
-    elif re.search(r"\bsc\b|\bst\b|\bpwd\b|\bph\b|reserved", ql):   s["category_bucket"] = "sc_st_pwd"
-    elif re.search(r"\bgen\b|general|\bobc\b|\bews\b|\bur\b", ql):  s["category_bucket"] = "gen_obc_ews"
+    if   re.search(r"below 1|less than 1|under 1|<\s*1", ql):
+        s["category_bucket"] = "below_1_lakh"
+    elif re.search(r"1.{0,6}5\s*lakh|between\s*1", ql):
+        s["category_bucket"] = "1_to_5_lakh"
+    elif re.search(r"above 5|more than 5|over 5|>\s*5", ql):
+        s["category_bucket"] = "above_5_lakh"
+    elif re.search(r"\bsc\b|\bst\b|\bpwd\b|\bph\b|reserved", ql):
+        s["category_bucket"] = "sc_st_pwd"
+    elif re.search(r"\bgen\b|general|\bobc\b|\bews\b|\bur\b", ql):
+        s["category_bucket"] = "gen_obc_ews"
 
     m = re.search(r"(\d+)\s*(?:st|nd|rd|th)?\s*sem", ql)
     if m:
@@ -96,20 +83,26 @@ def extract_slots(q: str) -> dict:
         cleaned = re.sub(r"\b\d+\s*lakhs?", " ", cleaned)
         cleaned = re.sub(r"\brs\.?\s*[\d,]+", " ", cleaned)
         m2 = re.search(r"\b([1-8])(?:st|nd|rd|th)?\b", cleaned)
-        if m2: s["semester"] = int(m2.group(1))
+        if m2:
+            s["semester"] = int(m2.group(1))
 
     # typo-tolerant: hoostel / hostell / hostl, day scholer / dayscholar
-    if   re.search(r"non[- ]?a\.?c", ql):        s["residence"] = "hosteller_non_ac"
-    elif re.search(r"\ba\.?c\b", ql):            s["residence"] = "hosteller_ac"
-    elif re.search(r"ho+ste?l+|hostl", ql):      s["residence"] = "hosteller_ac"
-    elif re.search(r"day\s*scho?l?a?e?r", ql):   s["residence"] = "day_scholar"
+    if   re.search(r"non[- ]?a\.?c", ql):
+        s["residence"] = "hosteller_non_ac"
+    elif re.search(r"\ba\.?c\b", ql):
+        s["residence"] = "hosteller_ac"
+    elif re.search(r"ho+ste?l+|hostl", ql):
+        s["residence"] = "hosteller_ac"
+    elif re.search(r"day\s*scho?l?a?e?r", ql):
+        s["residence"] = "day_scholar"
     return s
 
 
 def detect_component(q: str):
     ql = q.lower()
     for pat, key in COMPONENTS.items():
-        if re.search(pat, ql): return key
+        if re.search(pat, ql):
+            return key
     return None
 
 
@@ -130,7 +123,8 @@ def hybrid_chunks(query: str, k=None, pool=None, prefilter: dict | None = None):
     pool = pool or CFG.get("retrieval.candidate_pool")
     load_cache()
     chunks = _cache["chunks"]
-    if not chunks: return []
+    if not chunks:
+        return []
 
     idx = list(range(len(chunks)))
     if prefilter:
@@ -140,17 +134,18 @@ def hybrid_chunks(query: str, k=None, pool=None, prefilter: dict | None = None):
     b_scores = _cache["bm25"].get_scores(_tok(query))
     b_rank = sorted(idx, key=lambda i: -b_scores[i])[:pool]
 
-    model = get_model()
-    if model is not None:
-        qv = model.encode([query], normalize_embeddings=True)[0]
+    qv = encode(query)
+    if qv is None:
+        sims, d_rank = np.zeros(len(chunks), dtype="float32"), []
+    else:
         sims = _cache["vecs"] @ qv
         d_rank = sorted(idx, key=lambda i: -sims[i])[:pool]
-    else:
-        sims, d_rank = np.zeros(len(chunks), dtype="float32"), []
 
     K, fused = CFG.get("retrieval.rrf_k"), {}
-    for r, i in enumerate(b_rank): fused[i] = fused.get(i, 0) + 1 / (K + r + 1)
-    for r, i in enumerate(d_rank): fused[i] = fused.get(i, 0) + 1 / (K + r + 1)
+    for r, i in enumerate(b_rank):
+        fused[i] = fused.get(i, 0) + 1 / (K + r + 1)
+    for r, i in enumerate(d_rank):
+        fused[i] = fused.get(i, 0) + 1 / (K + r + 1)
     top = sorted(fused.items(), key=lambda x: -x[1])[:k]
     return [(chunks[i], round(s, 5), float(sims[i])) for i, s in top]
 
@@ -177,7 +172,8 @@ def render_rows(rows: list) -> dict:
 
 def component_answer(q: str, slots: dict):
     key = detect_component(q)
-    if not key: return None
+    if not key:
+        return None
     rows = filter_rows({k: v for k, v in slots.items()
                         if k in ("program", "semester", "admission_type") and v})
     if not rows:
@@ -185,7 +181,8 @@ def component_answer(q: str, slots: dict):
                           "(for example: B.Tech, 3rd semester, JOSAA).",
                 "source": None, "method": "metadata-filter"}
     doc = D.db.fee_docs.find_one({"_id": rows[0]["doc_id"], "status": {"$ne": "archived"}})
-    if not doc: return None
+    if not doc:
+        return None
     hdr = f"{doc.get('program')} sem {doc.get('semester')} · {doc.get('admission_type')}"
 
     if key == "__bank__":
@@ -250,81 +247,140 @@ def COVERAGE_MSG():
     return "I hold: " + "; ".join(out) + "." if out else "No fee data is loaded."
 
 
+TOTAL_RE = re.compile(
+    r"\btotal\b.*\b(years?|degree|course|all sem|entire|whole)\b"
+    r"|\b(all|whole|entire)\s+(4|four|8|eight)?\s*years?\b")
+COMPARE_RE = re.compile(
+    r"difference|how much more|how much less|compare|cheaper|costlier|vs\b")
+
+SLOT_ORDER = ("program", "semester", "admission_type", "residence")
+FEE_PDF = "Official fee notice (PDF)"
+
+
+def _merge_slots(current: dict, carried: dict | None) -> dict:
+    """Carry unstated slots from earlier turns.
+
+    A query naming two or more of programme, semester or admission type is a
+    fresh question, so the rest of the carried state is dropped.
+    """
+    if not carried:
+        return dict(current)
+    named = sum(1 for k in ("program", "semester", "admission_type") if current[k])
+    if named >= 2:
+        return dict(current)
+    return {k: (current[k] or carried.get(k)) for k in current}
+
+
+def _guard_unpublished_semester(slots: dict):
+    """Refuse a semester with no published figures.
+
+    Falling through to hybrid here once answered a 4th-semester question with
+    7th-semester amounts.
+    """
+    semester = slots.get("semester")
+    if semester is None:
+        return None
+
+    probe = {"semester": semester, "status": {"$ne": "archived"}}
+    if slots.get("program"):
+        probe["program"] = slots["program"]
+    if D.db.fee_rows.count_documents(probe):
+        return None
+
+    scope = {"program": slots["program"]} if slots.get("program") else {}
+    available = sorted(D.db.fee_rows.distinct("semester", scope))
+    programme = slots.get("program") or "that programme"
+    # Clear the semester, or every later turn inherits it and hits this guard.
+    return {"answer": f"Semester {semester} isn't published for {programme}. "
+                      f"Available: {', '.join(str(s) for s in available)}.",
+            "source": None, "method": "guard",
+            "slots": {**slots, "semester": None}}
+
+
+def _guard_total_across_semesters(query: str, slots: dict):
+    """Published per-semester amounts are the only reliable figures; summing
+    them would present an invented total as official."""
+    if not TOTAL_RE.search(query.lower()):
+        return None
+    return {"answer": "I don't add figures across semesters — only the published "
+                      f"per-semester amounts are reliable. {COVERAGE_MSG()}",
+            "source": None, "method": "guard", "slots": slots}
+
+
+def _guard_comparison(query: str, slots: dict):
+    """Show both sides rather than computing a difference."""
+    if not COMPARE_RE.search(query.lower()):
+        return None
+
+    # Residence is dropped so both sides of the comparison appear.
+    rows = filter_rows({k: v for k, v in slots.items() if v and k != "residence"})
+    if not rows:
+        return None
+
+    seen, lines = set(), []
+    for row in rows:
+        key = (row["income_category"], row["residence"])
+        if key in seen:
+            continue
+        seen.add(key)
+        lines.append(f"   {row['residence'].replace('_', ' ')}"
+                     f" ({row['income_category'].replace('_', ' ')}): {INR(row['amount'])}")
+    return {"answer": "I don't calculate differences — here are the published figures:\n"
+                      + "\n".join(lines[:8]),
+            "source": {"label": FEE_PDF, "url": rows[0]["source_url"]},
+            "method": "guard", "slots": slots}
+
+
+def _ask_for_missing_slots(row_count: int, slots: dict) -> dict:
+    missing = [k.replace("_", " ") for k in SLOT_ORDER if not slots.get(k)]
+    return {"answer": "Which one do you need? Please tell me the "
+                      + ", ".join(missing) + ".",
+            "source": None, "method": "metadata-filter",
+            "rows": row_count, "slots": slots}
+
+
+def _hybrid_fallback(query: str, slots: dict):
+    """Last resort when metadata filtering matched nothing."""
+    hits = hybrid_chunks(query, k=2,
+                         prefilter={"program": slots.get("program"),
+                                    "semester": slots.get("semester")})
+    if not hits or hits[0][2] < CFG.get("retrieval.fee_hybrid_min_cosine"):
+        return None
+    chunk = hits[0][0]
+    return {"answer": chunk.get("quick_answer") or chunk["text"][:400],
+            "source": {"label": chunk.get("title") or FEE_PDF,
+                       "url": chunk.get("source_url")},
+            "method": "hybrid(bm25+vector)", "score": hits[0][1], "slots": slots}
 
 
 @trace(name="fee_answer", run_type="chain")
 def answer_fee(q: str, carried: dict | None = None) -> dict:
-    """Entry point. Metadata filter -> component -> hybrid fallback."""
-    cur = extract_slots(q)
-    # carry unstated slots from earlier turns, but a query naming 2+ of
-    # programme/semester/admission-type is a fresh question and drops the rest
-    fresh = sum(1 for k in ("program", "semester", "admission_type") if cur[k]) >= 2
-    slots = dict(cur) if fresh or not carried else \
-            {k: (cur[k] or carried.get(k)) for k in cur}
+    """Metadata filter first, component lookup next, hybrid only as a fallback.
 
-    # A semester that simply isn't published must be refused outright. Falling
-    # through to hybrid here once answered "4th semester" with 7th-semester figures.
-    if slots.get("semester") is not None:
-        probe = {"semester": slots["semester"]}
-        if slots.get("program"): probe["program"] = slots["program"]
-        probe["status"] = {"$ne": "archived"}
-        if D.db.fee_rows.count_documents(probe) == 0:
-            have = sorted(D.db.fee_rows.distinct(
-                "semester", {"program": slots["program"]} if slots.get("program") else {}))
-            who = slots.get("program") or "that programme"
-            bad = slots["semester"]
-            # drop the unpublished semester, otherwise every later turn inherits it
-            # and keeps hitting this same guard
-            cleared = {**slots, "semester": None}
-            return {"answer": f"Semester {bad} isn't published for {who}. "
-                              f"Available: {', '.join(str(s) for s in have)}.",
-                    "source": None, "method": "guard", "slots": cleared}
+    No arithmetic and no model anywhere in this path: every figure is read from
+    the database and rendered by template.
+    """
+    slots = _merge_slots(extract_slots(q), carried)
 
-    if re.search(r"\btotal\b.*\b(years?|degree|course|all sem|entire|whole)\b", q.lower()) \
-       or re.search(r"\b(all|whole|entire)\s+(4|four|8|eight)?\s*years?\b", q.lower()):
-        return {"answer": "I don't add figures across semesters — only the published "
-                          f"per-semester amounts are reliable. {COVERAGE_MSG()}",
-                "source": None, "method": "guard", "slots": slots}
+    for guard in (_guard_unpublished_semester(slots),
+                  _guard_total_across_semesters(q, slots),
+                  _guard_comparison(q, slots)):
+        if guard:
+            return guard
 
-    if re.search(r"difference|how much more|how much less|compare|cheaper|costlier|vs\b", q.lower()):
-        # drop residence so BOTH sides of the comparison are shown
-        base = {k: v for k, v in slots.items() if v and k != "residence"}
-        rows = filter_rows(base)
-        if rows:
-            seen, body = set(), []
-            for r in rows:
-                key = (r["income_category"], r["residence"])
-                if key in seen: continue
-                seen.add(key)
-                body.append(f"   {r['residence'].replace('_',' ')}"
-                            f" ({r['income_category'].replace('_',' ')}): {INR(r['amount'])}")
-            return {"answer": "I don't calculate differences — here are the published figures:\n"
-                              + "\n".join(body[:8]),
-                    "source": {"label": "Official fee notice (PDF)", "url": rows[0]["source_url"]},
-                    "method": "guard", "slots": slots}
-
-    comp = component_answer(q, slots)
-    if comp: return {**comp, "slots": slots}
+    component = component_answer(q, slots)
+    if component:
+        return {**component, "slots": slots}
 
     rows = filter_rows({k: v for k, v in slots.items() if v})
     if rows and len(rows) <= 6:
         return {**render_rows(rows), "slots": slots}
+    if rows:
+        return _ask_for_missing_slots(len(rows), slots)
 
-    if rows:  # too many — ask only for what's missing
-        missing = [k.replace("_", " ") for k in
-                   ("program", "semester", "admission_type", "residence") if not slots.get(k)]
-        return {"answer": "Which one do you need? Please tell me the " + ", ".join(missing) + ".",
-                "source": None, "method": "metadata-filter", "rows": len(rows), "slots": slots}
-
-    # nothing matched the filter -> hybrid over the chunks
-    hits = hybrid_chunks(q, k=2, prefilter={"program": slots.get("program"),
-                                            "semester": slots.get("semester")})
-    if hits and hits[0][2] >= CFG.get("retrieval.fee_hybrid_min_cosine"):
-        c = hits[0][0]
-        return {"answer": (c.get("quick_answer") or c["text"][:400]),
-                "source": {"label": c.get("title") or "Official fee notice (PDF)",
-                           "url": c.get("source_url")},
-                "method": "hybrid(bm25+vector)", "score": hits[0][1], "slots": slots}
+    hybrid = _hybrid_fallback(q, slots)
+    if hybrid:
+        return hybrid
 
     return {"answer": f"I don't have a fee record for that. {COVERAGE_MSG()}",
             "source": None, "method": "no-match", "slots": slots}
